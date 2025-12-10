@@ -1,0 +1,10 @@
+.next
+node_modules
+.env.local
+.env
+out
+dist
+*.log
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
