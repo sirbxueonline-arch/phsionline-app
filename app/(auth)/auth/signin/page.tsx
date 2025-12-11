@@ -9,7 +9,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Sparkles } from "lucide-react";
+import { AlertCircle, Loader2, Sparkles } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -52,51 +52,77 @@ export default function SignInPage() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2 text-center">
-        <Sparkles className="mx-auto h-10 w-10 text-brand" />
+      <div className="space-y-3">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cyan-100 ring-1 ring-white/15">
+          <Sparkles className="h-4 w-4" /> Returning pilot
+        </div>
         <h1 className="text-3xl font-semibold">Welcome back</h1>
-        <p className="text-slate-200">Sign in to access your StudyPilot cockpit.</p>
+        <p className="text-slate-200">
+          Sign in to access your cockpit, sync your library, and keep generating study-ready content.
+        </p>
       </div>
-      <form className="space-y-4" onSubmit={handleSignIn}>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-          />
+
+      <form className="space-y-5" onSubmit={handleSignIn}>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
+            />
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-          />
-        </div>
+
         {error && (
           <div className="flex items-center gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-100">
             <AlertCircle className="h-4 w-4" />
             {error}
           </div>
         )}
+
         <div className="space-y-3">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" /> Signing in...
+              </span>
+            ) : (
+              "Sign In"
+            )}
           </Button>
-          <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={loading}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full border-slate-300 text-slate-900 hover:border-cyan-300/60 dark:text-white"
+            onClick={handleGoogle}
+            disabled={loading}
+          >
             Continue with Google
           </Button>
         </div>
+
         <p className="text-center text-sm text-slate-200">
           No account?{" "}
-          <Link className="font-semibold text-white underline" href="/auth/signup">
+          <Link className="font-semibold text-cyan-200 underline" href="/auth/signup">
             Sign up
           </Link>
         </p>

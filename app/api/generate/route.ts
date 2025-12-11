@@ -19,7 +19,9 @@ const openaiClient =
       ? new OpenAI({ apiKey, baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" })
       : null;
 
-const MODEL = aiProvider === "gemini" ? "gemini-1.5-flash" : "gpt-4o-mini";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash-001";
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-3.5-turbo-0125";
+const MODEL = aiProvider === "gemini" ? GEMINI_MODEL : OPENAI_MODEL;
 
 export const dynamic = "force-dynamic";
 
@@ -88,18 +90,10 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      const response = await openaiClient.chat.completions.create({
-        model: MODEL,
-        messages: baseMessages,
-        temperature: 0.7,
-        response_format: { type: "json_object" }
-      });
-
-      const content = response.choices?.[0]?.message?.content || "{}";
-      const parsed = safeJson(content);
+      const parsed = await runOpenAI(openaiClient, baseMessages, MODEL);
       return NextResponse.json(parsed);
     } catch (error: any) {
-      console.error("OpenAI error", error?.response?.status, await error?.response?.text?.());
+      console.error("OpenAI error", error?.message);
       return NextResponse.json({ error: "AI request failed", detail: error?.message }, { status: 500 });
     }
   } catch (err) {
@@ -183,30 +177,102 @@ function mockPayload(tool: string, text: string, settings: Record<string, any> =
   }
 }
 
+async function runOpenAI(
+  client: OpenAI,
+  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+  preferredModel: string
+) {
+  const modelsToTry = Array.from(
+    new Set([
+      preferredModel,
+      "gpt-3.5-turbo-0125",
+      "gpt-4o-mini",
+      "gpt-4o-mini-1",
+      "gpt-4o"
+    ])
+  );
+
+  let lastError: string | null = null;
+  for (const model of modelsToTry) {
+    try {
+      const response = await client.chat.completions.create({
+        model,
+        messages,
+        temperature: 0.7,
+        response_format: { type: "json_object" }
+      });
+      const content = response.choices?.[0]?.message?.content || "{}";
+      return safeJson(content);
+    } catch (error: any) {
+      const status = error?.status || error?.response?.status;
+      const detail =
+        error?.error?.message ||
+        error?.message ||
+        (error?.response ? await error.response.text?.() : "") ||
+        "Unknown OpenAI error";
+      lastError = `[${status ?? "unknown"}] ${detail}`;
+
+      // If the model is not available for this key/account, try the next fallback.
+      if (status === 404 || status === 400) {
+        continue;
+      }
+
+      console.error("OpenAI error", lastError);
+      throw new Error(`OpenAI request failed: ${lastError}`);
+    }
+  }
+
+  console.error("OpenAI error", lastError);
+  throw new Error(`OpenAI request failed: ${lastError ?? "no models available"}`);
+}
+
 async function runGemini(
   key: string,
   model: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
 ) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions?key=${key}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.7
-    })
-  });
+  const url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+  const modelsToTry = Array.from(new Set([model, "gemini-1.5-flash-001", "gemini-1.5-flash-latest"]));
+  let lastError: { status?: number; body?: string; model?: string } = {};
 
-  if (!res.ok) {
+  for (const m of modelsToTry) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        // Gemini's OpenAI-compatible endpoint expects the API key in the Authorization header.
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: m,
+        messages,
+        temperature: 0.7,
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const content = data?.choices?.[0]?.message?.content || "{}";
+      return safeJson(content);
+    }
+
     const body = await res.text();
+    lastError = { status: res.status, body, model: m };
+
+    // If the model is not found, try the next fallback model.
+    if (res.status === 404 && /not\s+found/i.test(body)) {
+      continue;
+    }
+
     console.error("Gemini error", res.status, body);
     throw new Error(`Gemini request failed: ${res.status} ${body}`);
   }
-  const data = await res.json();
-  const content = data?.choices?.[0]?.message?.content || "{}";
-  return safeJson(content);
+
+  console.error("Gemini error", lastError.status, lastError.body);
+  throw new Error(
+    `Gemini request failed (${lastError.model || model}): ${lastError.status || "unknown"} ${
+      lastError.body || ""
+    }`
+  );
 }
