@@ -18,7 +18,7 @@ export const getSupabaseClient = async (): Promise<SupabaseClient | null> => {
       detectSessionInUrl: false
     },
     global: {
-      fetch: (url, options = {}) => {
+      fetch: (url: RequestInfo | URL, options: RequestInit = {}) => {
         const headers = new Headers(options.headers);
         if (sessionToken) {
           headers.set("Authorization", `Bearer ${sessionToken}`);
