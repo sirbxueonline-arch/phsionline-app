@@ -237,8 +237,7 @@ async function runGemini(
     new Set([
       normalized || "gemini-1.5-flash-001",
       "gemini-1.5-flash-001",
-      "gemini-1.5-flash",
-      "gemini-pro"
+      "gemini-1.5-flash"
     ])
   );
   let lastError: { status?: number; body?: string; model?: string } = {};
