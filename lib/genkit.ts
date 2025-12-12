@@ -22,7 +22,7 @@ export async function runStudyFlow({
   count?: number;
 }) {
   const prompt = buildPrompt(tool, text, count);
-  const { text: raw } = await ai.generate(prompt, { responseMimeType: "application/json" });
+  const { text: raw } = await ai.generate(prompt);
   return safeJson(raw);
 }
 
