@@ -232,7 +232,15 @@ async function runGemini(
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
 ) {
   const url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-  const modelsToTry = Array.from(new Set([model, "gemini-1.5-flash-001", "gemini-1.5-flash-latest"]));
+  const normalized = model?.includes("latest") ? model.replace("-latest", "") : model;
+  const modelsToTry = Array.from(
+    new Set([
+      normalized || "gemini-1.5-flash-001",
+      "gemini-1.5-flash-001",
+      "gemini-1.5-flash",
+      "gemini-pro"
+    ])
+  );
   let lastError: { status?: number; body?: string; model?: string } = {};
 
   for (const m of modelsToTry) {
