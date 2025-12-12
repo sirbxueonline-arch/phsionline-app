@@ -1,4 +1,4 @@
-import genkit from "genkit";
+import { genkit } from "genkit";
 import { googleAI, gemini15Flash } from "@genkit-ai/googleai";
 
 type Tool = "flashcards" | "quiz" | "explain" | "plan";
