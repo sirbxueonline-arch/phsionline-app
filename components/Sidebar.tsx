@@ -19,7 +19,7 @@ export const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-60 flex-shrink-0 border-r border-slate-200/60 bg-white/60 p-4 dark:border-slate-800 dark:bg-slate-950/60 lg:block">
+    <aside className="hidden w-64 flex-shrink-0 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70 lg:block">
       <nav className="space-y-1">
         {links.map(({ href, label, icon: Icon }) => {
           const active = pathname?.startsWith(href);

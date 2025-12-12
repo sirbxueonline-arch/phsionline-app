@@ -44,7 +44,7 @@ export const Navbar = () => {
           : "sticky border-b border-slate-200/60 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/80"
       )}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="group flex items-center gap-2 font-semibold">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-indigo-500 text-white shadow-glow">
