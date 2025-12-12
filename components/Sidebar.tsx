@@ -3,14 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutGrid, Library, LineChart, Wand2, Notebook, Share2, Settings } from "lucide-react";
+import { Notebook, Share2, Settings } from "lucide-react";
 
 const links = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-  { href: "/generate", label: "Generate", icon: Wand2 },
-  { href: "/library", label: "Library", icon: Library },
   { href: "/study", label: "Study", icon: Notebook },
-  { href: "/analytics", label: "Analytics", icon: LineChart },
   { href: "/referrals", label: "Referrals", icon: Share2 },
   { href: "/settings/profile", label: "Settings", icon: Settings }
 ];

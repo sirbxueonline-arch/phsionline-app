@@ -155,8 +155,8 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="border-slate-200 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
+          <div className="grid auto-rows-[1fr] gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <Card className="flex min-h-[240px] flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-purple-600" />
@@ -164,7 +164,7 @@ export default function DashboardPage() {
                 </CardTitle>
                 <CardDescription>Jump into your most common flows.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
                 <Link href="/generate">
                   <Button className="w-full rounded-full bg-purple-600 text-white shadow hover:bg-purple-700">
                     Generate new set
@@ -178,19 +178,19 @@ export default function DashboardPage() {
                     Start a study session
                   </Button>
                 </Link>
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]">
+                <div className="mt-auto rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]">
                   Save time: pick a preset prompt from the AI suggestions below.
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
+            <Card className="flex min-h-[240px] flex-col">
               <CardHeader>
                 <CardTitle className="dark:text-[#E5E7EB]">Recent saves</CardTitle>
                 <CardDescription className="dark:text-[#94A3B8]">Keep momentum with your latest items.</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
+                <div className="flex-1 space-y-3">
                   {loading && <p className="text-sm text-slate-500 dark:text-[#94A3B8]">Loading...</p>}
                   {!loading && resources.length === 0 && (
                     <p className="text-sm text-slate-500 dark:text-[#94A3B8]">No items yet. Generate your first resource.</p>
@@ -216,12 +216,12 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
+            <Card className="flex min-h-[240px] flex-col">
               <CardHeader>
                 <CardTitle className="dark:text-[#E5E7EB]">Usage</CardTitle>
                 <CardDescription className="dark:text-[#94A3B8]">Free tier allows 20 saves/month.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
                 <div className="rounded-xl border border-slate-200/70 bg-slate-50 p-3 dark:border-[#1F2A44] dark:bg-[#0B1022]">
                   <p className="text-sm text-slate-500 dark:text-[#94A3B8]">You&apos;ve saved</p>
                   <p className="text-3xl font-semibold dark:text-[#E5E7EB]">{usage ?? "?"}</p>
@@ -233,7 +233,7 @@ export default function DashboardPage() {
                 <Link href="/upgrade">
                   <Button
                     variant="outline"
-                    className="w-full rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
+                    className="mt-auto w-full rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
                   >
                     Upgrade to unlock more
                   </Button>
