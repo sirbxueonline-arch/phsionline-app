@@ -1,15 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Check, Shield, Zap, Users } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
-import { db } from "@/lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { useSearchParams } from "next/navigation";
 
 type Plan = {
   name: string;
@@ -53,31 +49,53 @@ const plans: Plan[] = [
 
 export default function UpgradePage() {
   const { user } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const searchParams = useSearchParams();
+  const [processingPlan, setProcessingPlan] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const fakeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setProcessing(true);
-    setSuccess(false);
+  const statusMessage = useMemo(() => {
+    const status = searchParams?.get("status");
+    if (status === "success") return "Payment successful! Your Pro access will activate shortly.";
+    if (status === "cancelled") return "Checkout cancelled. You can try again anytime.";
+    return null;
+  }, [searchParams]);
+
+  const startCheckout = async (plan: Plan) => {
+    if (plan.action !== "pro") return;
+
+    if (!user) {
+      setError("Please sign in before upgrading.");
+      return;
+    }
+
+    setProcessingPlan(plan.name);
+    setError(null);
     try {
-      if (user) {
-        await addDoc(collection(db, "billingAttempts"), {
-          uid: user.uid,
-          plan: "pro",
-          status: "demo",
-          createdAt: new Date().toISOString()
-        });
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: plan.name.toLowerCase() })
+      });
+      if (!res.ok) {
+        throw new Error("Failed to start checkout. Please try again.");
       }
-      await new Promise((res) => setTimeout(res, 1000));
-      setSuccess(true);
-    } catch (err) {
-      console.error("Billing demo write failed", err);
-    } finally {
-      setProcessing(false);
+      const data = await res.json();
+      if (data?.url) {
+        window.location.href = data.url as string;
+      } else {
+        throw new Error("No checkout URL returned.");
+      }
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong. Please try again.");
+      setProcessingPlan(null);
     }
   };
+
+  useEffect(() => {
+    if (!processingPlan) return;
+    const timeout = setTimeout(() => setProcessingPlan(null), 15000);
+    return () => clearTimeout(timeout);
+  }, [processingPlan]);
 
   return (
     <div className="space-y-10">
@@ -100,6 +118,17 @@ export default function UpgradePage() {
           </span>
         </div>
       </header>
+
+      {statusMessage && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-900/30 dark:text-emerald-100">
+          {statusMessage}
+        </div>
+      )}
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/30 dark:text-red-100">
+          {error}
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-3">
         {plans.map((plan) => (
@@ -132,12 +161,10 @@ export default function UpgradePage() {
               <Button
                 className="w-full"
                 variant={plan.name === "Pro" ? "default" : "outline"}
-                onClick={() => {
-                  if (plan.action === "pro") setOpen(true);
-                }}
-                disabled={plan.action !== "pro"}
+                onClick={() => startCheckout(plan)}
+                disabled={plan.action !== "pro" || !!processingPlan}
               >
-                {plan.cta}
+                {processingPlan === plan.name ? "Redirecting..." : plan.cta}
               </Button>
               {plan.action !== "pro" && (
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -148,47 +175,6 @@ export default function UpgradePage() {
           </Card>
         ))}
       </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Demo checkout</DialogTitle>
-            <DialogDescription>Payments are mocked while Pro rolls out.</DialogDescription>
-          </DialogHeader>
-          <form className="space-y-3" onSubmit={fakeSubmit}>
-            <div className="space-y-1">
-              <Label htmlFor="card">Card number</Label>
-              <Input id="card" placeholder="4242 4242 4242 4242" required />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="exp">Expiry</Label>
-                <Input id="exp" placeholder="12/34" required />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="cvc">CVC</Label>
-                <Input id="cvc" placeholder="123" required />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="name">Name on card</Label>
-              <Input id="name" placeholder="Ada Lovelace" required />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="country">Country</Label>
-              <Input id="country" placeholder="USA" required />
-            </div>
-            <Button type="submit" className="w-full" disabled={processing}>
-              {processing ? "Processing..." : "Pay (demo)"}
-            </Button>
-            {success && (
-              <p className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-200">
-                Demo success! This is a mock checkout. Payments are coming soon.
-              </p>
-            )}
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
