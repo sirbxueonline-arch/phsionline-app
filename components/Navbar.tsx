@@ -40,7 +40,7 @@ export const Navbar = () => {
       className={cn(
         "top-0 z-40 w-full transition-colors",
         isLanding
-          ? "fixed border-b border-slate-200/70 bg-white/85 text-slate-900 backdrop-blur"
+          ? "fixed border-transparent bg-transparent text-slate-900 backdrop-blur-none dark:border-slate-800/80 dark:bg-slate-950/70 dark:text-slate-100"
           : "sticky border-b border-slate-200/60 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/80"
       )}
     >
@@ -51,8 +51,8 @@ export const Navbar = () => {
               <Rocket className="h-5 w-5" />
             </div>
             <div className="leading-tight">
-              <p className={cn("text-lg", isLanding && "text-slate-900")}>StudyPilot</p>
-              <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-slate-500")}>
+              <p className={cn("text-lg", isLanding && "text-slate-900 dark:text-slate-100")}>StudyPilot</p>
+              <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-slate-500 dark:text-slate-400")}>
                 AI study cockpit
               </p>
             </div>
@@ -74,7 +74,7 @@ export const Navbar = () => {
             size="sm"
             className={cn(
               "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
-              isLanding && "border border-slate-200/70 text-white"
+              isLanding && "border border-slate-200/70 text-white dark:border-slate-800/70"
             )}
           >
             New generation
@@ -84,7 +84,7 @@ export const Navbar = () => {
           <Button
             variant="outline"
             size="sm"
-            className={cn(isLanding && "border-slate-300 text-slate-900 hover:bg-slate-100")}
+            className={cn(isLanding && "border-slate-300 text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900/60")}
           >
             Upgrade
           </Button>
@@ -95,7 +95,7 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => router.push("/dashboard")}
-              className={cn(isLanding && "text-slate-900 hover:bg-slate-100")}
+              className={cn(isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60")}
             >
               {user?.email?.split("@")[0] || "You"}
             </Button>
@@ -103,7 +103,7 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={signOutUser}
-              className={cn(isLanding && "text-slate-900 hover:bg-slate-100")}
+              className={cn(isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60")}
             >
               <LogOut className="h-4 w-4" />
             </Button>
@@ -111,18 +111,25 @@ export const Navbar = () => {
         ) : (
           <>
             <Link href="/auth/signin">
-              <Button variant="ghost" size="sm" className={cn(isLanding && "text-slate-900 hover:bg-slate-100")}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60")}
+              >
                 Sign in
               </Button>
             </Link>
             <Link href="/auth/signup">
-              <Button size="sm" className={cn(isLanding && "bg-white text-slate-900 hover:bg-slate-200")}>
-                  Sign up
-                </Button>
-              </Link>
-            </>
-          )}
-        </div>
+              <Button
+                size="sm"
+                className={cn(isLanding && "bg-white text-slate-900 hover:bg-slate-200 dark:bg-slate-200 dark:text-slate-900")}
+              >
+                Sign up
+              </Button>
+            </Link>
+          </>
+        )}
+      </div>
       </div>
     </header>
   );
@@ -144,7 +151,10 @@ const NavLink = ({
     className={cn(
       "rounded-md px-2 py-1 transition-colors hover:text-slate-900 dark:hover:text-slate-100",
       active ? "text-slate-900 dark:text-slate-100" : "text-slate-500",
-      landing && (active ? "text-slate-900" : "text-slate-600 hover:text-slate-900")
+      landing &&
+        (active
+          ? "text-slate-900 dark:text-slate-100"
+          : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100")
     )}
   >
     {label}
