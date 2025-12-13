@@ -40,7 +40,7 @@ export const Navbar = () => {
       className={cn(
         "top-0 z-40 w-full transition-colors",
         isLanding
-          ? "fixed border-transparent bg-transparent text-white"
+          ? "fixed border-b border-slate-200/70 bg-white/85 text-slate-900 backdrop-blur"
           : "sticky border-b border-slate-200/60 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/80"
       )}
     >
@@ -51,8 +51,8 @@ export const Navbar = () => {
               <Rocket className="h-5 w-5" />
             </div>
             <div className="leading-tight">
-              <p className={cn("text-lg", isLanding && "text-white")}>StudyPilot</p>
-              <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-white/70")}>
+              <p className={cn("text-lg", isLanding && "text-slate-900")}>StudyPilot</p>
+              <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-slate-500")}>
                 AI study cockpit
               </p>
             </div>
@@ -63,56 +63,60 @@ export const Navbar = () => {
           <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
             <NavLink href="/dashboard" label="Dashboard" active={pathname?.startsWith("/dashboard")} landing={isLanding} />
             <NavLink href="/generate" label="Generate" active={pathname?.startsWith("/generate")} landing={isLanding} />
-            <NavLink href="/library" label="Library" active={pathname?.startsWith("/library")} landing={isLanding} />
-            <NavLink href="/analytics" label="Analytics" active={pathname?.startsWith("/analytics")} landing={isLanding} />
-          </div>
+          <NavLink href="/library" label="Library" active={pathname?.startsWith("/library")} landing={isLanding} />
+          <NavLink href="/analytics" label="Analytics" active={pathname?.startsWith("/analytics")} landing={isLanding} />
         </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle landing={isLanding} />
-          <Link href="/generate" className="hidden md:block">
+      </div>
+      <div className="flex items-center gap-2">
+        <ThemeToggle landing={isLanding} />
+        <Link href="/generate" className="hidden md:block">
+          <Button
+            size="sm"
+            className={cn(
+              "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
+              isLanding && "border border-slate-200/70 text-white"
+            )}
+          >
+            New generation
+          </Button>
+        </Link>
+        <Link href="/upgrade">
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(isLanding && "border-slate-300 text-slate-900 hover:bg-slate-100")}
+          >
+            Upgrade
+          </Button>
+        </Link>
+        {isAuthed ? (
+          <>
             <Button
+              variant="ghost"
               size="sm"
-              className={cn(
-                "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
-                isLanding && "border border-white/30"
-              )}
+              onClick={() => router.push("/dashboard")}
+              className={cn(isLanding && "text-slate-900 hover:bg-slate-100")}
             >
-              New generation
+              {user?.email?.split("@")[0] || "You"}
             </Button>
-          </Link>
-          <Link href="/upgrade">
-            <Button variant={isLanding ? "ghost" : "outline"} size="sm" className={cn(isLanding && "text-white hover:bg-white/10")}>
-              Upgrade
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOutUser}
+              className={cn(isLanding && "text-slate-900 hover:bg-slate-100")}
+            >
+              <LogOut className="h-4 w-4" />
             </Button>
-          </Link>
-          {isAuthed ? (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push("/dashboard")}
-                className={cn(isLanding && "text-white hover:bg-white/10")}
-              >
-                {user?.email?.split("@")[0] || "You"}
+          </>
+        ) : (
+          <>
+            <Link href="/auth/signin">
+              <Button variant="ghost" size="sm" className={cn(isLanding && "text-slate-900 hover:bg-slate-100")}>
+                Sign in
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={signOutUser}
-                className={cn(isLanding && "text-white hover:bg-white/10")}
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/signin">
-                <Button variant="ghost" size="sm" className={cn(isLanding && "text-white hover:bg-white/10")}>
-                  Sign in
-                </Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button size="sm" className={cn(isLanding && "bg-white text-slate-900 hover:bg-slate-200")}>
+            </Link>
+            <Link href="/auth/signup">
+              <Button size="sm" className={cn(isLanding && "bg-white text-slate-900 hover:bg-slate-200")}>
                   Sign up
                 </Button>
               </Link>
@@ -140,7 +144,7 @@ const NavLink = ({
     className={cn(
       "rounded-md px-2 py-1 transition-colors hover:text-slate-900 dark:hover:text-slate-100",
       active ? "text-slate-900 dark:text-slate-100" : "text-slate-500",
-      landing && (active ? "text-white" : "text-white/80 hover:text-white")
+      landing && (active ? "text-slate-900" : "text-slate-600 hover:text-slate-900")
     )}
   >
     {label}
