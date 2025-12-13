@@ -81,8 +81,22 @@ export async function POST(req: NextRequest) {
     ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
     if (aiProvider === "gemini") {
-      const parsed = await runGemini(apiKey, MODEL, baseMessages);
-      return NextResponse.json(parsed);
+      try {
+        const parsed = await runGemini(apiKey, MODEL, baseMessages);
+        return NextResponse.json(parsed);
+      } catch (error: any) {
+        console.error("Gemini error", error?.message || error);
+        const openaiFallbackKey = process.env.OPENAI_API_KEY;
+        if (openaiFallbackKey) {
+          const fallbackClient = new OpenAI({ apiKey: openaiFallbackKey });
+          const parsed = await runOpenAI(fallbackClient, baseMessages, OPENAI_MODEL);
+          return NextResponse.json(parsed);
+        }
+        return NextResponse.json(
+          { error: "Gemini request failed", detail: error?.message || "Model unavailable" },
+          { status: 500 }
+        );
+      }
     }
 
     if (!openaiClient) {
@@ -226,45 +240,92 @@ async function runOpenAI(
   throw new Error(`OpenAI request failed: ${lastError ?? "no models available"}`);
 }
 
+function toText(content: any) {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === "string") return part;
+        if (part && typeof part === "object" && "text" in part) return (part as any).text || "";
+        return "";
+      })
+      .filter(Boolean)
+      .join("\n");
+  }
+  if (content && typeof content === "object" && "text" in content) {
+    return (content as any).text || "";
+  }
+  return content ? String(content) : "";
+}
+
 async function runGemini(
   key: string,
   model: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
 ) {
-  const url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
   const normalized = model?.includes("latest") ? model.replace("-latest", "") : model;
   const modelsToTry = Array.from(
     new Set([
       normalized || "gemini-1.5-flash-001",
+      "gemini-1.5-flash-latest",
       "gemini-1.5-flash-001",
-      "gemini-1.5-flash"
+      "gemini-1.5-flash",
+      "gemini-1.5-pro-001"
     ])
   );
   let lastError: { status?: number; body?: string; model?: string } = {};
 
-  for (const m of modelsToTry) {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        // Gemini's OpenAI-compatible endpoint expects the API key in the Authorization header.
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: m,
-        messages,
-        temperature: 0.7,
-        response_format: { type: "json_object" }
-      })
-    });
+  const systemInstruction = messages
+    .filter((m) => m.role === "system")
+    .map((m) => toText(m.content))
+    .filter(Boolean)
+    .join("\n");
 
-    if (res.ok) {
-      const data = await res.json();
-      const content = data?.choices?.[0]?.message?.content || "{}";
-      return safeJson(content);
-    }
+  const contents = messages
+    .filter((m) => m.role !== "system")
+    .map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: toText(m.content) }]
+    }));
+
+  for (const m of modelsToTry) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents,
+          systemInstruction: systemInstruction
+            ? { role: "system", parts: [{ text: systemInstruction }] }
+            : undefined,
+          generationConfig: {
+            temperature: 0.7
+          }
+        })
+      }
+    );
 
     const body = await res.text();
+    let json: any = null;
+    try {
+      json = body ? JSON.parse(body) : null;
+    } catch (parseErr) {
+      json = null;
+    }
+
+    if (res.ok && json) {
+      const candidateText =
+        json?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || "").join("") || "";
+      if (candidateText) {
+        return safeJson(candidateText);
+      }
+      lastError = { status: res.status, body: "Empty Gemini response", model: m };
+      continue;
+    }
+
     lastError = { status: res.status, body, model: m };
 
     // If the model is not found, try the next fallback model.
