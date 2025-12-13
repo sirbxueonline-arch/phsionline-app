@@ -36,15 +36,25 @@ export default function GeneratePage() {
     const fetchUsage = async () => {
       const client = await getSupabaseClient();
       if (!client || !user) return;
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const { count: usageCount } = await client
-        .from("resources")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.uid)
-        .gte("created_at", startOfMonth);
-      if (typeof usageCount === "number") {
-        setUsage(usageCount);
-        if (usageCount >= 20) setLimitReached(true);
+      try {
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+        const { count: usageCount, error: usageError } = await client
+          .from("resources")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.uid)
+          .gte("created_at", startOfMonth);
+
+        if (usageError) {
+          console.warn("Usage fetch skipped (Supabase auth)", usageError?.message);
+          return;
+        }
+
+        if (typeof usageCount === "number") {
+          setUsage(usageCount);
+          if (usageCount >= 20) setLimitReached(true);
+        }
+      } catch (err) {
+        console.warn("Usage fetch failed", err);
       }
     };
     fetchUsage();

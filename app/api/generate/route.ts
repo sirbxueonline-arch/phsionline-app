@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { verifyToken } from "@/lib/firebaseAdmin";
 
@@ -8,20 +7,15 @@ const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabaseServer = supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
 
-const aiProvider = process.env.AI_PROVIDER || "openai";
+const apiKey = process.env.GEMINI_API_KEY;
 
-const apiKey = aiProvider === "gemini" ? process.env.GEMINI_API_KEY : process.env.OPENAI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
+const MODEL = GEMINI_MODEL;
 
-const openaiClient =
-  apiKey && aiProvider === "openai"
-    ? new OpenAI({ apiKey })
-    : apiKey && aiProvider === "gemini"
-      ? new OpenAI({ apiKey, baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" })
-      : null;
-
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash-001";
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-3.5-turbo-0125";
-const MODEL = aiProvider === "gemini" ? GEMINI_MODEL : OPENAI_MODEL;
+type ChatMessage = {
+  role: "system" | "user" | "assistant";
+  content: any;
+};
 
 export const dynamic = "force-dynamic";
 
@@ -71,44 +65,24 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = buildPrompt(tool, text, settings);
-    const baseMessages = [
+    const baseMessages: ChatMessage[] = [
       {
         role: "system",
         content:
           "You are an educational AI that must reply with strict JSON only. Do not include Markdown. Ensure all fields are populated and options are meaningful, not placeholders."
       },
       { role: "user", content: prompt }
-    ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
-
-    if (aiProvider === "gemini") {
-      try {
-        const parsed = await runGemini(apiKey, MODEL, baseMessages);
-        return NextResponse.json(parsed);
-      } catch (error: any) {
-        console.error("Gemini error", error?.message || error);
-        const openaiFallbackKey = process.env.OPENAI_API_KEY;
-        if (openaiFallbackKey) {
-          const fallbackClient = new OpenAI({ apiKey: openaiFallbackKey });
-          const parsed = await runOpenAI(fallbackClient, baseMessages, OPENAI_MODEL);
-          return NextResponse.json(parsed);
-        }
-        return NextResponse.json(
-          { error: "Gemini request failed", detail: error?.message || "Model unavailable" },
-          { status: 500 }
-        );
-      }
-    }
-
-    if (!openaiClient) {
-      return NextResponse.json({ error: "OpenAI client not configured" }, { status: 500 });
-    }
+    ];
 
     try {
-      const parsed = await runOpenAI(openaiClient, baseMessages, MODEL);
+      const parsed = await runGemini(apiKey, MODEL, baseMessages);
       return NextResponse.json(parsed);
     } catch (error: any) {
-      console.error("OpenAI error", error?.message);
-      return NextResponse.json({ error: "AI request failed", detail: error?.message }, { status: 500 });
+      console.error("Gemini error", error?.message || error);
+      return NextResponse.json(
+        { error: "Gemini request failed", detail: error?.message || "Model unavailable" },
+        { status: 500 }
+      );
     }
   } catch (err) {
     console.error("Generate API error", err);
@@ -191,55 +165,6 @@ function mockPayload(tool: string, text: string, settings: Record<string, any> =
   }
 }
 
-async function runOpenAI(
-  client: OpenAI,
-  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-  preferredModel: string
-) {
-  const modelsToTry = Array.from(
-    new Set([
-      preferredModel,
-      "gpt-3.5-turbo-0125",
-      "gpt-4o-mini",
-      "gpt-4o-mini-1",
-      "gpt-4o"
-    ])
-  );
-
-  let lastError: string | null = null;
-  for (const model of modelsToTry) {
-    try {
-      const response = await client.chat.completions.create({
-        model,
-        messages,
-        temperature: 0.7,
-        response_format: { type: "json_object" }
-      });
-      const content = response.choices?.[0]?.message?.content || "{}";
-      return safeJson(content);
-    } catch (error: any) {
-      const status = error?.status || error?.response?.status;
-      const detail =
-        error?.error?.message ||
-        error?.message ||
-        (error?.response ? await error.response.text?.() : "") ||
-        "Unknown OpenAI error";
-      lastError = `[${status ?? "unknown"}] ${detail}`;
-
-      // If the model is not available for this key/account, try the next fallback.
-      if (status === 404 || status === 400) {
-        continue;
-      }
-
-      console.error("OpenAI error", lastError);
-      throw new Error(`OpenAI request failed: ${lastError}`);
-    }
-  }
-
-  console.error("OpenAI error", lastError);
-  throw new Error(`OpenAI request failed: ${lastError ?? "no models available"}`);
-}
-
 function toText(content: any) {
   if (typeof content === "string") return content;
   if (Array.isArray(content)) {
@@ -261,16 +186,19 @@ function toText(content: any) {
 async function runGemini(
   key: string,
   model: string,
-  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
+  messages: ChatMessage[]
 ) {
-  const normalized = model?.includes("latest") ? model.replace("-latest", "") : model;
+  const normalized = model || "gemini-flash-latest";
+  const maybeNonLatest = normalized.includes("-latest") ? normalized.replace("-latest", "") : normalized;
   const modelsToTry = Array.from(
     new Set([
-      normalized || "gemini-1.5-flash-001",
-      "gemini-1.5-flash-latest",
-      "gemini-1.5-flash-001",
-      "gemini-1.5-flash",
-      "gemini-1.5-pro-001"
+      normalized,
+      maybeNonLatest,
+      "gemini-flash-latest",
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-2.0-flash-001",
+      "gemini-2.5-pro"
     ])
   );
   let lastError: { status?: number; body?: string; model?: string } = {};
