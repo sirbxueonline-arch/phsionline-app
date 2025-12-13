@@ -226,7 +226,8 @@ export default function GeneratePage() {
                   <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="subject">
                     Subject or title
                   </Label>
-                  <Info className="h-4 w-4 text-slate-400" aria-hidden title="This title appears on your saved set" />
+                  <Info className="h-4 w-4 text-slate-400" aria-hidden />
+                  <span className="sr-only">This title appears on your saved set</span>
                 </div>
                 <Input
                   id="subject"
@@ -242,7 +243,8 @@ export default function GeneratePage() {
                     <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="count">
                       Count
                     </Label>
-                    <Info className="h-4 w-4 text-slate-400" aria-hidden title="Choose how many items to generate" />
+                    <Info className="h-4 w-4 text-slate-400" aria-hidden />
+                    <span className="sr-only">Choose how many items to generate</span>
                   </div>
                   <Input
                     id="count"
@@ -259,7 +261,8 @@ export default function GeneratePage() {
                     <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="difficulty">
                       Difficulty
                     </Label>
-                    <Info className="h-4 w-4 text-slate-400" aria-hidden title="Describe the level (easy, medium, hard)" />
+                    <Info className="h-4 w-4 text-slate-400" aria-hidden />
+                    <span className="sr-only">Describe the level, e.g. easy, medium, hard</span>
                   </div>
                   <Input
                     id="difficulty"
