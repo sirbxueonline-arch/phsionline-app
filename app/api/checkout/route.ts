@@ -7,7 +7,7 @@ const stripePricePro = process.env.STRIPE_PRICE_PRO_ID;
 
 const stripe = stripeSecret
   ? new Stripe(stripeSecret, {
-      apiVersion: "2024-06-20"
+      apiVersion: Stripe.API_VERSION as Stripe.LatestApiVersion
     })
   : null;
 
