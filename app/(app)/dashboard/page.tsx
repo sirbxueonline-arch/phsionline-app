@@ -95,7 +95,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
         <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-r from-white via-indigo-50/60 to-white p-6 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
+          <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-r from-white via-indigo-50/60 to-white p-6 shadow-sm dark:border-[#1F2A44] dark:bg-gradient-to-r dark:from-[#0B1022] dark:via-[#0F172A] dark:to-[#0B1022]">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-purple-700 ring-1 ring-purple-100 dark:bg-transparent dark:text-purple-200 dark:ring-purple-900/60">

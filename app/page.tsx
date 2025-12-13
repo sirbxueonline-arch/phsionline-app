@@ -28,16 +28,20 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Link href="/auth/signin">
-              <Button size="lg" variant="outline" className="text-white border-white/40 hover:bg-white/10">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-slate-300 bg-white/70 text-slate-900 hover:bg-white dark:border-white/40 dark:bg-transparent dark:text-white dark:hover:bg-white/10"
+              >
                 Sign In
               </Button>
             </Link>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-sm text-slate-100/80">
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1">
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 px-3 py-1 text-slate-700 ring-1 ring-slate-200/70 dark:bg-white/10 dark:text-slate-100 dark:ring-white/20">
               <ShieldCheck className="h-4 w-4" /> Secure sync via Firebase + Supabase
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1">
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/5 px-3 py-1 text-slate-700 ring-1 ring-slate-200/70 dark:bg-white/10 dark:text-slate-100 dark:ring-white/20">
               <Zap className="h-4 w-4" /> Generations in seconds
             </span>
           </div>
