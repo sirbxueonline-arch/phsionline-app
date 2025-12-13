@@ -54,7 +54,8 @@ export default function FullscreenGenerateView() {
     if (!quizItems || !showResult) return 0;
     return quizItems.reduce((sum, q, idx) => {
       const selected = answers[idx];
-      return sum + (selected && selected === q.answer ? 1 : 0);
+      const normalize = (val: string) => (val || "").trim().toLowerCase();
+      return sum + (selected && normalize(selected) === normalize(q.answer) ? 1 : 0);
     }, 0);
   }, [quizItems, answers, showResult]);
 
@@ -283,7 +284,7 @@ export default function FullscreenGenerateView() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950">
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
+      <div className="absolute inset-0 light-gradient-bg dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.15),transparent_35%),radial-gradient(circle_at_80%_15%,rgba(124,58,237,0.16),transparent_30%)]" />
       <div className="relative mx-auto flex max-w-6xl flex-col gap-5 px-4 pb-16 pt-16 text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -297,7 +298,7 @@ export default function FullscreenGenerateView() {
           </div>
         </div>
 
-        <Card className="border-slate-800 bg-slate-900/80 text-white shadow-2xl backdrop-blur">
+        <Card className="border-slate-200 bg-white/90 text-slate-900 shadow-2xl backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 dark:text-white">
           <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-400">
@@ -335,9 +336,9 @@ export default function FullscreenGenerateView() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-sm text-slate-300">
+            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300">
               <p className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-cyan-300" />
+                <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />
                 Tip: share or export from the library after saving. This view keeps things focused for study.
               </p>
             </div>

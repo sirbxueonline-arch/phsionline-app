@@ -39,10 +39,10 @@ export const QuizQuestion = ({
   };
 
   return (
-    <Card className="space-y-4 rounded-2xl border border-slate-800/70 bg-slate-900/80 p-6 shadow-xl">
+    <Card className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800/70 dark:bg-slate-900/80">
       <div className="space-y-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Question</p>
-        <p className="text-xl font-semibold text-slate-50">{item.question}</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Question</p>
+        <p className="text-xl font-semibold text-slate-900 dark:text-slate-50">{item.question}</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {options.map((opt) => {
@@ -54,7 +54,7 @@ export const QuizQuestion = ({
               className={`h-12 justify-start text-left text-base ${
                 isSelected
                   ? "bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900"
-                  : "border-slate-700 text-slate-100 hover:border-cyan-400"
+                  : "border-slate-300 text-slate-900 hover:border-cyan-400 dark:border-slate-700 dark:text-slate-100"
               }`}
               onClick={() => handleSelect(opt)}
             >
@@ -64,9 +64,9 @@ export const QuizQuestion = ({
         })}
       </div>
       {showFeedback && currentChoice && (
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-200">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-200">
           <p className="font-semibold">{correct ? "Correct!" : "Not quite."}</p>
-          {item.explanation && <p className="mt-1 text-slate-300">{item.explanation}</p>}
+          {item.explanation && <p className="mt-1 text-slate-600 dark:text-slate-300">{item.explanation}</p>}
         </div>
       )}
     </Card>

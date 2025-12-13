@@ -26,7 +26,7 @@ export const Flashcard = ({
   };
   return (
     <Card
-      className="relative flex min-h-[280px] w-full cursor-pointer overflow-hidden rounded-2xl border border-slate-800/70 bg-slate-900/80 p-6 shadow-xl transition hover:border-cyan-400/40 hover:shadow-cyan-500/10"
+      className="relative flex min-h-[320px] w-full cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-xl transition hover:border-cyan-400/40 hover:shadow-cyan-500/10 dark:border-slate-800/70 dark:bg-slate-900/80"
       style={{ perspective: "1200px" }}
       onClick={toggle}
     >
