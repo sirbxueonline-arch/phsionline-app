@@ -22,7 +22,10 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <Link href="/auth/signup">
-              <Button size="lg" className="shadow-glow bg-white text-slate-900 hover:bg-slate-200">
+              <Button
+                size="lg"
+                className="shadow-lg bg-gradient-to-r from-brand to-indigo-500 text-white hover:from-brand/90 hover:to-indigo-500/90"
+              >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -31,7 +34,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-slate-300 bg-white/70 text-slate-900 hover:bg-white dark:border-white/40 dark:bg-transparent dark:text-white dark:hover:bg-white/10"
+                className="border-slate-300 bg-white text-slate-900 shadow-sm hover:bg-slate-50 ring-1 ring-slate-200 dark:border-white/40 dark:bg-transparent dark:text-white dark:hover:bg-white/10 dark:ring-0"
               >
                 Sign In
               </Button>
