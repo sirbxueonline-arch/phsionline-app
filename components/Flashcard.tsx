@@ -7,10 +7,25 @@ import { Button } from "./ui/button";
 
 export type FlashcardItem = { question: string; answer: string };
 
-export const Flashcard = ({ item }: { item: FlashcardItem }) => {
-  const [flipped, setFlipped] = React.useState(false);
+export const Flashcard = ({
+  item,
+  flipped: controlledFlipped,
+  onFlip
+}: {
+  item: FlashcardItem;
+  flipped?: boolean;
+  onFlip?: (flipped: boolean) => void;
+}) => {
+  const [internalFlipped, setInternalFlipped] = React.useState(false);
+  const flipped = controlledFlipped ?? internalFlipped;
+  const toggle = () => {
+    if (controlledFlipped === undefined) {
+      setInternalFlipped((f) => !f);
+    }
+    onFlip?.(!flipped);
+  };
   return (
-    <Card className="relative cursor-pointer overflow-hidden" onClick={() => setFlipped(!flipped)}>
+    <Card className="relative cursor-pointer overflow-hidden" onClick={toggle}>
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.4 }}
@@ -33,7 +48,7 @@ export const Flashcard = ({ item }: { item: FlashcardItem }) => {
         className="mt-4"
         onClick={(e) => {
           e.stopPropagation();
-          setFlipped((f) => !f);
+          toggle();
         }}
       >
         Flip

@@ -11,9 +11,18 @@ export type QuizItem = {
   explanation?: string;
 };
 
-export const QuizQuestion = ({ item }: { item: QuizItem }) => {
-  const [choice, setChoice] = React.useState<string | null>(null);
-  const correct = choice && choice === item.answer;
+export const QuizQuestion = ({
+  item,
+  selected,
+  onSelect
+}: {
+  item: QuizItem;
+  selected?: string | null;
+  onSelect?: (choice: string) => void;
+}) => {
+  const [choice, setChoice] = React.useState<string | null>(selected ?? null);
+  const currentChoice = selected ?? choice;
+  const correct = currentChoice && currentChoice === item.answer;
   const options = React.useMemo(
     () =>
       item.options && item.options.length > 0
@@ -21,6 +30,11 @@ export const QuizQuestion = ({ item }: { item: QuizItem }) => {
         : ["Option A", "Option B", "Option C", "Option D"],
     [item.options]
   );
+
+  const handleSelect = (opt: string) => {
+    setChoice(opt);
+    onSelect?.(opt);
+  };
 
   return (
     <Card className="space-y-3">
@@ -32,15 +46,15 @@ export const QuizQuestion = ({ item }: { item: QuizItem }) => {
         {options.map((opt) => (
           <Button
             key={opt}
-            variant={choice === opt ? "default" : "outline"}
+            variant={currentChoice === opt ? "default" : "outline"}
             className="justify-start"
-            onClick={() => setChoice(opt)}
+            onClick={() => handleSelect(opt)}
           >
             {opt}
           </Button>
         ))}
       </div>
-      {choice && (
+      {currentChoice && (
         <div className="rounded-lg border border-slate-200/70 bg-slate-50 p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
           <p className="font-medium">{correct ? "Correct!" : "Not quite."}</p>
           <p>

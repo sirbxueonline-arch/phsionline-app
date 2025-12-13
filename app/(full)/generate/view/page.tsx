@@ -9,7 +9,7 @@ import { QuizQuestion } from "@/components/QuizQuestion";
 import { useAuth } from "@/components/AuthProvider";
 import { getSupabaseClient } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
-import { ArrowLeft, BookmarkCheck, Clock3, Sparkles } from "lucide-react";
+import { ArrowLeft, BookmarkCheck, Clock3, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 
 type FullResult =
   | { flashcards: { question: string; answer: string }[]; mocked?: boolean; type?: string; title?: string; subject?: string }
@@ -23,6 +23,11 @@ export default function FullscreenGenerateView() {
   const router = useRouter();
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [showResult, setShowResult] = useState(false);
+  const [currentCard, setCurrentCard] = useState(0);
+  const [cardFlipped, setCardFlipped] = useState(false);
   const data = params.get("data");
   const decoded: FullResult = useMemo(() => {
     if (!data) return null;
@@ -38,6 +43,40 @@ export default function FullscreenGenerateView() {
       return null;
     }
   }, [data]);
+
+  const quizItems = useMemo(() => {
+    if (!decoded || !("quiz" in decoded)) return null;
+    return Array.isArray(decoded.quiz) ? decoded.quiz : [];
+  }, [decoded]);
+
+  const totalQuestions = quizItems?.length ?? 0;
+  const correctCount = useMemo(() => {
+    if (!quizItems || !showResult) return 0;
+    return quizItems.reduce((sum, q, idx) => {
+      const selected = answers[idx];
+      return sum + (selected && selected === q.answer ? 1 : 0);
+    }, 0);
+  }, [quizItems, answers, showResult]);
+
+  const flashcards = useMemo(() => {
+    if (!decoded || !("flashcards" in decoded)) return null;
+    return Array.isArray(decoded.flashcards) ? decoded.flashcards : [];
+  }, [decoded]);
+
+  useEffect(() => {
+    setCurrentQuestion(0);
+    setAnswers({});
+    setShowResult(false);
+  }, [totalQuestions]);
+
+  useEffect(() => {
+    setCurrentCard(0);
+    setCardFlipped(false);
+  }, [flashcards?.length]);
+
+  useEffect(() => {
+    setCardFlipped(false);
+  }, [currentCard]);
 
   const handleSave = async () => {
     if (!decoded || !user) return;
@@ -66,20 +105,73 @@ export default function FullscreenGenerateView() {
   const renderContent = () => {
     if (!decoded) return <p className="text-sm text-slate-400">No result found. Regenerate to view.</p>;
     if ("flashcards" in decoded) {
+      if (!flashcards || !flashcards.length) {
+        return <p className="text-sm text-slate-400">No flashcards available.</p>;
+      }
+      const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
+      const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
+      const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
+
       return (
-        <div className="grid gap-4 md:grid-cols-2">
-          {decoded.flashcards.map((item, idx) => (
-            <Flashcard key={idx} item={item} />
-          ))}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-sm text-slate-400">
+            <span>
+              Card {currentCard + 1} of {flashcards.length}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-slate-500">Tap to flip</span>
+          </div>
+          <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={goPrevCard}
+              disabled={currentCard === 0}
+              className="border-slate-700 text-slate-200 hover:border-slate-500"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              onClick={goNextCard}
+              disabled={currentCard === flashcards.length - 1}
+              className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       );
     }
     if ("quiz" in decoded) {
       return (
         <div className="space-y-4">
-          {decoded.quiz.map((item: any, idx: number) => (
-            <QuizQuestion key={idx} item={item} />
-          ))}
+          <div className="flex items-center justify-between text-sm text-slate-400">
+            <span>
+              Question {idx + 1} of {quizItems.length}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-slate-500">Auto-advance on answer</span>
+          </div>
+          <QuizQuestion item={item} selected={selected} onSelect={handleSelect} />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={goPrev}
+              disabled={idx === 0}
+              className="border-slate-700 text-slate-200 hover:border-slate-500"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              onClick={goNext}
+              disabled={!answered}
+              className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+            >
+              {isLast ? "Finish" : "Next"}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       );
     }
