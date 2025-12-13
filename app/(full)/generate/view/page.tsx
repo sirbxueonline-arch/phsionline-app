@@ -144,6 +144,80 @@ export default function FullscreenGenerateView() {
       );
     }
     if ("quiz" in decoded) {
+      if (!quizItems || !quizItems.length) {
+        return <p className="text-sm text-slate-400">No quiz questions available.</p>;
+      }
+      const idx = Math.min(currentQuestion, quizItems.length - 1);
+      const item = quizItems[idx];
+      const selected = answers[idx];
+      const isLast = idx === quizItems.length - 1;
+      const answered = typeof selected === "string" && selected.length > 0;
+
+      const handleSelect = (choice: string) => {
+        setAnswers((prev) => ({ ...prev, [idx]: choice }));
+      };
+
+      const goNext = () => {
+        if (!answered) return;
+        if (isLast) {
+          setShowResult(true);
+        } else {
+          setCurrentQuestion((n) => Math.min(n + 1, quizItems.length - 1));
+        }
+      };
+
+      const goPrev = () => {
+        setShowResult(false);
+        setCurrentQuestion((n) => Math.max(0, n - 1));
+      };
+
+      if (showResult) {
+        const percent = quizItems.length ? Math.round((correctCount / quizItems.length) * 100) : 0;
+        return (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm uppercase tracking-wide text-slate-400">Quiz complete</p>
+                <p className="text-3xl font-semibold text-white">
+                  Score: {correctCount}/{quizItems.length} ({percent}%)
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => setShowResult(false)}>
+                  Review answers
+                </Button>
+                <Button
+                  onClick={() => {
+                    setAnswers({});
+                    setCurrentQuestion(0);
+                    setShowResult(false);
+                  }}
+                  className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+                >
+                  Retry quiz
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-4">
+              {quizItems.map((q: any, i: number) => {
+                const sel = answers[i];
+                const correct = sel === q.answer;
+                return (
+                  <div key={i} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p className="text-sm uppercase tracking-wide text-slate-400 mb-2">Question {i + 1}</p>
+                    <p className="text-lg font-semibold text-white">{q.question}</p>
+                    <p className={`mt-2 text-sm ${correct ? "text-emerald-300" : "text-red-300"}`}>
+                      {correct ? "Correct" : `Incorrect (correct: ${q.answer || "n/a"})`}
+                    </p>
+                    {q.explanation && <p className="mt-2 text-sm text-slate-300">{q.explanation}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm text-slate-400">
