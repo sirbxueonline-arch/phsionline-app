@@ -113,32 +113,39 @@ export default function FullscreenGenerateView() {
       const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
 
       return (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex items-center justify-between text-sm text-slate-400">
             <span>
               Card {currentCard + 1} of {flashcards.length}
             </span>
-            <span className="text-xs uppercase tracking-wide text-slate-500">Tap to flip</span>
+            <span className="text-xs uppercase tracking-wide text-slate-500">Tap or flip</span>
           </div>
-          <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={goPrevCard}
-              disabled={currentCard === 0}
-              className="border-slate-700 text-slate-200 hover:border-slate-500"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button
-              onClick={goNextCard}
-              disabled={currentCard === flashcards.length - 1}
-              className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+          <div className="flex flex-col gap-4 rounded-3xl border border-slate-800/70 bg-slate-950/50 p-4 sm:p-6">
+            <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+                <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={goPrevCard}
+                  disabled={currentCard === 0}
+                  className="border-slate-700 text-slate-200 hover:border-slate-500"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button
+                  onClick={goNextCard}
+                  disabled={currentCard === flashcards.length - 1}
+                  className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -152,6 +159,7 @@ export default function FullscreenGenerateView() {
       const selected = answers[idx];
       const isLast = idx === quizItems.length - 1;
       const answered = typeof selected === "string" && selected.length > 0;
+      const showFeedback = false;
 
       const handleSelect = (choice: string) => {
         setAnswers((prev) => ({ ...prev, [idx]: choice }));
@@ -219,32 +227,39 @@ export default function FullscreenGenerateView() {
       }
 
       return (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex items-center justify-between text-sm text-slate-400">
             <span>
               Question {idx + 1} of {quizItems.length}
             </span>
             <span className="text-xs uppercase tracking-wide text-slate-500">Auto-advance on answer</span>
           </div>
-          <QuizQuestion item={item} selected={selected} onSelect={handleSelect} />
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={goPrev}
-              disabled={idx === 0}
-              className="border-slate-700 text-slate-200 hover:border-slate-500"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button
-              onClick={goNext}
-              disabled={!answered}
-              className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
-            >
-              {isLast ? "Finish" : "Next"}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+          <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-4 sm:p-6">
+            <QuizQuestion item={item} selected={selected} onSelect={handleSelect} showFeedback={showFeedback} />
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+                <span className="h-2 w-2 rounded-full bg-cyan-400" /> Progress {idx + 1}/{quizItems.length}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={goPrev}
+                  disabled={idx === 0}
+                  className="border-slate-700 text-slate-200 hover:border-slate-500"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button
+                  onClick={goNext}
+                  disabled={!answered}
+                  className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+                >
+                  {isLast ? "Finish" : "Next"}
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -270,7 +285,7 @@ export default function FullscreenGenerateView() {
     <div className="relative min-h-screen overflow-hidden bg-slate-950">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.15),transparent_35%),radial-gradient(circle_at_80%_15%,rgba(124,58,237,0.16),transparent_30%)]" />
-      <div className="relative mx-auto flex max-w-5xl flex-col gap-5 px-4 pb-16 pt-16 text-white">
+      <div className="relative mx-auto flex max-w-6xl flex-col gap-5 px-4 pb-16 pt-16 text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Button variant="ghost" className="w-fit text-slate-100 hover:text-white" onClick={() => router.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />

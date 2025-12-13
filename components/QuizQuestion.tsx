@@ -14,11 +14,13 @@ export type QuizItem = {
 export const QuizQuestion = ({
   item,
   selected,
-  onSelect
+  onSelect,
+  showFeedback = true
 }: {
   item: QuizItem;
   selected?: string | null;
   onSelect?: (choice: string) => void;
+  showFeedback?: boolean;
 }) => {
   const [choice, setChoice] = React.useState<string | null>(selected ?? null);
   const currentChoice = selected ?? choice;
@@ -37,30 +39,34 @@ export const QuizQuestion = ({
   };
 
   return (
-    <Card className="space-y-3">
-      <div>
-        <p className="text-sm uppercase text-slate-500">Question</p>
-        <p className="text-lg font-semibold">{item.question}</p>
+    <Card className="space-y-4 rounded-2xl border border-slate-800/70 bg-slate-900/80 p-6 shadow-xl">
+      <div className="space-y-2">
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Question</p>
+        <p className="text-xl font-semibold text-slate-50">{item.question}</p>
       </div>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {options.map((opt) => (
-          <Button
-            key={opt}
-            variant={currentChoice === opt ? "default" : "outline"}
-            className="justify-start"
-            onClick={() => handleSelect(opt)}
-          >
-            {opt}
-          </Button>
-        ))}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {options.map((opt) => {
+          const isSelected = currentChoice === opt;
+          return (
+            <Button
+              key={opt}
+              variant={isSelected ? "default" : "outline"}
+              className={`h-12 justify-start text-left text-base ${
+                isSelected
+                  ? "bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900"
+                  : "border-slate-700 text-slate-100 hover:border-cyan-400"
+              }`}
+              onClick={() => handleSelect(opt)}
+            >
+              {opt}
+            </Button>
+          );
+        })}
       </div>
-      {currentChoice && (
-        <div className="rounded-lg border border-slate-200/70 bg-slate-50 p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="font-medium">{correct ? "Correct!" : "Not quite."}</p>
-          <p>
-            Correct answer: <span className="font-semibold">{item.answer}</span>
-          </p>
-          {item.explanation && <p className="text-slate-600 dark:text-slate-300">{item.explanation}</p>}
+      {showFeedback && currentChoice && (
+        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-200">
+          <p className="font-semibold">{correct ? "Correct!" : "Not quite."}</p>
+          {item.explanation && <p className="mt-1 text-slate-300">{item.explanation}</p>}
         </div>
       )}
     </Card>
