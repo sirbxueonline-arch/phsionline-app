@@ -30,13 +30,13 @@ export async function POST(request: Request) {
   const successUrl = `${origin}/upgrade?status=success`;
   const cancelUrl = `${origin}/upgrade?status=cancelled`;
 
-  const lineItem = stripePricePro
+  const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = stripePricePro
     ? { price: stripePricePro, quantity: 1 }
     : {
         price_data: {
           currency: "usd",
           product_data: { name: "StudyPilot Pro (Monthly)" },
-          recurring: { interval: "month" },
+          recurring: { interval: "month" as Stripe.Price.Recurring.Interval },
           unit_amount: 1200
         },
         quantity: 1
