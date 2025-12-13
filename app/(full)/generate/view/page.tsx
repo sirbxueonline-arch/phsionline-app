@@ -284,10 +284,10 @@ export default function FullscreenGenerateView() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950">
-      <div className="absolute inset-0 light-gradient-bg dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.15),transparent_35%),radial-gradient(circle_at_80%_15%,rgba(124,58,237,0.16),transparent_30%)]" />
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-5 px-4 pb-16 pt-16 text-white">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1022] via-[#0f152f] to-[#0B1022]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(124,58,237,0.18),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(56,189,248,0.14),transparent_30%)]" />
+      <div className="relative mx-auto flex max-w-6xl flex-col gap-5 px-4 pb-14 pt-12 text-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/5">
           <Button variant="ghost" className="w-fit text-slate-100 hover:text-white" onClick={() => router.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
@@ -298,15 +298,15 @@ export default function FullscreenGenerateView() {
           </div>
         </div>
 
-        <Card className="border-slate-200 bg-white/90 text-slate-900 shadow-2xl backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 dark:text-white">
-          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <Card className="border-white/10 bg-white/90 text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white">
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-400">
-                <span className="rounded-full bg-white/5 px-2 py-1 ring-1 ring-white/10">
+                <span className="rounded-full bg-white/10 px-2 py-1 text-white ring-1 ring-white/15">
                   {(decoded as any)?.type || "Generated"}
                 </span>
                 {(decoded as any)?.subject && (
-                  <span className="rounded-full bg-white/5 px-2 py-1 ring-1 ring-white/10">
+                  <span className="rounded-full bg-white/10 px-2 py-1 text-white ring-1 ring-white/15">
                     {(decoded as any).subject}
                   </span>
                 )}
@@ -321,11 +321,7 @@ export default function FullscreenGenerateView() {
                 Full-screen focus view. Save to your library to study later.
               </CardDescription>
             </div>
-            <Button
-              onClick={handleSave}
-              disabled={saving || !decoded}
-              className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
-            >
+            <Button onClick={handleSave} disabled={saving || !decoded} className="rounded-full bg-gradient-to-r from-brand to-indigo-500 text-white shadow-lg">
               {saving ? (
                 "Saving..."
               ) : (
@@ -335,8 +331,8 @@ export default function FullscreenGenerateView() {
               )}
             </Button>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300">
+          <CardContent className="space-y-5">
+            <div className="rounded-xl border border-white/10 bg-white/70 px-4 py-3 text-sm text-slate-700 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
               <p className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />
                 Tip: share or export from the library after saving. This view keeps things focused for study.
