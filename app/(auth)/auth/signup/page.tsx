@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -139,7 +140,8 @@ export default function SignUpPage() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Creating account..." : "Sign Up"}
           </Button>
-          <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={loading}>
+          <Button type="button" variant="outline" className="w-full gap-2" onClick={handleGoogle} disabled={loading}>
+            <Image src="/google.svg" alt="Google" width={18} height={18} className="h-4 w-4" />
             Continue with Google
           </Button>
         </div>

@@ -6,8 +6,8 @@ import { Sparkles, ArrowRight, ShieldCheck, Zap, Gauge, NotebookPen, Rocket } fr
 export default function LandingPage() {
   return (
     <main className="relative overflow-hidden">
-      <div className="absolute inset-0 light-gradient-bg blur-3xl opacity-80 dark:gradient-bg" />
-      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-white/70 via-white/40 to-transparent dark:from-slate-900/70 dark:via-slate-900/30" />
+      <div className="absolute inset-0 light-gradient-bg blur-3xl opacity-90 dark:gradient-bg" />
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-white/80 via-white/50 to-transparent dark:from-slate-900/70 dark:via-slate-900/30" />
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col items-center gap-12 px-4 pb-20 pt-28 text-center lg:flex-row lg:text-left">
         <div className="flex-1 space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200/60 dark:bg-white/10 dark:text-slate-200 dark:ring-white/20">

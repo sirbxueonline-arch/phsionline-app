@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Loader2, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -112,10 +113,11 @@ export default function SignInPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full border-slate-300 text-slate-900 hover:border-cyan-300/60 dark:text-white"
+            className="w-full gap-2 border-slate-300 text-slate-900 hover:border-cyan-300/60 dark:text-white"
             onClick={handleGoogle}
             disabled={loading}
           >
+            <Image src="/google.svg" alt="Google" width={18} height={18} className="h-4 w-4" />
             Continue with Google
           </Button>
         </div>

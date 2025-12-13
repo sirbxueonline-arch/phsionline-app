@@ -20,17 +20,19 @@ body {
 }
 
 .gradient-bg {
-  background: radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.2), transparent 35%),
-    radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.15), transparent 30%),
-    radial-gradient(circle at 60% 70%, rgba(99, 102, 241, 0.25), transparent 35%),
+  background:
+    radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.35), transparent 32%),
+    radial-gradient(circle at 80% 10%, rgba(45, 212, 191, 0.28), transparent 30%),
+    radial-gradient(circle at 70% 75%, rgba(99, 102, 241, 0.25), transparent 30%),
     #0b1021;
 }
 
 .light-gradient-bg {
-  background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.12), transparent 35%),
-    radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.12), transparent 30%),
-    radial-gradient(circle at 60% 70%, rgba(124, 58, 237, 0.08), transparent 35%),
-    #f8fafc;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.14), transparent 32%),
+    radial-gradient(circle at 85% 0%, rgba(45, 212, 191, 0.12), transparent 30%),
+    radial-gradient(circle at 70% 70%, rgba(124, 58, 237, 0.1), transparent 32%),
+    #f9fbff;
 }
 
 .card-glow {
