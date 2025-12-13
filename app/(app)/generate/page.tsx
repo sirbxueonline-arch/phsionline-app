@@ -17,6 +17,16 @@ type Tool = "flashcards" | "quiz" | "explain" | "plan";
 const defaultPrompt =
   "Provide a short passage or topic (e.g. 'Basics of photosynthesis' or paste your notes) and choose a tool.";
 
+function encodePayload(data: unknown) {
+  const json = JSON.stringify(data);
+  const bytes = new TextEncoder().encode(json);
+  let binary = "";
+  bytes.forEach((b) => {
+    binary += String.fromCharCode(b);
+  });
+  return encodeURIComponent(btoa(binary));
+}
+
 export default function GeneratePage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -34,24 +44,22 @@ export default function GeneratePage() {
 
   useEffect(() => {
     const fetchUsage = async () => {
-      const client = await getSupabaseClient();
-      if (!client || !user) return;
+      if (!user) return;
       try {
-        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-        const { count: usageCount, error: usageError } = await client
-          .from("resources")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.uid)
-          .gte("created_at", startOfMonth);
-
-        if (usageError) {
-          console.warn("Usage fetch skipped (Supabase auth)", usageError?.message);
+        const token = await user.getIdToken();
+        const res = await fetch("/api/usage", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (!res.ok) {
+          console.warn("Usage fetch skipped", res.status);
           return;
         }
-
-        if (typeof usageCount === "number") {
-          setUsage(usageCount);
-          if (usageCount >= 20) setLimitReached(true);
+        const json = await res.json();
+        if (typeof json?.usage === "number") {
+          setUsage(json.usage);
+          if (json.usage >= (json.limit ?? 20)) setLimitReached(true);
         }
       } catch (err) {
         console.warn("Usage fetch failed", err);
@@ -99,7 +107,7 @@ export default function GeneratePage() {
         title: subject || `Generated ${tool}`,
         subject
       };
-      const encoded = encodeURIComponent(btoa(JSON.stringify(payload)));
+      const encoded = encodePayload(payload);
       router.push(`/generate/view?data=${encoded}`);
     } catch (err: any) {
       if (err.name === "AbortError") {

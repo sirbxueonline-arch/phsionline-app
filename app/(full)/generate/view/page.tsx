@@ -27,8 +27,11 @@ export default function FullscreenGenerateView() {
   const decoded: FullResult = useMemo(() => {
     if (!data) return null;
     try {
-      const json = decodeURIComponent(data);
-      const payload = JSON.parse(atob(json));
+      const encoded = decodeURIComponent(data);
+      const binary = atob(encoded);
+      const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      const jsonStr = new TextDecoder().decode(bytes);
+      const payload = JSON.parse(jsonStr);
       return payload;
     } catch (err) {
       console.error("Failed to parse full view data", err);
