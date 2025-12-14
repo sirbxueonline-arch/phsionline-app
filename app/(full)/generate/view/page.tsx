@@ -322,30 +322,30 @@ export default function FullscreenGenerateView() {
     const hasQuiz = hasQuizProp && quizItems.length > 0;
 
     if (hasFlashcards && hasQuiz) {
-      return (
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Flashcards</p>
-            {renderFlashcardsSection()}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                {flashcardsDone ? "Flashcards reviewed. Ready for quiz." : "Work through cards to unlock the quiz."}
-              </span>
-              <Button
-                onClick={unlockQuiz}
-                disabled={!flashcardsDone}
-                className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
-              >
-                Start quiz
-              </Button>
-            </div>
+      if (showQuiz) {
+        return (
+          <div className="space-y-3" ref={quizSectionRef}>
+            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Quiz</p>
+            {renderQuizSection()}
           </div>
-          {showQuiz && (
-            <div className="space-y-3" ref={quizSectionRef}>
-              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Quiz</p>
-              {renderQuizSection()}
-            </div>
-          )}
+        );
+      }
+      return (
+        <div className="space-y-4">
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Flashcards</p>
+          {renderFlashcardsSection()}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200">
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {flashcardsDone ? "Flashcards done. Start the quiz." : "Finish the cards to unlock the quiz."}
+            </span>
+            <Button
+              onClick={unlockQuiz}
+              disabled={!flashcardsDone}
+              className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
+            >
+              Start quiz
+            </Button>
+          </div>
         </div>
       );
     }

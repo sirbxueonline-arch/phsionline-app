@@ -221,22 +221,19 @@ export default function GeneratePage() {
 
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold text-slate-900 dark:text-[#E5E7EB]">Create your study set</h1>
-        <p className="max-w-3xl text-slate-600 dark:text-[#94A3B8]">
-          Move through the steps like a checkout: paste a topic, pick how you want to study, then we handle the rest.
-        </p>
       </div>
 
       <Card className="rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
         <CardContent className="space-y-8 p-6 sm:p-8">
           <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
             <span className="rounded-full bg-purple-100 px-3 py-1 font-semibold text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-100 dark:ring-purple-700/40">
-              Step 1 Input
+              1. Input
             </span>
             <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
-              Step 2 Study with
+              2. Study mode
             </span>
             <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
-              Step 3 Create
+              3. Create
             </span>
           </div>
 
@@ -253,7 +250,7 @@ export default function GeneratePage() {
                   </div>
                 </div>
                 <div className="rounded-full bg-white px-3 py-1 text-xs text-slate-600 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
-                  Works best with bullet points or pasted slides.
+                  Best with bullet points.
                 </div>
               </div>
 
@@ -282,7 +279,7 @@ export default function GeneratePage() {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Short prompts are fine. Add notes if you want tighter context.</p>
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Short prompts are fine; notes add context.</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -297,15 +294,10 @@ export default function GeneratePage() {
                     onChange={(e) => setSubject(e.target.value)}
                     className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
                   />
-                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Shows up in your library and usage log.</p>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Shows up in your library.</p>
                 </div>
-                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-[#E5E7EB]">
-                    <Stars className="h-4 w-4 text-purple-600" /> Smart defaults are on
-                  </div>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-[#94A3B8]">
-                    Medium difficulty, {questionMixLabel.toLowerCase()}, and 10 items. Change them under Advanced if you need to.
-                  </p>
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-[#E5E7EB]">
+                  <Stars className="h-4 w-4 text-purple-600" /> Smart defaults: medium, mixed, 10 items.
                 </div>
               </div>
             </div>
@@ -315,10 +307,7 @@ export default function GeneratePage() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-50 dark:ring-purple-700/40">
                   2
                 </span>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">What do you want to study with?</p>
-                  <p className="text-lg font-semibold text-slate-900 dark:text-[#E5E7EB]">Choose your study mode</p>
-                </div>
+                <p className="text-lg font-semibold text-slate-900 dark:text-[#E5E7EB]">Choose your study mode</p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
@@ -377,10 +366,7 @@ export default function GeneratePage() {
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-50 dark:ring-purple-700/40">
                     3
                   </span>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Create</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-[#E5E7EB]">Ready with smart defaults</p>
-                  </div>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-[#E5E7EB]">Ready with smart defaults</p>
                 </div>
                 <button
                   type="button"
@@ -392,17 +378,17 @@ export default function GeneratePage() {
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
+              <div className="flex flex-wrap gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                <span className="rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 dark:bg-white/10 dark:ring-white/10">
                   {tool === "both" ? "Flashcards + Quiz" : tool.charAt(0).toUpperCase() + tool.slice(1)}
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
+                <span className="rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 dark:bg-white/10 dark:ring-white/10">
                   {count || 10} items
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
+                <span className="rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 dark:bg-white/10 dark:ring-white/10">
                   Difficulty: {difficulty}
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
+                <span className="rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 dark:bg-white/10 dark:ring-white/10">
                   {questionMixLabel}
                 </span>
               </div>
