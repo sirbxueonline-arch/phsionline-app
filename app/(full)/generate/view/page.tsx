@@ -34,6 +34,7 @@ export default function FullscreenGenerateView() {
   const [currentCard, setCurrentCard] = useState(0);
   const [cardFlipped, setCardFlipped] = useState(false);
   const [quizUnlocked, setQuizUnlocked] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
   const quizSectionRef = useRef<HTMLDivElement | null>(null);
   const data = params.get("data");
   const decoded: FullResult = useMemo(() => {
@@ -91,6 +92,7 @@ export default function FullscreenGenerateView() {
     const hasFlashcards = flashcards.length > 0;
     const hasQuiz = quizItems.length > 0;
     setQuizUnlocked(!(hasFlashcards && hasQuiz));
+    setShowQuiz(!(hasFlashcards && hasQuiz));
     setShowResult(false);
     setCurrentQuestion(0);
     setAnswers({});
@@ -98,6 +100,7 @@ export default function FullscreenGenerateView() {
 
   const unlockQuiz = () => {
     setQuizUnlocked(true);
+    setShowQuiz(true);
     setShowResult(false);
     setCurrentQuestion(0);
     setAnswers({});
@@ -337,18 +340,12 @@ export default function FullscreenGenerateView() {
               </Button>
             </div>
           </div>
-          <div className="space-y-3" ref={quizSectionRef}>
-            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Quiz</p>
-            {!quizUnlocked && (
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-200">
-                <p className="font-semibold text-slate-800 dark:text-white">Quiz locked until you finish the cards.</p>
-                <p className="mt-1 text-slate-600 dark:text-slate-300">Flip through the flashcards first for better recall.</p>
-              </div>
-            )}
-            <div className={quizUnlocked ? "" : "pointer-events-none select-none blur-sm opacity-60"}>
+          {showQuiz && (
+            <div className="space-y-3" ref={quizSectionRef}>
+              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Quiz</p>
               {renderQuizSection()}
             </div>
-          </div>
+          )}
         </div>
       );
     }
@@ -422,9 +419,6 @@ export default function FullscreenGenerateView() {
                 )}
               </div>
               <CardTitle className="text-2xl">{(decoded as any)?.title || "Generated content"}</CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-300">
-                Full-screen focus view. Save to your library to study later.
-              </CardDescription>
             </div>
             <div className="flex flex-col items-end gap-2">
               {saveFeedback && (
@@ -449,21 +443,7 @@ export default function FullscreenGenerateView() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="flex flex-1 flex-col space-y-5">
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-              <p className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />
-                Want to test yourself now? Flip through below or jump to study mode after saving.
-              </p>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-300">
-                <Link href="/study" className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-white dark:ring-white/10">
-                  Open study
-                </Link>
-                <span>Saving keeps progress in your library.</span>
-              </div>
-            </div>
-            {renderContent()}
-          </CardContent>
+          <CardContent className="flex flex-1 flex-col space-y-5">{renderContent()}</CardContent>
         </Card>
       </div>
     </div>
