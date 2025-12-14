@@ -48,7 +48,7 @@ export const Navbar = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="group flex items-center gap-2 font-semibold">
-            <Image src="/logo.svg" alt="StudyPilot logo" width={40} height={40} className="h-10 w-10" />
+            <Image src="/logo.svg" alt="StudyPilot logo" width={32} height={32} className="h-8 w-8" />
             <div className="leading-tight">
               <p className={cn("text-lg", isLanding && "text-slate-900 dark:text-slate-100")}>StudyPilot</p>
               <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-slate-500 dark:text-slate-400")}>

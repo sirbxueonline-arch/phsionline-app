@@ -9,7 +9,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Loader2, Sparkles } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 export default function SignInPage() {
@@ -54,8 +54,8 @@ export default function SignInPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-3 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-cyan-100 dark:ring-white/15">
-          <Sparkles className="h-4 w-4" /> Returning pilot
+        <div className="flex justify-center">
+          <Image src="/logo.png" alt="StudyPilot logo" width={48} height={48} className="h-12 w-12" />
         </div>
         <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Welcome back</h1>
         <p className="text-slate-600 dark:text-slate-200">

@@ -10,7 +10,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Sparkles } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import Image from "next/image";
 
 export default function SignUpPage() {
@@ -81,7 +81,9 @@ export default function SignUpPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-2 text-center">
-        <Sparkles className="mx-auto h-10 w-10 text-brand" />
+        <div className="flex justify-center">
+          <Image src="/logo.png" alt="StudyPilot logo" width={48} height={48} className="h-12 w-12" />
+        </div>
         <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Create your account</h1>
         <p className="text-slate-600 dark:text-slate-200">Generate smarter study materials with AI.</p>
       </div>
