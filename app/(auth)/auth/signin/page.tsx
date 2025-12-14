@@ -53,7 +53,7 @@ export default function SignInPage() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
+      <div className="space-y-3 text-center">
         <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-cyan-100 dark:ring-white/15">
           <Sparkles className="h-4 w-4" /> Returning pilot
         </div>
