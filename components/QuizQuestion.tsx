@@ -39,22 +39,22 @@ export const QuizQuestion = ({
   };
 
   return (
-    <Card className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800/70 dark:bg-slate-900/80">
+    <Card className="space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800/70 dark:bg-slate-900/80">
       <div className="space-y-2">
         <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Question</p>
-        <p className="text-xl font-semibold text-slate-900 dark:text-slate-50">{item.question}</p>
+        <p className="text-2xl font-semibold text-slate-900 dark:text-slate-50">{item.question}</p>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {options.map((opt) => {
           const isSelected = currentChoice === opt;
           return (
             <Button
               key={opt}
               variant={isSelected ? "default" : "outline"}
-              className={`h-14 justify-start text-left text-base ${
+              className={`h-16 justify-start rounded-xl text-left text-base ${
                 isSelected
-                  ? "bg-gradient-to-r from-brand to-indigo-600 text-white shadow"
-                  : "border-slate-300 text-slate-900 hover:border-purple-300 dark:border-slate-700 dark:text-slate-100 dark:hover:border-purple-400"
+                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg"
+                  : "border-slate-300 text-slate-900 hover:border-purple-300/70 hover:bg-purple-50/70 dark:border-slate-700 dark:text-slate-100 dark:hover:border-purple-400/60 dark:hover:bg-slate-900"
               }`}
               onClick={() => handleSelect(opt)}
             >
