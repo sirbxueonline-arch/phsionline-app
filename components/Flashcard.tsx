@@ -26,7 +26,7 @@ export const Flashcard = ({
   };
   return (
     <Card
-      className="relative flex min-h-[320px] w-full cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-xl transition hover:border-cyan-400/40 hover:shadow-cyan-500/10 dark:border-slate-800/70 dark:bg-slate-900/80"
+      className="relative flex min-h-[320px] w-full cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-xl transition hover:border-purple-300/60 hover:shadow-purple-500/10 dark:border-slate-800/70 dark:bg-slate-900/80"
       style={{ perspective: "1200px" }}
       onClick={toggle}
     >
@@ -36,22 +36,22 @@ export const Flashcard = ({
         className="preserve-3d flex w-full items-center justify-center text-center"
       >
         <div className="backface-hidden w-full">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Question</p>
-          <p className="mt-3 text-2xl font-semibold text-slate-50">{item.question}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Question</p>
+          <p className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-50">{item.question}</p>
         </div>
         <div className="absolute inset-0 flex backface-hidden rotateY-180">
           <div className="flex w-full flex-col items-center justify-center text-center">
-            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Answer</p>
-            <p className="mt-3 text-2xl font-semibold text-emerald-200">{item.answer}</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Answer</p>
+            <p className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-50">{item.answer}</p>
           </div>
         </div>
       </motion.div>
       <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/5" />
-      <div className="absolute right-4 top-4 text-xs uppercase tracking-wide text-slate-500">Tap or Flip</div>
+      <div className="absolute right-4 top-4 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Tap or Flip</div>
       <Button
         variant="outline"
         size="sm"
-        className="pointer-events-auto absolute bottom-4 right-4 border-slate-700 text-slate-100 hover:border-cyan-400 hover:text-white"
+        className="pointer-events-auto absolute bottom-4 right-4 border-slate-300 text-slate-700 hover:border-purple-300 dark:border-slate-700 dark:text-slate-100 dark:hover:border-purple-400"
         onClick={(e) => {
           e.stopPropagation();
           toggle();
