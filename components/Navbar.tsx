@@ -6,7 +6,8 @@ import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
-import { Sun, Moon, Rocket, LogOut } from "lucide-react";
+import { Sun, Moon, LogOut } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const ThemeToggle = ({ landing = false }: { landing?: boolean }) => {
@@ -47,9 +48,7 @@ export const Navbar = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="group flex items-center gap-2 font-semibold">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-indigo-500 text-white shadow-glow">
-              <Rocket className="h-5 w-5" />
-            </div>
+            <Image src="/logo.svg" alt="StudyPilot logo" width={40} height={40} className="h-10 w-10" />
             <div className="leading-tight">
               <p className={cn("text-lg", isLanding && "text-slate-900 dark:text-slate-100")}>StudyPilot</p>
               <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-slate-500 dark:text-slate-400")}>
