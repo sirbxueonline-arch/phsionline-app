@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { verifyToken } from "@/lib/firebaseAdmin";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -288,7 +288,7 @@ async function logUsage(
   uid: string,
   tool: string,
   subject: string | undefined,
-  client: ReturnType<typeof createClient>
+  client: SupabaseClient
 ) {
   const title = `Generation - ${tool}`;
   await client.from("resources").insert({
