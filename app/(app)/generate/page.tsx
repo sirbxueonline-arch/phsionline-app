@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/components/AuthProvider";
 import { Gauge, Info, Loader2, Sparkles, Wand2 } from "lucide-react";
 
-type Tool = "flashcards" | "quiz" | "explain" | "plan";
+type Tool = "flashcards" | "quiz";
 
 const defaultPrompt =
   "Provide a short passage or topic (e.g. 'Basics of photosynthesis' or paste your notes) and choose a tool.";
@@ -170,7 +170,7 @@ export default function GeneratePage() {
             {limitReached ? "Limit reached" : "Credits OK"}
           </div>
           <div className="flex flex-wrap gap-2" role="group" aria-label="Choose output type">
-            {(["flashcards", "quiz", "explain", "plan"] as Tool[]).map((t) => {
+            {(["flashcards", "quiz"] as Tool[]).map((t) => {
               const isActive = tool === t;
               return (
                 <Button
@@ -229,23 +229,29 @@ export default function GeneratePage() {
                   className="border-slate-200 bg-white text-slate-900 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]"
                 />
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="difficulty">
-                    Difficulty
-                  </Label>
-                  <Info className="h-4 w-4 text-slate-400" aria-hidden />
-                  <span className="sr-only">Describe the level, e.g. easy, medium, hard</span>
-                </div>
-                <Input
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="difficulty">
+                      Difficulty
+                    </Label>
+                    <Info className="h-4 w-4 text-slate-400" aria-hidden />
+                    <span className="sr-only">Describe the level, e.g. easy, medium, hard</span>
+                  </div>
+                <select
                   id="difficulty"
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value)}
-                  className="border-slate-200 bg-white text-slate-900 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]"
-                />
+                  className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-slate-900 shadow-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:focus:border-purple-400 dark:focus:ring-purple-900/40"
+                >
+                  {["easy", "medium", "hard"].map((level) => (
+                    <option key={level} value={level}>
+                      {level.charAt(0).toUpperCase() + level.slice(1)}
+                    </option>
+                  ))}
+                </select>
+                </div>
               </div>
             </div>
-          </div>
 
           <div className="space-y-2">
             <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="topic">
@@ -261,7 +267,7 @@ export default function GeneratePage() {
               className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
             />
             <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-              Tip: add bullet points for key facts; we’ll structure them for the chosen format.
+              Tip: add bullet points for key facts; we'll structure them for the chosen format.
             </p>
           </div>
 
