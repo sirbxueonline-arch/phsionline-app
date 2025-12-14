@@ -99,7 +99,7 @@ export default function SignInPage() {
         <div className="space-y-3">
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+            className="w-full bg-[#7C3AED] text-white shadow-lg hover:bg-[#6c2fd0]"
             disabled={loading}
           >
             {loading ? (
