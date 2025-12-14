@@ -314,7 +314,7 @@ export default function FullscreenGenerateView() {
           </div>
         </div>
 
-        <Card className="flex min-h-[70vh] flex-col border-white/10 bg-white text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white">
+        <Card className="flex min-h-[90vh] flex-col border-white/10 bg-white text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white">
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">

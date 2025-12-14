@@ -41,8 +41,8 @@ export const Navbar = () => {
       className={cn(
         "top-0 z-40 w-full transition-colors",
         isLanding
-          ? "fixed border-transparent bg-transparent text-slate-900 backdrop-blur-none dark:border-slate-800/80 dark:bg-slate-950/70 dark:text-slate-100"
-          : "sticky border-b border-slate-200/60 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/80"
+          ? "fixed border-transparent bg-white/80 text-slate-900 backdrop-blur-lg dark:border-slate-800/80 dark:bg-slate-900/80 dark:text-slate-100"
+          : "sticky border-b border-slate-200/60 bg-white/85 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-900/80"
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">

@@ -53,8 +53,8 @@ export const QuizQuestion = ({
               variant={isSelected ? "default" : "outline"}
               className={`h-12 justify-start text-left text-base ${
                 isSelected
-                  ? "bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900"
-                  : "border-slate-300 text-slate-900 hover:border-cyan-400 dark:border-slate-700 dark:text-slate-100"
+                  ? "bg-gradient-to-r from-brand to-indigo-600 text-white shadow"
+                  : "border-slate-300 text-slate-900 hover:border-purple-300 dark:border-slate-700 dark:text-slate-100 dark:hover:border-purple-400"
               }`}
               onClick={() => handleSelect(opt)}
             >
