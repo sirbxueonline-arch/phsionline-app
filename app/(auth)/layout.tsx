@@ -20,13 +20,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </p>
             <div className="mt-6 space-y-3 text-sm text-slate-700 dark:text-slate-100">
               {[
-                { icon: <CheckCircle2 className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />, text: "Secure sign-in with Firebase Auth" },
-                { icon: <CheckCircle2 className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />, text: "Supabase storage for your resources" },
-                { icon: <Shield className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />, text: "End-to-end SSL and protected routes" }
+                { icon: <CheckCircle2 className="h-4 w-4 text-slate-500 dark:text-cyan-300" />, text: "Secure sign-in with Firebase Auth" },
+                { icon: <CheckCircle2 className="h-4 w-4 text-slate-500 dark:text-cyan-300" />, text: "Supabase storage for your resources" },
+                { icon: <Shield className="h-4 w-4 text-slate-500 dark:text-cyan-300" />, text: "End-to-end SSL and protected routes" }
               ].map((item) => (
                 <div
                   key={item.text}
-                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-white/10 dark:bg-white/5"
+                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-white/10 dark:bg-white/5"
                 >
                   {item.icon}
                   <span>{item.text}</span>
