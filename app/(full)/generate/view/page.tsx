@@ -105,37 +105,37 @@ export default function FullscreenGenerateView() {
 
   const renderContent = () => {
     if (!decoded) return <p className="text-sm text-slate-400">No result found. Regenerate to view.</p>;
-    if ("flashcards" in decoded) {
-      if (!flashcards || !flashcards.length) {
-        return <p className="text-sm text-slate-400">No flashcards available.</p>;
-      }
-      const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
-      const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
-      const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
+      if ("flashcards" in decoded) {
+        if (!flashcards || !flashcards.length) {
+          return <p className="text-sm text-slate-400">No flashcards available.</p>;
+        }
+        const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
+        const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
+        const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
 
-      return (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between text-sm text-slate-400">
-            <span>
-              Card {currentCard + 1} of {flashcards.length}
-            </span>
-            <span className="text-xs uppercase tracking-wide text-slate-500">Tap or flip</span>
-          </div>
-          <div className="flex flex-col gap-4 rounded-3xl border border-slate-800/70 bg-slate-950/50 p-4 sm:p-6">
-            <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
-                <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <Button
-                  variant="outline"
-                  onClick={goPrevCard}
-                  disabled={currentCard === 0}
-                  className="border-slate-700 text-slate-200 hover:border-slate-500"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+              <span>
+                Card {currentCard + 1} of {flashcards.length}
+              </span>
+              <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Tap or flip</span>
+            </div>
+            <div className="flex flex-col gap-4 rounded-3xl border border-slate-200/80 bg-slate-100/80 p-4 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
+              <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={goPrevCard}
+                    disabled={currentCard === 0}
+                    className="border-slate-300 text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
                 </Button>
                 <Button
                   onClick={goNextCard}
@@ -151,10 +151,10 @@ export default function FullscreenGenerateView() {
         </div>
       );
     }
-    if ("quiz" in decoded) {
-      if (!quizItems || !quizItems.length) {
-        return <p className="text-sm text-slate-400">No quiz questions available.</p>;
-      }
+      if ("quiz" in decoded) {
+        if (!quizItems || !quizItems.length) {
+          return <p className="text-sm text-slate-400">No quiz questions available.</p>;
+        }
       const idx = Math.min(currentQuestion, quizItems.length - 1);
       const item = quizItems[idx];
       const selected = answers[idx];
@@ -186,8 +186,8 @@ export default function FullscreenGenerateView() {
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm uppercase tracking-wide text-slate-400">Quiz complete</p>
-                <p className="text-3xl font-semibold text-white">
+                <p className="text-sm uppercase tracking-wide text-slate-500 dark:text-slate-400">Quiz complete</p>
+                <p className="text-3xl font-semibold text-slate-900 dark:text-white">
                   Score: {correctCount}/{quizItems.length} ({percent}%)
                 </p>
               </div>
@@ -212,13 +212,13 @@ export default function FullscreenGenerateView() {
                 const sel = answers[i];
                 const correct = sel === q.answer;
                 return (
-                  <div key={i} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p className="text-sm uppercase tracking-wide text-slate-400 mb-2">Question {i + 1}</p>
-                    <p className="text-lg font-semibold text-white">{q.question}</p>
-                    <p className={`mt-2 text-sm ${correct ? "text-emerald-300" : "text-red-300"}`}>
+                  <div key={i} className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
+                    <p className="mb-2 text-sm uppercase tracking-wide text-slate-500 dark:text-slate-400">Question {i + 1}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{q.question}</p>
+                    <p className={`mt-2 text-sm ${correct ? "text-emerald-600 dark:text-emerald-300" : "text-red-600 dark:text-red-300"}`}>
                       {correct ? "Correct" : `Incorrect (correct: ${q.answer || "n/a"})`}
                     </p>
-                    {q.explanation && <p className="mt-2 text-sm text-slate-300">{q.explanation}</p>}
+                    {q.explanation && <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{q.explanation}</p>}
                   </div>
                 );
               })}
@@ -229,16 +229,16 @@ export default function FullscreenGenerateView() {
 
       return (
         <div className="space-y-6">
-          <div className="flex items-center justify-between text-sm text-slate-400">
+          <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
             <span>
               Question {idx + 1} of {quizItems.length}
             </span>
-            <span className="text-xs uppercase tracking-wide text-slate-500">Auto-advance on answer</span>
+            <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Auto-advance on answer</span>
           </div>
-          <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-4 sm:p-6">
+          <div className="rounded-3xl border border-slate-200/80 bg-slate-100/80 p-4 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
             <QuizQuestion item={item} selected={selected} onSelect={handleSelect} showFeedback={showFeedback} />
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 <span className="h-2 w-2 rounded-full bg-cyan-400" /> Progress {idx + 1}/{quizItems.length}
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -246,7 +246,7 @@ export default function FullscreenGenerateView() {
                   variant="outline"
                   onClick={goPrev}
                   disabled={idx === 0}
-                  className="border-slate-700 text-slate-200 hover:border-slate-500"
+                  className="border-slate-300 text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
@@ -283,16 +283,19 @@ export default function FullscreenGenerateView() {
   const isMock = !!(decoded as any)?.mocked;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1022] via-[#0f152f] to-[#0B1022]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(124,58,237,0.18),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(56,189,248,0.14),transparent_30%)]" />
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-5 px-4 pb-14 pt-12 text-white">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/5">
-          <Button variant="ghost" className="w-fit text-slate-100 hover:text-white" onClick={() => router.back()}>
+    <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white">
+      <div className="absolute inset-0 light-gradient-bg dark:gradient-bg" aria-hidden="true" />
+      <div className="relative mx-auto flex w-full max-w-screen-2xl flex-col gap-6 px-6 pb-16 pt-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-slate-200/60 backdrop-blur-sm dark:bg-white/5 dark:ring-white/5">
+          <Button
+            variant="ghost"
+            className="w-fit text-slate-700 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+            onClick={() => router.back()}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <div className="flex items-center gap-2 text-sm text-slate-300">
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
             <Clock3 className="h-4 w-4" />
             {formatDate(new Date())}
           </div>
@@ -301,23 +304,23 @@ export default function FullscreenGenerateView() {
         <Card className="border-white/10 bg-white/90 text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white">
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-400">
-                <span className="rounded-full bg-white/10 px-2 py-1 text-white ring-1 ring-white/15">
+              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-white dark:ring-white/15">
                   {(decoded as any)?.type || "Generated"}
                 </span>
                 {(decoded as any)?.subject && (
-                  <span className="rounded-full bg-white/10 px-2 py-1 text-white ring-1 ring-white/15">
+                  <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-white dark:ring-white/15">
                     {(decoded as any).subject}
                   </span>
                 )}
                 {isMock && (
-                  <span className="rounded-full bg-amber-400/20 px-2 py-1 text-amber-100 ring-1 ring-amber-300/40">
+                  <span className="rounded-full bg-amber-100 px-2 py-1 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-400/20 dark:text-amber-100 dark:ring-amber-300/40">
                     Mock data
                   </span>
                 )}
               </div>
               <CardTitle className="text-2xl">{(decoded as any)?.title || "Generated content"}</CardTitle>
-              <CardDescription className="text-slate-300">
+              <CardDescription className="text-slate-600 dark:text-slate-300">
                 Full-screen focus view. Save to your library to study later.
               </CardDescription>
             </div>
@@ -332,7 +335,7 @@ export default function FullscreenGenerateView() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="rounded-xl border border-white/10 bg-white/70 px-4 py-3 text-sm text-slate-700 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+            <div className="rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-700 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
               <p className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />
                 Tip: share or export from the library after saving. This view keeps things focused for study.
