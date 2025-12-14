@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,8 @@ export default function FullscreenGenerateView() {
   const [showResult, setShowResult] = useState(false);
   const [currentCard, setCurrentCard] = useState(0);
   const [cardFlipped, setCardFlipped] = useState(false);
+  const [quizUnlocked, setQuizUnlocked] = useState(false);
+  const quizSectionRef = useRef<HTMLDivElement | null>(null);
   const data = params.get("data");
   const decoded: FullResult = useMemo(() => {
     if (!data) return null;
@@ -68,6 +70,7 @@ export default function FullscreenGenerateView() {
     if (!decoded || !("flashcards" in decoded)) return [];
     return Array.isArray(decoded.flashcards) ? decoded.flashcards : [];
   }, [decoded]);
+  const flashcardsDone = flashcards.length === 0 || currentCard >= flashcards.length - 1;
 
   useEffect(() => {
     setCurrentQuestion(0);
@@ -83,6 +86,23 @@ export default function FullscreenGenerateView() {
   useEffect(() => {
     setCardFlipped(false);
   }, [currentCard]);
+
+  useEffect(() => {
+    const hasFlashcards = flashcards.length > 0;
+    const hasQuiz = quizItems.length > 0;
+    setQuizUnlocked(!(hasFlashcards && hasQuiz));
+    setShowResult(false);
+    setCurrentQuestion(0);
+    setAnswers({});
+  }, [flashcards.length, quizItems.length]);
+
+  const unlockQuiz = () => {
+    setQuizUnlocked(true);
+    setShowResult(false);
+    setCurrentQuestion(0);
+    setAnswers({});
+    quizSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const renderFlashcardsSection = () => {
     if (!flashcards.length) {
@@ -119,7 +139,7 @@ export default function FullscreenGenerateView() {
               <Button
                 onClick={goNextCard}
                 disabled={currentCard === flashcards.length - 1}
-                className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+                className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
@@ -181,7 +201,7 @@ export default function FullscreenGenerateView() {
                   setCurrentQuestion(0);
                   setShowResult(false);
                 }}
-                className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+                className="bg-purple-600 text-white shadow-md hover:bg-purple-700"
               >
                 Retry quiz
               </Button>
@@ -234,7 +254,7 @@ export default function FullscreenGenerateView() {
               <Button
                 onClick={goNext}
                 disabled={!answered}
-                className="bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 shadow-lg"
+                className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
               >
                 {isLast ? "Finish" : "Next"}
                 <ChevronRight className="h-4 w-4" />
@@ -300,14 +320,34 @@ export default function FullscreenGenerateView() {
 
     if (hasFlashcards && hasQuiz) {
       return (
-        <div className="grid gap-6 xl:grid-cols-2">
+        <div className="space-y-6">
           <div className="space-y-3">
             <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Flashcards</p>
             {renderFlashcardsSection()}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {flashcardsDone ? "Flashcards reviewed. Ready for quiz." : "Work through cards to unlock the quiz."}
+              </span>
+              <Button
+                onClick={unlockQuiz}
+                disabled={!flashcardsDone}
+                className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
+              >
+                Start quiz
+              </Button>
+            </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3" ref={quizSectionRef}>
             <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Quiz</p>
-            {renderQuizSection()}
+            {!quizUnlocked && (
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-200">
+                <p className="font-semibold text-slate-800 dark:text-white">Quiz locked until you finish the cards.</p>
+                <p className="mt-1 text-slate-600 dark:text-slate-300">Flip through the flashcards first for better recall.</p>
+              </div>
+            )}
+            <div className={quizUnlocked ? "" : "pointer-events-none select-none blur-sm opacity-60"}>
+              {renderQuizSection()}
+            </div>
           </div>
         </div>
       );
@@ -394,7 +434,11 @@ export default function FullscreenGenerateView() {
                   {saveFeedback.message}
                 </p>
               )}
-              <Button onClick={handleSave} disabled={saving || !decoded} className="rounded-full bg-gradient-to-r from-brand to-indigo-500 text-white shadow-lg">
+              <Button
+                onClick={handleSave}
+                disabled={saving || !decoded}
+                className="rounded-full bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
+              >
                 {saving ? (
                   "Saving..."
                 ) : (

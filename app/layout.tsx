@@ -5,7 +5,12 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "StudyPilot | AI Study Companion",
-  description: "Generate flashcards, quizzes, explanations, and study plans with AI."
+  description: "Generate flashcards, quizzes, explanations, and study plans with AI.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png"
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
