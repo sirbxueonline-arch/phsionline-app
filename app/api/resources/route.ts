@@ -5,8 +5,6 @@ import { verifyToken } from "@/lib/firebaseAdmin";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabaseServer = supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
-const USAGE_TYPE = "usage-log";
-const USAGE_LIMIT = 20;
 
 export const dynamic = "force-dynamic";
 
@@ -39,24 +37,6 @@ export async function POST(req: NextRequest) {
   const { content, type, title, subject } = await req.json();
   if (!content || !type) {
     return NextResponse.json({ error: "Missing content or type" }, { status: 400 });
-  }
-
-  // Respect monthly limit based on usage logs
-  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-  const { count: usageCount, error: usageError } = await supabaseServer
-    .from("resources")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", uid)
-    .eq("type", USAGE_TYPE)
-    .gte("created_at", startOfMonth);
-
-  if (usageError) {
-    console.error("Usage check failed", usageError);
-    return NextResponse.json({ error: "Usage check failed" }, { status: 500 });
-  }
-
-  if ((usageCount ?? 0) > USAGE_LIMIT) {
-    return NextResponse.json({ error: "Monthly limit reached" }, { status: 429 });
   }
 
   const { data, error } = await supabaseServer
