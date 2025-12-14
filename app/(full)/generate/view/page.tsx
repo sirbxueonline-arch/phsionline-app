@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Flashcard } from "@/components/Flashcard";
 import { QuizQuestion } from "@/components/QuizQuestion";
 import { useAuth } from "@/components/AuthProvider";
-import { getSupabaseClient } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft, BookmarkCheck, Clock3, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -23,6 +22,7 @@ export default function FullscreenGenerateView() {
   const router = useRouter();
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showResult, setShowResult] = useState(false);
@@ -80,62 +80,75 @@ export default function FullscreenGenerateView() {
   }, [currentCard]);
 
   const handleSave = async () => {
-    if (!decoded || !user) return;
-    setSaving(true);
-    const client = await getSupabaseClient();
-    if (!client) {
-      setSaving(false);
+    if (!decoded) {
+      setSaveFeedback({ type: "error", message: "Nothing to save yet. Generate content first." });
       return;
     }
-    const type = (decoded as any).type || "generated";
+    if (!user) {
+      setSaveFeedback({ type: "error", message: "Sign in to save this to your library." });
+      return;
+    }
+    setSaving(true);
+    setSaveFeedback(null);
+    const type = (decoded as any).type || (decoded && "quiz" in decoded ? "quiz" : "generated");
     const title = (decoded as any).title || `Generated ${type}`;
     const subject = (decoded as any).subject || null;
-    const { error } = await client.from("resources").insert({
-      user_id: user.uid,
-      type,
-      title,
-      subject,
-      content: decoded
-    });
-    if (error) {
-      console.error("Save failed", error);
+    try {
+      const token = await user.getIdToken?.();
+      const res = await fetch("/api/resources", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ content: decoded, type, title, subject })
+      });
+      if (!res.ok) {
+        const detail = await res.json().catch(() => null);
+        throw new Error(detail?.error || "Save failed");
+      }
+      setSaveFeedback({ type: "success", message: "Saved to your library." });
+    } catch (err: any) {
+      console.error("Save failed", err);
+      setSaveFeedback({ type: "error", message: err?.message || "Save failed. Please try again." });
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   const renderContent = () => {
     if (!decoded) return <p className="text-sm text-slate-400">No result found. Regenerate to view.</p>;
-      if ("flashcards" in decoded) {
-        if (!flashcards || !flashcards.length) {
-          return <p className="text-sm text-slate-400">No flashcards available.</p>;
-        }
-        const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
-        const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
-        const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
+    if ("flashcards" in decoded) {
+      if (!flashcards || !flashcards.length) {
+        return <p className="text-sm text-slate-400">No flashcards available.</p>;
+      }
+      const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
+      const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
+      const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
 
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-              <span>
-                Card {currentCard + 1} of {flashcards.length}
-              </span>
-              <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Tap or flip</span>
-            </div>
-            <div className="flex flex-col gap-4 rounded-3xl border border-slate-200/80 bg-slate-100/80 p-4 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
-              <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={goPrevCard}
-                    disabled={currentCard === 0}
-                    className="border-slate-300 text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+            <span>
+              Card {currentCard + 1} of {flashcards.length}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Tap or flip</span>
+          </div>
+          <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
+            <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={goPrevCard}
+                  disabled={currentCard === 0}
+                  className="border-slate-300 text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
                 </Button>
                 <Button
                   onClick={goNextCard}
@@ -151,10 +164,10 @@ export default function FullscreenGenerateView() {
         </div>
       );
     }
-      if ("quiz" in decoded) {
-        if (!quizItems || !quizItems.length) {
-          return <p className="text-sm text-slate-400">No quiz questions available.</p>;
-        }
+    if ("quiz" in decoded) {
+      if (!quizItems || !quizItems.length) {
+        return <p className="text-sm text-slate-400">No quiz questions available.</p>;
+      }
       const idx = Math.min(currentQuestion, quizItems.length - 1);
       const item = quizItems[idx];
       const selected = answers[idx];
@@ -235,7 +248,7 @@ export default function FullscreenGenerateView() {
             </span>
             <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Auto-advance on answer</span>
           </div>
-          <div className="rounded-3xl border border-slate-200/80 bg-slate-100/80 p-4 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
+          <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
             <QuizQuestion item={item} selected={selected} onSelect={handleSelect} showFeedback={showFeedback} />
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -283,10 +296,10 @@ export default function FullscreenGenerateView() {
   const isMock = !!(decoded as any)?.mocked;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white">
-      <div className="absolute inset-0 light-gradient-bg dark:gradient-bg" aria-hidden="true" />
-      <div className="relative mx-auto flex w-full max-w-screen-2xl flex-col gap-6 px-6 pb-16 pt-12">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-slate-200/60 backdrop-blur-sm dark:bg-white/5 dark:ring-white/5">
+    <div className="relative min-h-screen overflow-hidden bg-white text-slate-900 dark:bg-slate-950 dark:text-white">
+      <div className="absolute inset-0 hidden dark:block gradient-bg" aria-hidden="true" />
+      <div className="relative mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-6 pb-16 pt-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200/60 shadow-sm dark:bg-white/5 dark:ring-white/5">
           <Button
             variant="ghost"
             className="w-fit text-slate-700 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
@@ -301,7 +314,7 @@ export default function FullscreenGenerateView() {
           </div>
         </div>
 
-        <Card className="border-white/10 bg-white/90 text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white">
+        <Card className="flex min-h-[70vh] flex-col border-white/10 bg-white text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white">
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -324,18 +337,27 @@ export default function FullscreenGenerateView() {
                 Full-screen focus view. Save to your library to study later.
               </CardDescription>
             </div>
-            <Button onClick={handleSave} disabled={saving || !decoded} className="rounded-full bg-gradient-to-r from-brand to-indigo-500 text-white shadow-lg">
-              {saving ? (
-                "Saving..."
-              ) : (
-                <span className="flex items-center gap-2">
-                  <BookmarkCheck className="h-4 w-4" /> Save to library
-                </span>
+            <div className="flex flex-col items-end gap-2">
+              {saveFeedback && (
+                <p
+                  className={`text-sm ${saveFeedback.type === "success" ? "text-emerald-600 dark:text-emerald-300" : "text-red-600 dark:text-red-300"}`}
+                >
+                  {saveFeedback.message}
+                </p>
               )}
-            </Button>
+              <Button onClick={handleSave} disabled={saving || !decoded} className="rounded-full bg-gradient-to-r from-brand to-indigo-500 text-white shadow-lg">
+                {saving ? (
+                  "Saving..."
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <BookmarkCheck className="h-4 w-4" /> Save to library
+                  </span>
+                )}
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-700 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+          <CardContent className="flex flex-1 flex-col space-y-5">
+            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
               <p className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-300" />
                 Tip: share or export from the library after saving. This view keeps things focused for study.

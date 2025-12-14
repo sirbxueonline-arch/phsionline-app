@@ -38,9 +38,15 @@ export default function DashboardPage() {
           .from("resources")
           .select("id,title,type,subject,created_at")
           .eq("user_id", user.uid)
+          .neq("type", "usage-log")
           .order("created_at", { ascending: false })
           .limit(5),
-        client.from("resources").select("id", { count: "exact", head: true }).eq("user_id", user.uid).gte("created_at", startOfMonth)
+        client
+          .from("resources")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.uid)
+          .eq("type", "usage-log")
+          .gte("created_at", startOfMonth)
       ]);
       if (data) setResources(data as Resource[]);
       if (typeof count === "number") setUsage(count);

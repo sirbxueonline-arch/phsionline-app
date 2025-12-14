@@ -34,7 +34,9 @@ export default function StudySessionPage() {
         .eq("id", params.id as string)
         .eq("user_id", user.uid)
         .single();
-      if (data) setResource(data as Resource);
+      if (data && data.type !== "usage-log") {
+        setResource(data as Resource);
+      }
     };
     fetchResource();
   }, [params, user]);

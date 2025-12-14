@@ -36,6 +36,7 @@ export default function LibraryPage() {
         .from("resources")
         .select("*")
         .eq("user_id", user.uid)
+        .neq("type", "usage-log")
         .order("created_at", { ascending: false });
       if (data) setResources(data as Resource[]);
       setLoading(false);

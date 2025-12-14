@@ -6,6 +6,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabaseServer =
   supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
+const USAGE_TYPE = "usage-log";
+const USAGE_LIMIT = 20;
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +42,7 @@ export async function GET(req: NextRequest) {
       .from("resources")
       .select("id", { count: "exact", head: true })
       .eq("user_id", uid)
+      .eq("type", USAGE_TYPE)
       .gte("created_at", startOfMonth);
 
     if (error) {
@@ -47,7 +50,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Usage fetch failed" }, { status: 500 });
     }
 
-    return NextResponse.json({ usage: count ?? 0, limit: 20 });
+    return NextResponse.json({ usage: count ?? 0, limit: USAGE_LIMIT });
   } catch (err) {
     console.error("Usage API error", err);
     return NextResponse.json({ error: "Usage fetch failed" }, { status: 500 });

@@ -22,6 +22,7 @@ export default function AnalyticsPage() {
         .from("resources")
         .select("id,type,created_at")
         .eq("user_id", user.uid)
+        .neq("type", "usage-log")
         .order("created_at", { ascending: true });
       if (data) setResources(data as Resource[]);
     };

@@ -8,6 +8,8 @@ const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabaseServer = supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
 
 const apiKey = process.env.GEMINI_API_KEY;
+const USAGE_TYPE = "usage-log";
+const USAGE_LIMIT = 20;
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 const MODEL = GEMINI_MODEL;
@@ -53,8 +55,9 @@ export async function POST(req: NextRequest) {
         .from("resources")
         .select("id", { count: "exact", head: true })
         .eq("user_id", uid)
+        .eq("type", USAGE_TYPE)
         .gte("created_at", startOfMonth);
-      if ((count ?? 0) >= 20) {
+      if ((count ?? 0) >= USAGE_LIMIT) {
         return NextResponse.json({ error: "Monthly limit reached" }, { status: 429 });
       }
     }
@@ -76,6 +79,14 @@ export async function POST(req: NextRequest) {
 
     try {
       const parsed = await runGemini(apiKey, MODEL, baseMessages);
+      // Log usage for this generation (best-effort, but await so limit stays accurate)
+      if (supabaseServer && uid) {
+        try {
+          await logUsage(uid, tool, settings?.subject, supabaseServer);
+        } catch (err) {
+          console.error("Usage log failed", err);
+        }
+      }
       return NextResponse.json(parsed);
     } catch (error: any) {
       console.error("Gemini error", error?.message || error);
@@ -271,4 +282,20 @@ async function runGemini(
       lastError.body || ""
     }`
   );
+}
+
+async function logUsage(
+  uid: string,
+  tool: string,
+  subject: string | undefined,
+  client: ReturnType<typeof createClient>
+) {
+  const title = `Generation - ${tool}`;
+  await client.from("resources").insert({
+    user_id: uid,
+    type: USAGE_TYPE,
+    title,
+    subject: subject || null,
+    content: { tool, subject: subject || null, createdAt: new Date().toISOString() }
+  });
 }
