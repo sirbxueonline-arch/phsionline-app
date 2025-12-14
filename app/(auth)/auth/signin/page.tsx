@@ -54,11 +54,11 @@ export default function SignInPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cyan-100 ring-1 ring-white/15">
+        <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-cyan-100 dark:ring-white/15">
           <Sparkles className="h-4 w-4" /> Returning pilot
         </div>
-        <h1 className="text-3xl font-semibold">Welcome back</h1>
-        <p className="text-slate-200">
+        <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Welcome back</h1>
+        <p className="text-slate-600 dark:text-slate-200">
           Sign in to access your cockpit, sync your library, and keep generating study-ready content.
         </p>
       </div>
@@ -90,7 +90,7 @@ export default function SignInPage() {
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-100">
+          <div className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
             <AlertCircle className="h-4 w-4" />
             {error}
           </div>
@@ -113,7 +113,7 @@ export default function SignInPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full gap-2 border-slate-300 text-slate-900 hover:border-cyan-300/60 dark:text-white"
+            className="w-full gap-2 border-slate-300 text-slate-700 hover:border-cyan-300/60 dark:text-white"
             onClick={handleGoogle}
             disabled={loading}
           >
@@ -122,9 +122,9 @@ export default function SignInPage() {
           </Button>
         </div>
 
-        <p className="text-center text-sm text-slate-200">
+        <p className="text-center text-sm text-slate-600 dark:text-slate-200">
           No account?{" "}
-          <Link className="font-semibold text-cyan-200 underline" href="/auth/signup">
+          <Link className="font-semibold text-cyan-600 underline dark:text-cyan-200" href="/auth/signup">
             Sign up
           </Link>
         </p>

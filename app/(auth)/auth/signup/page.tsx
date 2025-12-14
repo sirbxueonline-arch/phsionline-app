@@ -82,8 +82,8 @@ export default function SignUpPage() {
     <div className="space-y-8">
       <div className="space-y-2 text-center">
         <Sparkles className="mx-auto h-10 w-10 text-brand" />
-        <h1 className="text-3xl font-semibold">Create your account</h1>
-        <p className="text-slate-200">Generate smarter study materials with AI.</p>
+        <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Create your account</h1>
+        <p className="text-slate-600 dark:text-slate-200">Generate smarter study materials with AI.</p>
       </div>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
@@ -115,9 +115,9 @@ export default function SignUpPage() {
             required
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            placeholder="••••••••"
+            placeholder="********"
           />
-          <p className="text-xs text-slate-300">Use 8+ characters for a stronger password.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-300">Use 8+ characters for a stronger password.</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirm">Confirm password</Label>
@@ -127,11 +127,11 @@ export default function SignUpPage() {
             required
             value={form.confirm}
             onChange={(e) => setForm({ ...form, confirm: e.target.value })}
-            placeholder="••••••••"
+            placeholder="********"
           />
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-100">
+          <div className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
             <AlertCircle className="h-4 w-4" />
             {error}
           </div>
@@ -145,9 +145,9 @@ export default function SignUpPage() {
             Continue with Google
           </Button>
         </div>
-        <p className="text-center text-sm text-slate-200">
+        <p className="text-center text-sm text-slate-600 dark:text-slate-200">
           Already have an account?{" "}
-          <Link className="font-semibold text-white underline" href="/auth/signin">
+          <Link className="font-semibold text-cyan-600 underline dark:text-white" href="/auth/signin">
             Sign in
           </Link>
         </p>
