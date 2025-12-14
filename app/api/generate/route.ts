@@ -103,11 +103,21 @@ export async function POST(req: NextRequest) {
 
 function buildPrompt(tool: string, text: string, settings: Record<string, any> = {}) {
   const common = `Return ONLY valid JSON with all fields filled. No Markdown.`;
+  const difficulty = settings.difficulty || "medium";
+  const mixHint =
+    settings.questionMix === "concept"
+      ? "Favor concept checks and why/how framing."
+      : settings.questionMix === "recall"
+      ? "Favor direct recall and definitions."
+      : "Blend recall, concept checks, and light scenarios.";
+  const itemCount = settings.count || 10;
   switch (tool) {
     case "flashcards":
-      return `${common} Create ${settings.count || 6} flashcards about: ${text}. Respond with {"flashcards":[{"question":"","answer":""}]}. Keep answers concise.`;
+      return `${common} Create ${itemCount} flashcards about: ${text}. Use ${difficulty} difficulty. ${mixHint} Respond with {"flashcards":[{"question":"","answer":""}]}. Keep answers concise.`;
     case "quiz":
-      return `${common} Create a multiple-choice quiz with ${settings.count || 5} questions about: ${text}. Respond with {"quiz":[{"question":"","options":["",""],"answer":"","explanation":""}]}. Options must be distinct, meaningful, and non-empty. Answer must match one of the options.`;
+      return `${common} Create a multiple-choice quiz with ${itemCount} questions about: ${text}. Use ${difficulty} difficulty. ${mixHint} Respond with {"quiz":[{"question":"","options":["",""],"answer":"","explanation":""}]}. Options must be distinct, meaningful, and non-empty. Answer must match one of the options.`;
+    case "both":
+      return `${common} Create ${itemCount} flashcards AND ${itemCount} mixed multiple-choice questions about: ${text}. Use ${difficulty} difficulty overall. ${mixHint} Respond with {"flashcards":[{"question":"","answer":""}],"quiz":[{"question":"","options":["",""],"answer":"","explanation":""}]}. Ensure quiz answers match options and flashcard answers stay concise.`;
     case "plan":
       return `${common} Build a study plan with ${settings.count || 5} steps for: ${text}. Respond with {"plan":["step 1","step 2"]}.`;
     default:
@@ -147,6 +157,27 @@ function mockPayload(tool: string, text: string, settings: Record<string, any> =
       };
     case "quiz":
       return {
+        quiz: [
+          {
+            question: `Core idea of ${subject}?`,
+            options: [
+              `${subject} is primarily about...`,
+              `A secondary aspect of ${subject}`,
+              `An unrelated detail to ${subject}`,
+              `A historical note on ${subject}`
+            ],
+            answer: `${subject} is primarily about...`,
+            explanation: `The main concept of ${subject} revolves around the core idea in the first option.`
+          }
+        ],
+        mocked
+      };
+    case "both":
+      return {
+        flashcards: [
+          { question: `What is ${subject}?`, answer: `A concise overview of ${subject}.` },
+          { question: `Why is ${subject} important?`, answer: `Because it underpins key concepts in this area.` }
+        ],
         quiz: [
           {
             question: `Core idea of ${subject}?`,

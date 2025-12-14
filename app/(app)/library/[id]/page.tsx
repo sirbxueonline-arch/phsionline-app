@@ -48,6 +48,37 @@ export default function ResourceDetailPage() {
 
   const renderContent = () => {
     if (!resource) return null;
+    if (resource.type === "both") {
+      const cards = Array.isArray(resource.content?.flashcards) ? resource.content.flashcards : [];
+      const quiz = Array.isArray(resource.content?.quiz) ? resource.content.quiz : [];
+      const hasCards = cards.length > 0;
+      const hasQuiz = quiz.length > 0;
+      return (
+        <div className="space-y-5">
+          {hasCards && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Flashcards</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                {cards.map((item: any, idx: number) => (
+                  <Flashcard key={idx} item={item} />
+                ))}
+              </div>
+            </div>
+          )}
+          {hasQuiz && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Quiz</p>
+              <div className="space-y-3">
+                {quiz.map((item: any, idx: number) => (
+                  <QuizQuestion key={idx} item={item} />
+                ))}
+              </div>
+            </div>
+          )}
+          {!hasCards && !hasQuiz && <p className="text-sm text-slate-500">No flashcards or quiz questions saved.</p>}
+        </div>
+      );
+    }
     if (resource.type === "flashcards" && resource.content?.flashcards) {
       return (
         <div className="grid gap-3 md:grid-cols-2">

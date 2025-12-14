@@ -74,9 +74,14 @@ export default function LibraryPage() {
       {!loading && filtered.length === 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Empty library</CardTitle>
-            <CardDescription>Save generated content to see it here.</CardDescription>
+            <CardTitle>No study sets yet</CardTitle>
+            <CardDescription>Let's make your first one.</CardDescription>
           </CardHeader>
+          <CardContent>
+            <Link href="/generate">
+              <Button>Create my study set</Button>
+            </Link>
+          </CardContent>
         </Card>
       )}
       <div className="grid gap-3">
@@ -86,7 +91,7 @@ export default function LibraryPage() {
               <div>
                 <p className="text-lg font-semibold">{res.title}</p>
                 <p className="text-sm text-slate-500">
-                  {res.type} · {res.subject || "General"} · {formatDate(res.created_at)}
+                  {res.type} | {res.subject || "General"} | {formatDate(res.created_at)}
                 </p>
               </div>
               <Link href={`/library/${res.id}`}>

@@ -11,33 +11,24 @@ export default function LandingPage() {
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col items-center gap-12 px-4 pb-20 pt-28 text-center lg:flex-row lg:text-left">
         <div className="flex-1 space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200/60 dark:bg-white/10 dark:text-slate-200 dark:ring-white/20">
-            <Sparkles className="h-4 w-4" /> AI-first study companion
+            <Sparkles className="h-4 w-4" /> Study companion
           </div>
           <h1 className="font-display text-4xl leading-tight text-slate-900 md:text-5xl lg:text-6xl dark:text-white">
-            AI-Powered Study Companion
+            Paste your notes. Get flashcards and quizzes instantly.
           </h1>
-          <p className="max-w-2xl text-lg text-slate-700 dark:text-slate-100">
-            Generate crisp explanations, interactive flashcards, quizzes, and study plans in seconds.
-            StudyPilot keeps you focused with modern design and analytics.
-          </p>
+          <p className="max-w-2xl text-lg text-slate-700 dark:text-slate-100">Study faster without rewriting notes.</p>
           <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <Link href="/auth/signup">
               <Button
                 size="lg"
                 className="shadow-lg bg-gradient-to-r from-brand to-indigo-500 text-white hover:from-brand/90 hover:to-indigo-500/90"
               >
-                Get Started
+                Create my study set
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/auth/signin">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-slate-300 bg-white text-slate-900 shadow-sm hover:bg-slate-50 ring-1 ring-slate-200 dark:border-white/40 dark:bg-transparent dark:text-white dark:hover:bg-white/10 dark:ring-0"
-              >
-                Sign In
-              </Button>
+            <Link href="/auth/signin" className="text-sm font-semibold text-slate-600 underline dark:text-slate-200">
+              Already learning? Sign in
             </Link>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-sm text-slate-100/80">
