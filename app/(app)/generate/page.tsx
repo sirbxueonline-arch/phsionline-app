@@ -50,9 +50,6 @@ export default function GeneratePage() {
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<number | null>(null);
   const [limitReached, setLimitReached] = useState(false);
-  const [feedback, setFeedback] = useState("");
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const controllerRef = useRef<AbortController | null>(null);
 
@@ -153,13 +150,6 @@ export default function GeneratePage() {
   const cancelGeneration = () => {
     controllerRef.current?.abort();
     setLoading(false);
-  };
-
-  const handleFeedbackSubmit = () => {
-    if (!feedback.trim()) return;
-    setFeedbackSubmitted(true);
-    setTimeout(() => setFeedbackSubmitted(false), 3000);
-    setFeedback("");
   };
 
   const usageLimit = 20;
@@ -515,46 +505,6 @@ export default function GeneratePage() {
             </div>
           </div>
         </CardContent>
-      </Card>
-
-      <Card className="rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
-        <CardHeader
-          className="flex cursor-pointer items-center justify-between"
-          onClick={() => setFeedbackOpen((o) => !o)}
-        >
-          <div>
-            <CardTitle className="text-lg text-slate-900 dark:text-[#E5E7EB]">Feedback (optional)</CardTitle>
-            <CardDescription className="text-slate-600 dark:text-[#94A3B8]">
-              Share ideas after you create. Collapsed by default.
-            </CardDescription>
-          </div>
-          <span className="text-sm text-purple-600 dark:text-purple-300">{feedbackOpen ? "Hide" : "Show"}</span>
-        </CardHeader>
-        {feedbackOpen && (
-          <CardContent className="space-y-3">
-            <Label htmlFor="feedback" className="text-slate-700 dark:text-[#E5E7EB]">
-              What should we improve?
-            </Label>
-            <Textarea
-              id="feedback"
-              rows={3}
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Tell us if the output missed context or if you need different formats."
-              className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
-            />
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={handleFeedbackSubmit} disabled={!feedback.trim()}>
-                Submit feedback
-              </Button>
-              {feedbackSubmitted && (
-                <span className="text-sm text-emerald-600 dark:text-emerald-300" role="status" aria-live="polite">
-                  Thanks for the insight!
-                </span>
-              )}
-            </div>
-          </CardContent>
-        )}
       </Card>
     </div>
   );

@@ -109,45 +109,45 @@ export default function FullscreenGenerateView() {
 
   const renderFlashcardsSection = () => {
     if (!flashcards.length) {
-      return <p className="text-sm text-slate-400">No flashcards available.</p>;
+      return <p className="text-sm text-slate-400 text-center">No flashcards available.</p>;
     }
     const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
     const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
     const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 max-w-4xl mx-auto">
         <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
           <span>
             Card {currentCard + 1} of {flashcards.length}
           </span>
           <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Tap or flip</span>
         </div>
-        <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-950/50">
           <Flashcard item={card} flipped={cardFlipped} onFlip={setCardFlipped} />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
-                variant="outline"
-                onClick={goPrevCard}
-                disabled={currentCard === 0}
-                className="border-slate-300 text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              <Button
-                onClick={goNextCard}
-                disabled={currentCard === flashcards.length - 1}
-                className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-cyan-400" /> Interactive mode
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={goPrevCard}
+              disabled={currentCard === 0}
+              className="border-slate-300 text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              onClick={goNextCard}
+              disabled={currentCard === flashcards.length - 1}
+              className="bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
@@ -231,14 +231,14 @@ export default function FullscreenGenerateView() {
     }
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 max-w-3xl mx-auto">
         <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
           <span>
             Question {idx + 1} of {quizItems.length}
           </span>
           <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Auto-advance on answer</span>
         </div>
-        <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-950/50 sm:p-6">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-950/50">
           <QuizQuestion item={item} selected={selected} onSelect={handleSelect} showFeedback={showFeedback} />
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -400,7 +400,7 @@ export default function FullscreenGenerateView() {
           </div>
         </div>
 
-        <Card className="flex min-h-[90vh] flex-col border-white/10 bg-white text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white overflow-hidden">
+        <Card className="flex flex-col border-white/10 bg-white text-slate-900 shadow-2xl backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/85 dark:text-white overflow-hidden">
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
