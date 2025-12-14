@@ -295,46 +295,48 @@ export default function GeneratePage() {
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-200">
               <NotebookPen className="h-4 w-4" /> Step 3 · Options
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="count">
-                  Count
-                </Label>
-                <Input
-                  id="count"
-                  type="number"
-                  min={3}
-                  max={20}
-                  value={count}
-                  onChange={(e) => setCount(Number(e.target.value))}
-                  className="border-slate-200 bg-white text-slate-900 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-[#E5E7EB]">Difficulty</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { key: "easy", label: "Easy", sub: "Recall" },
-                    { key: "medium", label: "Medium", sub: "Understand & apply" },
-                    { key: "hard", label: "Hard", sub: "Exam-style" }
-                  ].map((lvl) => {
-                    const active = difficulty === lvl.key;
-                    return (
-                      <button
-                        key={lvl.key}
-                        type="button"
-                        onClick={() => setDifficulty(lvl.key as typeof difficulty)}
-                        className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
-                          active
-                            ? "border-purple-400 bg-purple-50 text-purple-900 shadow-sm dark:border-purple-500/60 dark:bg-purple-900/30 dark:text-purple-100"
-                            : "border-slate-200 bg-white text-slate-700 hover:border-purple-200 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
-                        }`}
-                      >
-                        <p className="font-semibold">{lvl.label}</p>
-                        <p className="text-xs text-slate-500 dark:text-[#94A3B8]">{lvl.sub}</p>
-                      </button>
-                    );
-                  })}
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]/60">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+                <div className="w-full max-w-[200px] space-y-2">
+                  <Label className="text-slate-700 dark:text-[#E5E7EB]" htmlFor="count">
+                    Count
+                  </Label>
+                  <Input
+                    id="count"
+                    type="number"
+                    min={3}
+                    max={20}
+                    value={count}
+                    onChange={(e) => setCount(Number(e.target.value))}
+                    className="border-slate-200 bg-white text-slate-900 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]"
+                  />
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Label className="text-slate-700 dark:text-[#E5E7EB]">Difficulty</Label>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    {[
+                      { key: "easy", label: "Easy", sub: "Recall" },
+                      { key: "medium", label: "Medium", sub: "Understand & apply" },
+                      { key: "hard", label: "Hard", sub: "Exam-style" }
+                    ].map((lvl) => {
+                      const active = difficulty === lvl.key;
+                      return (
+                        <button
+                          key={lvl.key}
+                          type="button"
+                          onClick={() => setDifficulty(lvl.key as typeof difficulty)}
+                          className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
+                            active
+                              ? "border-purple-400 bg-purple-50 text-purple-900 shadow-sm dark:border-purple-500/60 dark:bg-purple-900/30 dark:text-purple-100"
+                              : "border-slate-200 bg-white text-slate-700 hover:border-purple-200 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
+                          }`}
+                        >
+                          <p className="font-semibold">{lvl.label}</p>
+                          <p className="text-xs text-slate-500 dark:text-[#94A3B8]">{lvl.sub}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
