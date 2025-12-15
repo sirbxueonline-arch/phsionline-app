@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { getRedirectResult, signInWithRedirect } from "firebase/auth";
 
@@ -20,7 +20,7 @@ const formatAuthError = (err: any) => {
   return err?.message || "We couldn't reach Google right now. Please try again.";
 };
 
-export default function GoogleRedirectPage() {
+function GoogleRedirectContent() {
   const router = useRouter();
   const params = useSearchParams();
   const intent = useMemo(() => (params.get("intent") === "signup" ? "signup" : "signin"), [params]);
@@ -81,5 +81,20 @@ export default function GoogleRedirectPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function GoogleRedirectPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          Opening Google...
+        </div>
+      }
+    >
+      <GoogleRedirectContent />
+    </Suspense>
   );
 }

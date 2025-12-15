@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,9 +20,9 @@ const formatAuthError = (err: any) => {
   if (code.includes("network-request-failed")) {
     return "Network issue—please retry once your connection is stable.";
   }
-  if (code.includes("operation-not-supported") || code.includes("popup-blocked")) {
+  if (code.includes("operation-not-supported") || code.includes("popup-blocked"))
     return "This browser blocks pop-ups. Use email/password or try the Google redirect option.";
-  }
+  if (code.includes("popup-closed-by-user")) return "The Google window was closed before completing. Please try again.";
   return err?.message || "We couldn't sign you in. Please try again.";
 };
 
@@ -52,10 +52,20 @@ export default function SignInPage() {
     }
   };
 
-  const handleGoogle = () => {
+  const handleGoogle = async () => {
     setLoading(true);
     setError(null);
-    router.push("/auth/google-redirect?intent=signin");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push("/dashboard");
+    } catch (err: any) {
+      if (err?.code?.includes("popup-blocked")) {
+        router.push("/auth/google-redirect?intent=signin");
+        return;
+      }
+      setError(formatAuthError(err));
+      setLoading(false);
+    }
   };
 
   return (

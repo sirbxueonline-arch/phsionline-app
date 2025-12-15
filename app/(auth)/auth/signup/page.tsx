@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +18,9 @@ const formatAuthError = (err: any) => {
   if (code.includes("email-already-in-use")) return "That email already has an account. Try signing in instead.";
   if (code.includes("weak-password")) return "Use a stronger password (8+ characters).";
   if (code.includes("network-request-failed")) return "Network issue—please retry once your connection is stable.";
-  if (code.includes("operation-not-supported") || code.includes("popup-blocked")) {
+  if (code.includes("operation-not-supported") || code.includes("popup-blocked"))
     return "This browser blocks pop-ups. Use the email form or try the Google redirect option.";
-  }
+  if (code.includes("popup-closed-by-user")) return "The Google window was closed before completing. Please try again.";
   return err?.message || "We couldn't sign you up. Please try again.";
 };
 
@@ -64,10 +64,20 @@ export default function SignUpPage() {
     }
   };
 
-  const handleGoogle = () => {
+  const handleGoogle = async () => {
     setLoading(true);
     setError(null);
-    router.push("/auth/google-redirect?intent=signup");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push("/onboarding");
+    } catch (err: any) {
+      if (err?.code?.includes("popup-blocked")) {
+        router.push("/auth/google-redirect?intent=signup");
+        return;
+      }
+      setError(formatAuthError(err));
+      setLoading(false);
+    }
   };
 
   return (
