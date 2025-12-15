@@ -44,8 +44,9 @@ export default function LandingPage() {
 
   return (
     <main className="relative overflow-visible bg-gradient-to-b from-white via-white to-slate-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
-      <section className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col-reverse items-center gap-10 px-4 pb-16 pt-24 lg:flex-row lg:items-start">
-        <div className="flex-1 space-y-6">
+      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 pt-16">
+        <div className="grid items-start gap-8 lg:grid-cols-2">
+          <div className="space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200/70 dark:bg-white/10 dark:text-slate-100 dark:ring-white/15">
             Built for tests, not notes
           </div>
@@ -124,47 +125,49 @@ export default function LandingPage() {
             )}
           </div>
         </div>
+          </div>
 
-        <div className="flex-1 w-full max-w-xl">
-          <Card className="card-glow bg-white/90 text-slate-900 shadow-xl backdrop-blur dark:bg-slate-900/80 dark:text-white">
-            <CardHeader className="pb-4">
-              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">What you&apos;ll actually study</p>
-              <CardTitle className="text-2xl">AP Bio snapshot</CardTitle>
-              <CardDescription>Flashcards + quiz in the same lane.</CardDescription>
-            </CardHeader>
-            <div className="space-y-3 p-5 pt-0">
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 text-left text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 dark:text-white">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                  Flashcard
-                </p>
-                <p className="mt-2 text-base font-semibold">
-                  What triggers the depolarization phase of an action potential?
-                </p>
-                <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">
-                  Voltage-gated sodium channels opening, letting Na+ rush into the neuron.
-                </p>
+          <div className="w-full">
+            <Card className="card-glow bg-white/90 text-slate-900 shadow-xl backdrop-blur dark:bg-slate-900/80 dark:text-white">
+              <CardHeader className="pb-4">
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">What you&apos;ll actually study</p>
+                <CardTitle className="text-2xl">AP Bio snapshot</CardTitle>
+                <CardDescription>Flashcards + quiz in the same lane.</CardDescription>
+              </CardHeader>
+              <div className="space-y-3 p-5 pt-0">
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4 text-left text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 dark:text-white">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                    Flashcard
+                  </p>
+                  <p className="mt-2 text-base font-semibold">
+                    What triggers the depolarization phase of an action potential?
+                  </p>
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">
+                    Voltage-gated sodium channels opening, letting Na+ rush into the neuron.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-4 text-left shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                    Quiz
+                  </p>
+                  <p className="mt-2 text-base font-semibold text-slate-900 dark:text-white">
+                    Which ion initiates an action potential?
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm text-slate-800 dark:text-slate-100">
+                    {["Potassium", "Calcium", "Sodium", "Chloride"].map((option, idx) => (
+                      <li
+                        key={option}
+                        className={`rounded-md px-3 py-2 ring-1 ring-slate-200 dark:ring-slate-800 ${idx === 2 ? "bg-emerald-50 text-emerald-800 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-100 dark:ring-emerald-800" : "bg-white dark:bg-slate-800/60"}`}
+                      >
+                        {String.fromCharCode(65 + idx)}. {option}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">Correct: C</p>
+                </div>
               </div>
-              <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-4 text-left shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                  Quiz
-                </p>
-                <p className="mt-2 text-base font-semibold text-slate-900 dark:text-white">
-                  Which ion initiates an action potential?
-                </p>
-                <ul className="mt-3 space-y-2 text-sm text-slate-800 dark:text-slate-100">
-                  {["Potassium", "Calcium", "Sodium", "Chloride"].map((option, idx) => (
-                    <li
-                      key={option}
-                      className={`rounded-md px-3 py-2 ring-1 ring-slate-200 dark:ring-slate-800 ${idx === 2 ? "bg-emerald-50 text-emerald-800 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-100 dark:ring-emerald-800" : "bg-white dark:bg-slate-800/60"}`}
-                    >
-                      {String.fromCharCode(65 + idx)}. {option}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">Correct: C</p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       </section>
 
