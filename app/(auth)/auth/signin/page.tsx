@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getRedirectResult, signInWithEmailAndPassword, signInWithRedirect } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,20 +38,6 @@ export default function SignInPage() {
     if (user) router.replace("/dashboard");
   }, [user, router]);
 
-  useEffect(() => {
-    const finishRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          router.push("/dashboard");
-        }
-      } catch (err: any) {
-        setError(formatAuthError(err));
-      }
-    };
-    finishRedirect();
-  }, [router]);
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -66,15 +52,10 @@ export default function SignInPage() {
     }
   };
 
-  const handleGoogle = async () => {
+  const handleGoogle = () => {
     setLoading(true);
     setError(null);
-    try {
-      await signInWithRedirect(auth, googleProvider);
-    } catch (err: any) {
-      setError(formatAuthError(err));
-      setLoading(false);
-    }
+    router.push("/auth/google-redirect?intent=signin");
   };
 
   return (

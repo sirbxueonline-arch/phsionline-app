@@ -3,14 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  createUserWithEmailAndPassword,
-  getRedirectResult,
-  signInWithRedirect,
-  updateProfile
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db, googleProvider } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,31 +34,6 @@ export default function SignUpPage() {
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [user, router]);
-
-  useEffect(() => {
-    const finishRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          await setDoc(
-            doc(db, "users", result.user.uid),
-            {
-              name: result.user.displayName,
-              email: result.user.email,
-              createdAt: new Date().toISOString(),
-              referralCode: result.user.uid.slice(0, 8)
-            },
-            { merge: true }
-          );
-          router.push("/onboarding");
-        }
-      } catch (err: any) {
-        setError(formatAuthError(err));
-        setLoading(false);
-      }
-    };
-    finishRedirect();
-  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,15 +64,10 @@ export default function SignUpPage() {
     }
   };
 
-  const handleGoogle = async () => {
+  const handleGoogle = () => {
     setLoading(true);
     setError(null);
-    try {
-      await signInWithRedirect(auth, googleProvider);
-    } catch (err: any) {
-      setError(formatAuthError(err));
-      setLoading(false);
-    }
+    router.push("/auth/google-redirect?intent=signup");
   };
 
   return (
