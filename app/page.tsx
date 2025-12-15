@@ -170,7 +170,7 @@ export default function LandingPage() {
 
       <section className="relative z-10 mx-auto max-w-6xl space-y-6 px-4 pb-6">
         <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 text-center text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200">
-          Type a topic -> choose how hard you want it -> study with flashcards and exam-style questions.
+          Type a topic, choose how hard you want it, then study with flashcards and exam-style questions.
         </div>
       </section>
 
