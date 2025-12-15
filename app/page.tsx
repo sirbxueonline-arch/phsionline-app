@@ -44,7 +44,7 @@ export default function LandingPage() {
 
   return (
     <main className="relative overflow-visible bg-gradient-to-b from-white via-white to-slate-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
-      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 pt-16">
+      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 pt-28 lg:pt-32">
         <div className="grid items-start gap-8 lg:grid-cols-2">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200/70 dark:bg-white/10 dark:text-slate-100 dark:ring-white/15">
