@@ -1,20 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "./ui/button";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { useAuth } from "./AuthProvider";
-import { Sun, Moon, LogOut } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { LogOut, Moon, Sun } from "lucide-react";
+
+import { useAuth } from "./AuthProvider";
+import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 const ThemeToggle = ({ landing = false }: { landing?: boolean }) => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
+
   return (
     <Button
       variant="ghost"
@@ -36,6 +39,18 @@ export const Navbar = () => {
   const isAuthed = !!user;
   const isLanding = pathname === "/";
 
+  const landingLinks = [
+    { href: "/#how-it-works", label: "How it works" },
+    { href: "/#pricing", label: "Pricing" }
+  ];
+
+  const authedLinks = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/generate", label: "Generate" },
+    { href: "/library", label: "Library" },
+    { href: "/analytics", label: "Analytics" }
+  ];
+
   return (
     <header
       className={cn(
@@ -51,7 +66,12 @@ export const Navbar = () => {
             <Image src="/logo.svg" alt="StudyPilot logo" width={32} height={32} className="h-8 w-8" />
             <div className="leading-tight">
               <p className={cn("text-lg", isLanding && "text-slate-900 dark:text-slate-100")}>StudyPilot</p>
-              <p className={cn("text-xs text-slate-500 dark:text-slate-400", isLanding && "text-slate-500 dark:text-slate-400")}>
+              <p
+                className={cn(
+                  "text-xs text-slate-500 dark:text-slate-400",
+                  isLanding && "text-slate-500 dark:text-slate-400"
+                )}
+              >
                 AI study cockpit
               </p>
             </div>
@@ -60,75 +80,94 @@ export const Navbar = () => {
             Live beta
           </span>
           <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
-            <NavLink href="/dashboard" label="Dashboard" active={pathname?.startsWith("/dashboard")} landing={isLanding} />
-            <NavLink href="/generate" label="Generate" active={pathname?.startsWith("/generate")} landing={isLanding} />
-          <NavLink href="/library" label="Library" active={pathname?.startsWith("/library")} landing={isLanding} />
-          <NavLink href="/analytics" label="Analytics" active={pathname?.startsWith("/analytics")} landing={isLanding} />
+            {(isAuthed ? authedLinks : landingLinks).map(({ href, label }) => (
+              <NavLink
+                key={href}
+                href={href}
+                label={label}
+                active={pathname === href || pathname?.startsWith(href.replace("/#", ""))}
+                landing={isLanding}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <ThemeToggle landing={isLanding} />
-        <Link href="/generate" className="hidden md:block">
-          <Button
-            size="sm"
-            className={cn(
-              "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
-              isLanding && "border border-slate-200/70 text-white dark:border-slate-800/70"
-            )}
-          >
-            New generation
-          </Button>
-        </Link>
-        <Link href="/upgrade">
-          <Button
-            variant="outline"
-            size="sm"
-            className={cn(isLanding && "border-slate-300 text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900/60")}
-          >
-            Upgrade
-          </Button>
-        </Link>
-        {isAuthed ? (
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/dashboard")}
-              className={cn(isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60")}
-            >
-              {user?.email?.split("@")[0] || "You"}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={signOutUser}
-              className={cn(isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60")}
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </>
-        ) : (
-          <>
-            <Link href="/auth/signin">
+
+        <div className="flex items-center gap-2">
+          <ThemeToggle landing={isLanding} />
+          {isAuthed ? (
+            <>
+              <Link href="/generate" className="hidden md:block">
+                <Button
+                  size="sm"
+                  className={cn(
+                    "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
+                    isLanding && "border border-slate-200/70 text-white dark:border-slate-800/70"
+                  )}
+                >
+                  New study set
+                </Button>
+              </Link>
+              <Link href="/upgrade">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    isLanding &&
+                      "border-slate-300 text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900/60"
+                  )}
+                >
+                  Upgrade
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"
-                className={cn(isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60")}
+                onClick={() => router.push("/dashboard")}
+                className={cn(
+                  isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60"
+                )}
               >
-                Sign in
+                {user?.email?.split("@")[0] || "You"}
               </Button>
-            </Link>
-            <Link href="/auth/signup">
               <Button
+                variant="ghost"
                 size="sm"
-                className={cn(isLanding && "bg-white text-slate-900 hover:bg-slate-200 dark:bg-slate-200 dark:text-slate-900")}
+                onClick={signOutUser}
+                className={cn(
+                  isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60"
+                )}
               >
-                Sign up
+                <LogOut className="h-4 w-4" />
               </Button>
-            </Link>
-          </>
-        )}
-      </div>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/signin">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "text-slate-700 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60",
+                    isLanding && "text-slate-900"
+                  )}
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button
+                  size="sm"
+                  className={cn(
+                    "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
+                    isLanding && "bg-white text-slate-900 hover:bg-slate-200 dark:bg-slate-200 dark:text-slate-900"
+                  )}
+                >
+                  Start a study set
+                </Button>
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

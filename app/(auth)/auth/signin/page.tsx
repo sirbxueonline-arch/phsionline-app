@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { getRedirectResult, signInWithEmailAndPassword, signInWithRedirect } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
+
+const formatAuthError = (err: any) => {
+  const code = err?.code || "";
+  if (code.includes("user-not-found") || code.includes("invalid-credential")) {
+    return "Check your email or password and try again.";
+  }
+  if (code.includes("network-request-failed")) {
+    return "Network issue—please retry once your connection is stable.";
+  }
+  if (code.includes("operation-not-supported") || code.includes("popup-blocked")) {
+    return "This browser blocks pop-ups. Use email/password or try the Google redirect option.";
+  }
+  return err?.message || "We couldn't sign you in. Please try again.";
+};
 
 export default function SignInPage() {
   const router = useRouter();
@@ -24,6 +38,20 @@ export default function SignInPage() {
     if (user) router.replace("/dashboard");
   }, [user, router]);
 
+  useEffect(() => {
+    const finishRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          router.push("/dashboard");
+        }
+      } catch (err: any) {
+        setError(formatAuthError(err));
+      }
+    };
+    finishRedirect();
+  }, [router]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -32,7 +60,7 @@ export default function SignInPage() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Invalid credentials");
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -42,11 +70,9 @@ export default function SignInPage() {
     setLoading(true);
     setError(null);
     try {
-      await signInWithPopup(auth, googleProvider);
-      router.push("/dashboard");
+      await signInWithRedirect(auth, googleProvider);
     } catch (err: any) {
-      setError(err.message || "Google sign-in failed");
-    } finally {
+      setError(formatAuthError(err));
       setLoading(false);
     }
   };

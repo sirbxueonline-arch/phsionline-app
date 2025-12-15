@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getRedirectResult,
+  signInWithRedirect,
+  updateProfile
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
@@ -12,6 +17,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
 import Image from "next/image";
+
+const formatAuthError = (err: any) => {
+  const code = err?.code || "";
+  if (code.includes("email-already-in-use")) return "That email already has an account. Try signing in instead.";
+  if (code.includes("weak-password")) return "Use a stronger password (8+ characters).";
+  if (code.includes("network-request-failed")) return "Network issue—please retry once your connection is stable.";
+  if (code.includes("operation-not-supported") || code.includes("popup-blocked")) {
+    return "This browser blocks pop-ups. Use the email form or try the Google redirect option.";
+  }
+  return err?.message || "We couldn't sign you up. Please try again.";
+};
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -23,6 +39,31 @@ export default function SignUpPage() {
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [user, router]);
+
+  useEffect(() => {
+    const finishRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          await setDoc(
+            doc(db, "users", result.user.uid),
+            {
+              name: result.user.displayName,
+              email: result.user.email,
+              createdAt: new Date().toISOString(),
+              referralCode: result.user.uid.slice(0, 8)
+            },
+            { merge: true }
+          );
+          router.push("/onboarding");
+        }
+      } catch (err: any) {
+        setError(formatAuthError(err));
+        setLoading(false);
+      }
+    };
+    finishRedirect();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +88,7 @@ export default function SignUpPage() {
       });
       router.push("/onboarding");
     } catch (err: any) {
-      setError(err.message || "Failed to sign up");
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -57,23 +98,9 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      if (result?.user) {
-        await setDoc(
-          doc(db, "users", result.user.uid),
-          {
-            name: result.user.displayName,
-            email: result.user.email,
-            createdAt: new Date().toISOString(),
-            referralCode: result.user.uid.slice(0, 8)
-          },
-          { merge: true }
-        );
-      }
-      router.push("/onboarding");
+      await signInWithRedirect(auth, googleProvider);
     } catch (err: any) {
-      setError(err.message || "Google sign-up failed");
-    } finally {
+      setError(formatAuthError(err));
       setLoading(false);
     }
   };
