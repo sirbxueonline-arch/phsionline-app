@@ -47,84 +47,83 @@ export default function LandingPage() {
       <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 pt-16">
         <div className="grid items-start gap-8 lg:grid-cols-2">
           <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200/70 dark:bg-white/10 dark:text-slate-100 dark:ring-white/15">
-            Built for tests, not notes
-          </div>
-          <div className="space-y-3">
-            <h1 className="font-display text-4xl leading-tight text-slate-900 md:text-5xl dark:text-white">
-              Built for exams, not endless notes
-            </h1>
-            <p className="max-w-2xl text-lg text-slate-700 dark:text-slate-200">
-              Turn any topic into flashcards and quizzes that match real exam questions.
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-lg backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/80">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200/70 dark:bg-white/10 dark:text-slate-100 dark:ring-white/15">
+              Built for tests, not notes
+            </div>
             <div className="space-y-3">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                  Topic
-                </p>
-                <Input
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder={rotatingTopics[placeholderIndex]}
-                  className="h-12 text-base placeholder:text-slate-500 dark:placeholder:text-slate-400"
-                />
-              </div>
-              <Button
-                size="lg"
-                className="w-full bg-slate-900 text-white shadow-md hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                onClick={handlePrimaryCTA}
-              >
-                Create my first study set
-              </Button>
-              <p className="text-center text-sm text-slate-600 dark:text-slate-300">Takes about 30 seconds.</p>
+              <h1 className="font-display text-4xl leading-tight text-slate-900 md:text-5xl dark:text-white">
+                Built for exams, not endless notes
+              </h1>
+              <p className="max-w-2xl text-lg text-slate-700 dark:text-slate-200">
+                Turn any topic into flashcards and quizzes that match real exam questions.
+              </p>
             </div>
 
-            {showControls && (
-              <div className="space-y-4 border-t border-slate-200 pt-4 dark:border-slate-800">
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-slate-800 dark:text-white">Card count</p>
-                  <div className="flex flex-wrap gap-2">
-                    {[12, 16, 24].map((count) => (
-                      <Button
-                        key={count}
-                        variant={cardCount === count ? "default" : "outline"}
-                        className={`flex-1 min-w-[90px] ${cardCount === count ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""}`}
-                        onClick={() => setCardCount(count)}
-                      >
-                        {count} cards
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-slate-800 dark:text-white">Difficulty</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(["Review", "Exam-Style", "Hard Mode"] as const).map((level) => (
-                      <Button
-                        key={level}
-                        variant={difficulty === level ? "default" : "outline"}
-                        className={difficulty === level ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""}
-                        onClick={() => setDifficulty(level)}
-                      >
-                        {level}
-                      </Button>
-                    ))}
-                  </div>
+            <div className="space-y-3 rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-lg backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/80">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                    Topic
+                  </p>
+                  <Input
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    placeholder={rotatingTopics[placeholderIndex]}
+                    className="h-12 text-base placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                  />
                 </div>
                 <Button
-                  size="sm"
-                  className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                  onClick={() => router.push("/auth/signup")}
+                  size="lg"
+                  className="w-full bg-slate-900 text-white shadow-md hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                  onClick={handlePrimaryCTA}
                 >
-                  Save and start studying
+                  Create my first study set
                 </Button>
+                <p className="text-center text-sm text-slate-600 dark:text-slate-300">Takes about 30 seconds.</p>
               </div>
-            )}
-          </div>
-        </div>
+
+              {showControls && (
+                <div className="space-y-4 border-t border-slate-200 pt-4 dark:border-slate-800">
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">Card count</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[12, 16, 24].map((count) => (
+                        <Button
+                          key={count}
+                          variant={cardCount === count ? "default" : "outline"}
+                          className={`flex-1 min-w-[90px] ${cardCount === count ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""}`}
+                          onClick={() => setCardCount(count)}
+                        >
+                          {count} cards
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">Difficulty</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["Review", "Exam-Style", "Hard Mode"] as const).map((level) => (
+                        <Button
+                          key={level}
+                          variant={difficulty === level ? "default" : "outline"}
+                          className={difficulty === level ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""}
+                          onClick={() => setDifficulty(level)}
+                        >
+                          {level}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                    onClick={() => router.push("/auth/signup")}
+                  >
+                    Save and start studying
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="w-full">
