@@ -23,7 +23,10 @@ const ThemeToggle = ({ landing = false }: { landing?: boolean }) => {
       variant="ghost"
       size="sm"
       aria-label="Toggle theme"
-      className={cn(landing && "text-white hover:bg-white/10")}
+      className={cn(
+        "text-[#E5E7EB] hover:bg-[#111827] focus-visible:ring-[#4F46E5] focus-visible:ring-offset-[#0F172A]",
+        landing && "border border-[#111827]"
+      )}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -54,10 +57,7 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "top-0 z-40 w-full transition-colors",
-        isLanding
-          ? "fixed border-transparent bg-white/80 text-slate-900 backdrop-blur-lg dark:border-slate-800/80 dark:bg-slate-900/80 dark:text-slate-100"
-          : "sticky border-b border-slate-200/60 bg-white/85 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-900/80"
+        "fixed top-0 z-40 w-full border-b border-[#111827] bg-[#0F172A]/90 text-[#E5E7EB] backdrop-blur-xl transition-colors"
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -65,28 +65,20 @@ export const Navbar = () => {
           <Link href="/" className="group flex items-center gap-2 font-semibold">
             <Image src="/logo.svg" alt="StudyPilot logo" width={32} height={32} className="h-8 w-8" />
             <div className="leading-tight">
-              <p className={cn("text-lg", isLanding && "text-slate-900 dark:text-slate-100")}>StudyPilot</p>
-              <p
-                className={cn(
-                  "text-xs text-slate-500 dark:text-slate-400",
-                  isLanding && "text-slate-500 dark:text-slate-400"
-                )}
-              >
-                AI study cockpit
-              </p>
+              <p className="text-lg text-[#E5E7EB]">StudyPilot</p>
+              <p className="text-xs text-[#9CA3AF]">Structured exam prep</p>
             </div>
           </Link>
-          <span className="hidden rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 sm:inline-flex">
-            Live beta
+          <span className="hidden rounded-full border border-[#22C55E] px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#22C55E] sm:inline-flex">
+            Stable build
           </span>
-          <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
+          <div className="hidden items-center gap-2 text-sm text-[#9CA3AF] sm:flex">
             {(isAuthed ? authedLinks : landingLinks).map(({ href, label }) => (
               <NavLink
                 key={href}
                 href={href}
                 label={label}
                 active={pathname === href || pathname?.startsWith(href.replace("/#", ""))}
-                landing={isLanding}
               />
             ))}
           </div>
@@ -99,10 +91,7 @@ export const Navbar = () => {
               <Link href="/generate" className="hidden md:block">
                 <Button
                   size="sm"
-                  className={cn(
-                    "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
-                    isLanding && "border border-slate-200/70 text-white dark:border-slate-800/70"
-                  )}
+                  className="bg-[#4F46E5] text-[#E5E7EB] shadow-md shadow-[#0F172A] hover:bg-[#7C3AED]"
                 >
                   New study set
                 </Button>
@@ -111,10 +100,7 @@ export const Navbar = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={cn(
-                    isLanding &&
-                      "border-slate-300 text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900/60"
-                  )}
+                  className="border-[#4F46E5] text-[#E5E7EB] hover:bg-[#111827]"
                 >
                   Upgrade
                 </Button>
@@ -123,9 +109,7 @@ export const Navbar = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push("/dashboard")}
-                className={cn(
-                  isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60"
-                )}
+                className="text-[#E5E7EB] hover:bg-[#111827]"
               >
                 {user?.email?.split("@")[0] || "You"}
               </Button>
@@ -133,9 +117,7 @@ export const Navbar = () => {
                 variant="ghost"
                 size="sm"
                 onClick={signOutUser}
-                className={cn(
-                  isLanding && "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60"
-                )}
+                className="text-[#E5E7EB] hover:bg-[#111827]"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -146,10 +128,7 @@ export const Navbar = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={cn(
-                    "text-slate-700 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900/60",
-                    isLanding && "text-slate-900"
-                  )}
+                  className="text-[#E5E7EB] hover:bg-[#111827]"
                 >
                   Log in
                 </Button>
@@ -157,10 +136,7 @@ export const Navbar = () => {
               <Link href="/auth/signup">
                 <Button
                   size="sm"
-                  className={cn(
-                    "bg-gradient-to-r from-brand to-indigo-500 text-white shadow-md shadow-brand/30",
-                    isLanding && "bg-white text-slate-900 hover:bg-slate-200 dark:bg-slate-200 dark:text-slate-900"
-                  )}
+                  className="bg-[#4F46E5] text-[#E5E7EB] shadow-md shadow-[#0F172A] hover:bg-[#7C3AED]"
                 >
                   Start a study set
                 </Button>
@@ -176,23 +152,18 @@ export const Navbar = () => {
 const NavLink = ({
   href,
   label,
-  active,
-  landing
+  active
 }: {
   href: string;
   label: string;
   active: boolean;
-  landing?: boolean;
 }) => (
   <Link
     href={href}
     className={cn(
-      "rounded-md px-2 py-1 transition-colors hover:text-slate-900 dark:hover:text-slate-100",
-      active ? "text-slate-900 dark:text-slate-100" : "text-slate-500",
-      landing &&
-        (active
-          ? "text-slate-900 dark:text-slate-100"
-          : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100")
+      "rounded-md px-2 py-1 text-sm transition-colors",
+      active ? "bg-[#111827] text-[#E5E7EB]" : "text-[#9CA3AF]",
+      "hover:text-[#E5E7EB]"
     )}
   >
     {label}

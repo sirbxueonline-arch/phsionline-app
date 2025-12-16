@@ -4,14 +4,13 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const base =
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:ring-brand focus-visible:ring-offset-background";
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F172A] disabled:opacity-60 disabled:cursor-not-allowed";
 
 const variants: Record<string, string> = {
-  default: "bg-brand text-white hover:bg-brand/90",
-  outline:
-    "border border-slate-200 dark:border-slate-800 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-900",
-  ghost: "hover:bg-slate-100 dark:hover:bg-slate-900",
-  secondary: "bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+  default: "bg-[#4F46E5] text-[#E5E7EB] hover:bg-[#7C3AED]",
+  outline: "border border-[#4F46E5] text-[#E5E7EB] hover:bg-[#111827]",
+  ghost: "text-[#E5E7EB] hover:bg-[#111827]",
+  secondary: "border border-[#0F172A] bg-[#111827] text-[#E5E7EB] hover:border-[#7C3AED]"
 };
 
 const sizes: Record<string, string> = {
