@@ -10,6 +10,8 @@
   --border: #111827;
   --text-primary: #E5E7EB;
   --text-muted: #9CA3AF;
+  --text-surface: #E5E7EB;
+  --text-muted-surface: #9CA3AF;
   --accent: #4F46E5;
   --accent-strong: #7C3AED;
   --success: #22C55E;
@@ -23,14 +25,18 @@
 
 :root.light {
   color-scheme: light;
-  --bg: #111827;
-  --surface: #0F172A;
-  --panel: #111827;
-  --border: #0F172A;
-  --nav: rgba(17, 24, 39, 0.9);
-  --shadow-strong: 0 18px 60px rgba(0, 0, 0, 0.35), 0 0 90px 24px rgba(79, 70, 229, 0.14);
-  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.28), 0 0 70px 18px rgba(79, 70, 229, 0.1);
-  --gradient-base: linear-gradient(120deg, rgba(17, 24, 39, 0.92), rgba(17, 24, 39, 0.9));
+  --bg: #E5E7EB;
+  --surface: #E5E7EB;
+  --panel: #E5E7EB;
+  --border: #9CA3AF;
+  --text-primary: #0F172A;
+  --text-muted: #111827;
+  --text-surface: #0F172A;
+  --text-muted-surface: #111827;
+  --nav: rgba(229, 231, 235, 0.92);
+  --shadow-strong: 0 16px 60px rgba(15, 23, 42, 0.18), 0 0 90px 24px rgba(79, 70, 229, 0.12);
+  --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.16), 0 0 60px 18px rgba(79, 70, 229, 0.08);
+  --gradient-base: linear-gradient(120deg, rgba(229, 231, 235, 0.98), rgba(229, 231, 235, 0.96));
 }
 
 html,
@@ -86,8 +92,8 @@ body {
 
 .light .theme-gradient {
   background:
-    radial-gradient(circle at 20% 20%, rgba(79, 70, 229, 0.14), transparent 38%),
-    radial-gradient(circle at 75% 15%, rgba(124, 58, 237, 0.14), transparent 34%),
+    radial-gradient(circle at 20% 22%, rgba(79, 70, 229, 0.12), transparent 42%),
+    radial-gradient(circle at 76% 14%, rgba(124, 58, 237, 0.12), transparent 36%),
     var(--gradient-base);
 }
 

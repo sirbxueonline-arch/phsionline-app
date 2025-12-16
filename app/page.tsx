@@ -136,7 +136,7 @@ export default function LandingPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 <Button
                   size="lg"
-                  className="flex w-full items-center justify-between bg-[var(--accent)] text-base text-[var(--text-primary)] hover:bg-[var(--accent-strong)]"
+                  className="flex w-full items-center justify-between text-base"
                   onClick={handleStart}
                 >
                   Start focused session
@@ -529,19 +529,19 @@ export default function LandingPage() {
           <div className="flex gap-3">
             <Button
               size="lg"
-              className="bg-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--accent-strong)]"
-              onClick={handleStart}
-            >
-              Start a session
-            </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="border border-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--surface)]"
-              onClick={handlePreview}
-            >
-              See the workspace
-            </Button>
+                  className="bg-[var(--accent)] hover:bg-[var(--accent-strong)]"
+                  onClick={handleStart}
+                >
+                  Start a session
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="border border-[var(--accent)] hover:bg-[var(--surface)]"
+                  onClick={handlePreview}
+                >
+                  See the workspace
+                </Button>
           </div>
         </div>
       </section>
