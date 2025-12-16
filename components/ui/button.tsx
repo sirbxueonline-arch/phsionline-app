@@ -4,13 +4,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const base =
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F172A] disabled:opacity-60 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] disabled:opacity-60 disabled:cursor-not-allowed";
 
 const variants: Record<string, string> = {
-  default: "bg-[#4F46E5] text-[#E5E7EB] hover:bg-[#7C3AED]",
-  outline: "border border-[#4F46E5] text-[#E5E7EB] hover:bg-[#111827]",
-  ghost: "text-[#E5E7EB] hover:bg-[#111827]",
-  secondary: "border border-[#0F172A] bg-[#111827] text-[#E5E7EB] hover:border-[#7C3AED]"
+  default: "bg-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--accent-strong)]",
+  outline: "border border-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--surface)]",
+  ghost: "text-[var(--text-primary)] hover:bg-[var(--surface)]",
+  secondary:
+    "border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--accent-strong)]"
 };
 
 const sizes: Record<string, string> = {

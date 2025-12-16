@@ -24,8 +24,8 @@ const ThemeToggle = ({ landing = false }: { landing?: boolean }) => {
       size="sm"
       aria-label="Toggle theme"
       className={cn(
-        "text-[#E5E7EB] hover:bg-[#111827] focus-visible:ring-[#4F46E5] focus-visible:ring-offset-[#0F172A]",
-        landing && "border border-[#111827]"
+        "text-[var(--text-primary)] hover:bg-[var(--surface)] focus-visible:ring-[var(--accent)] focus-visible:ring-offset-[var(--bg)]",
+        landing && "border border-[var(--border)]"
       )}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
@@ -57,7 +57,7 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 z-40 w-full border-b border-[#111827] bg-[#0F172A]/90 text-[#E5E7EB] backdrop-blur-xl transition-colors"
+        "fixed top-0 z-40 w-full border-b border-[var(--border)] bg-[var(--nav)] text-[var(--text-primary)] backdrop-blur-xl transition-colors"
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -65,14 +65,14 @@ export const Navbar = () => {
           <Link href="/" className="group flex items-center gap-2 font-semibold">
             <Image src="/logo.svg" alt="StudyPilot logo" width={32} height={32} className="h-8 w-8" />
             <div className="leading-tight">
-              <p className="text-lg text-[#E5E7EB]">StudyPilot</p>
-              <p className="text-xs text-[#9CA3AF]">Structured exam prep</p>
+              <p className="text-lg text-[var(--text-primary)]">StudyPilot</p>
+              <p className="text-xs text-[var(--text-muted)]">Structured exam prep</p>
             </div>
           </Link>
           <span className="hidden rounded-full border border-[#22C55E] px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#22C55E] sm:inline-flex">
             Stable build
           </span>
-          <div className="hidden items-center gap-2 text-sm text-[#9CA3AF] sm:flex">
+          <div className="hidden items-center gap-2 text-sm text-[var(--text-muted)] sm:flex">
             {(isAuthed ? authedLinks : landingLinks).map(({ href, label }) => (
               <NavLink
                 key={href}
@@ -91,7 +91,7 @@ export const Navbar = () => {
               <Link href="/generate" className="hidden md:block">
                 <Button
                   size="sm"
-                  className="bg-[#4F46E5] text-[#E5E7EB] shadow-md shadow-[#0F172A] hover:bg-[#7C3AED]"
+                  className="bg-[var(--accent)] text-[var(--text-primary)] shadow-md shadow-[var(--bg)] hover:bg-[var(--accent-strong)]"
                 >
                   New study set
                 </Button>
@@ -100,7 +100,7 @@ export const Navbar = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-[#4F46E5] text-[#E5E7EB] hover:bg-[#111827]"
+                  className="border-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--surface)]"
                 >
                   Upgrade
                 </Button>
@@ -109,7 +109,7 @@ export const Navbar = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push("/dashboard")}
-                className="text-[#E5E7EB] hover:bg-[#111827]"
+                className="text-[var(--text-primary)] hover:bg-[var(--surface)]"
               >
                 {user?.email?.split("@")[0] || "You"}
               </Button>
@@ -117,7 +117,7 @@ export const Navbar = () => {
                 variant="ghost"
                 size="sm"
                 onClick={signOutUser}
-                className="text-[#E5E7EB] hover:bg-[#111827]"
+                className="text-[var(--text-primary)] hover:bg-[var(--surface)]"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -128,7 +128,7 @@ export const Navbar = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-[#E5E7EB] hover:bg-[#111827]"
+                  className="text-[var(--text-primary)] hover:bg-[var(--surface)]"
                 >
                   Log in
                 </Button>
@@ -136,7 +136,7 @@ export const Navbar = () => {
               <Link href="/auth/signup">
                 <Button
                   size="sm"
-                  className="bg-[#4F46E5] text-[#E5E7EB] shadow-md shadow-[#0F172A] hover:bg-[#7C3AED]"
+                  className="bg-[var(--accent)] text-[var(--text-primary)] shadow-md shadow-[var(--bg)] hover:bg-[var(--accent-strong)]"
                 >
                   Start a study set
                 </Button>
@@ -162,8 +162,8 @@ const NavLink = ({
     href={href}
     className={cn(
       "rounded-md px-2 py-1 text-sm transition-colors",
-      active ? "bg-[#111827] text-[#E5E7EB]" : "text-[#9CA3AF]",
-      "hover:text-[#E5E7EB]"
+      active ? "bg-[var(--surface)] text-[var(--text-primary)]" : "text-[var(--text-muted)]",
+      "hover:text-[var(--text-primary)]"
     )}
   >
     {label}

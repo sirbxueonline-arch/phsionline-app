@@ -65,51 +65,47 @@ export default function LandingPage() {
   const handlePreview = () => router.push("/onboarding");
 
   return (
-    <main className="relative isolate overflow-hidden bg-[#0F172A] text-[#E5E7EB]">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(79,70,229,0.18),transparent_35%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_12%,rgba(124,58,237,0.16),transparent_32%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,23,42,0.95),rgba(15,23,42,0.94))]" />
-      </div>
+    <main className="relative isolate overflow-hidden bg-[var(--bg)] text-[var(--text-primary)]">
+      <div className="pointer-events-none absolute inset-0 theme-gradient" />
 
       <section className="relative mx-auto max-w-6xl px-6 pb-16 pt-28">
         <div className="grid items-start gap-8 lg:grid-cols-[1.08fr_0.92fr]">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#0F172A] bg-[#111827] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">
-              <span className="h-2 w-2 rounded-full bg-[#4F46E5]" aria-hidden />
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" aria-hidden />
               Exam-day discipline
             </div>
             <div className="space-y-3">
               <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
                 Deliberate practice for serious exams
               </h1>
-              <p className="max-w-2xl text-base text-[#9CA3AF]">
+              <p className="max-w-2xl text-base text-[var(--text-muted)]">
                 StudyPilot keeps you focused on pace, accuracy, and retention. Every session feels like the exam: no
                 noise, no gimmicks.
               </p>
             </div>
 
-            <div className="space-y-5 rounded-2xl border border-[#0F172A] bg-[#111827] p-6 shadow-2xl shadow-[#0F172A]">
+            <div className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">Subject or exam</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Subject or exam</p>
                 <Input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder={ROTATING_SUBJECTS[placeholderIndex]}
-                  className="h-12 text-base placeholder:text-[#9CA3AF]"
+                  className="h-12 text-base placeholder:text-[var(--text-muted)]"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">Practice mode</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Practice mode</p>
                   <div className="flex flex-wrap gap-2">
                     {PRACTICE_MODES.map((option) => (
                       <Button
                         key={option}
                         variant={mode === option ? "default" : "secondary"}
                         className={`flex-1 min-w-[120px] text-sm ${
-                          mode === option ? "shadow-md shadow-[#0F172A]" : "border-[#111827] hover:border-[#4F46E5]"
+                          mode === option ? "shadow-md" : "border-[var(--border)] hover:border-[var(--accent)]"
                         }`}
                         onClick={() => setMode(option)}
                       >
@@ -119,14 +115,14 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">Set length</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Set length</p>
                   <div className="flex flex-wrap gap-2">
                     {SET_LENGTHS.map((count) => (
                       <Button
                         key={count}
                         variant={length === count ? "default" : "secondary"}
                         className={`flex-1 min-w-[90px] text-sm ${
-                          length === count ? "shadow-md shadow-[#0F172A]" : "border-[#111827] hover:border-[#4F46E5]"
+                          length === count ? "shadow-md" : "border-[var(--border)] hover:border-[var(--accent)]"
                         }`}
                         onClick={() => setLength(count)}
                       >
@@ -140,7 +136,7 @@ export default function LandingPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 <Button
                   size="lg"
-                  className="flex w-full items-center justify-between bg-[#4F46E5] text-base text-[#E5E7EB] hover:bg-[#7C3AED]"
+                  className="flex w-full items-center justify-between bg-[var(--accent)] text-base text-[var(--text-primary)] hover:bg-[var(--accent-strong)]"
                   onClick={handleStart}
                 >
                   Start focused session
@@ -149,53 +145,53 @@ export default function LandingPage() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="flex w-full items-center justify-between border border-[#111827] text-base hover:border-[#4F46E5]"
+                  className="flex w-full items-center justify-between border border-[var(--border)] text-base hover:border-[var(--accent)]"
                   onClick={handlePreview}
                 >
                   Preview question style
-                  <PlayCircle className="h-5 w-5 text-[#9CA3AF]" />
+                  <PlayCircle className="h-5 w-5 text-[var(--text-muted)]" />
                 </Button>
               </div>
 
               <div className="grid gap-3 md:grid-cols-3">
-                <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
-                  <div className="flex items-center justify-between text-sm text-[#9CA3AF]">
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                  <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
                     <span>Accuracy</span>
-                    <TrendingUp className="h-4 w-4 text-[#22C55E]" />
+                    <TrendingUp className="h-4 w-4 text-[var(--success)]" />
                   </div>
-                  <p className="mt-2 text-2xl font-semibold text-[#E5E7EB]">78%</p>
-                  <p className="text-xs text-[#9CA3AF]">+6% vs last week</p>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold">78%</p>
+                  <p className="text-xs text-[var(--text-muted)]">+6% vs last week</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
-                      className="h-full rounded-full bg-[#4F46E5] transition-[width] duration-700 ease-out"
+                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
                       style={{ width: `${accuracyProgress}%` }}
                     />
                   </div>
                 </div>
-                <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
-                  <div className="flex items-center justify-between text-sm text-[#9CA3AF]">
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                  <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
                     <span>Timing</span>
-                    <Clock3 className="h-4 w-4 text-[#F59E0B]" />
+                    <Clock3 className="h-4 w-4 text-[var(--warning)]" />
                   </div>
-                  <p className="mt-2 text-2xl font-semibold text-[#E5E7EB]">0:48</p>
-                  <p className="text-xs text-[#9CA3AF]">Target 0:45</p>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold">0:48</p>
+                  <p className="text-xs text-[var(--text-muted)]">Target 0:45</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
-                      className="h-full rounded-full bg-[#4F46E5] transition-[width] duration-700 ease-out"
+                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
                       style={{ width: "82%" }}
                     />
                   </div>
                 </div>
-                <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
-                  <div className="flex items-center justify-between text-sm text-[#9CA3AF]">
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                  <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
                     <span>Retention</span>
-                    <ShieldCheck className="h-4 w-4 text-[#22C55E]" />
+                    <ShieldCheck className="h-4 w-4 text-[var(--success)]" />
                   </div>
-                  <p className="mt-2 text-2xl font-semibold text-[#E5E7EB]">64%</p>
-                  <p className="text-xs text-[#9CA3AF]">Stabilizing</p>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold">64%</p>
+                  <p className="text-xs text-[var(--text-muted)]">Stabilizing</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
-                      className="h-full rounded-full bg-[#4F46E5] transition-[width] duration-700 ease-out"
+                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
                       style={{ width: `${retentionProgress}%` }}
                     />
                   </div>
@@ -204,25 +200,25 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-[#111827] bg-[#111827] p-6 shadow-2xl shadow-[#0F172A]">
+          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9CA3AF]">Session preview</p>
-                <p className="text-lg font-semibold text-[#E5E7EB]">Neurophysiology drill</p>
-                <p className="text-sm text-[#9CA3AF]">Exam-style stems with immediate feedback.</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Session preview</p>
+                <p className="text-lg font-semibold">Neurophysiology drill</p>
+                <p className="text-sm text-[var(--text-muted)]">Exam-style stems with immediate feedback.</p>
               </div>
-              <div className="rounded-full border border-[#4F46E5] bg-[#0F172A] px-3 py-1 text-xs font-semibold text-[#E5E7EB]">
+              <div className="rounded-full border border-[var(--accent)] bg-[var(--panel)] px-3 py-1 text-xs font-semibold">
                 Focused
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">Question stem</p>
-              <p className="mt-2 text-base font-semibold text-[#E5E7EB]">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Question stem</p>
+              <p className="mt-2 text-base font-semibold">
                 A patient presents with slowed reflexes after chronic opioid use. Which receptor activity most directly
                 mediates the observed respiratory depression?
               </p>
-              <div className="mt-3 space-y-2 text-sm text-[#E5E7EB]">
+              <div className="mt-3 space-y-2 text-sm">
                 {[
                   { label: "A", text: "NMDA receptor blockade", tone: "neutral" },
                   { label: "B", text: "Mu receptor hyperpolarization", tone: "success" },
@@ -233,52 +229,52 @@ export default function LandingPage() {
                     key={option.label}
                     className={`flex items-start gap-2 rounded-lg border px-3 py-2 ${
                       option.tone === "success"
-                        ? "border-[#22C55E] bg-[#111827]"
+                        ? "border-[var(--success)] bg-[var(--surface)]"
                         : option.tone === "error"
-                          ? "border-[#EF4444] bg-[#111827]"
-                          : "border-[#111827] bg-[#111827]"
+                          ? "border-[var(--error)] bg-[var(--surface)]"
+                          : "border-[var(--border)] bg-[var(--surface)]"
                     }`}
                   >
-                    <span className="mt-0.5 text-xs text-[#9CA3AF]">{option.label}</span>
+                    <span className="mt-0.5 text-xs text-[var(--text-muted)]">{option.label}</span>
                     <span>{option.text}</span>
-                    {option.tone === "success" && <Check className="ml-auto h-4 w-4 text-[#22C55E]" />}
-                    {option.tone === "error" && <AlertTriangle className="ml-auto h-4 w-4 text-[#EF4444]" />}
+                    {option.tone === "success" && <Check className="ml-auto h-4 w-4 text-[var(--success)]" />}
+                    {option.tone === "error" && <AlertTriangle className="ml-auto h-4 w-4 text-[var(--error)]" />}
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-sm text-[#22C55E]">Marked correct; move to spaced review</p>
+              <p className="mt-3 text-sm text-[var(--success)]">Marked correct; move to spaced review</p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-3">
-                <div className="flex items-center justify-between text-xs text-[#9CA3AF]">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-3">
+                <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                   <span>Session progress</span>
                   <span>72%</span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#111827]">
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                   <div
-                    className="h-full rounded-full bg-[#4F46E5] transition-[width] duration-700 ease-out"
+                    className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
                     style={{ width: `${sessionProgress}%` }}
                   />
                 </div>
-                <p className="mt-2 text-sm text-[#9CA3AF]">Sections collapse as you clear them.</p>
+                <p className="mt-2 text-sm text-[var(--text-muted)]">Sections collapse as you clear them.</p>
               </div>
-              <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-3">
-                <div className="flex items-center justify-between text-xs text-[#9CA3AF]">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-3">
+                <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                   <span>Pace</span>
                   <span>0:48 / q</span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#111827]">
-                  <div className="h-full rounded-full bg-[#4F46E5] transition-[width] duration-700 ease-out" style={{ width: "82%" }} />
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
+                  <div className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out" style={{ width: "82%" }} />
                 </div>
-                <p className="mt-2 text-sm text-[#F59E0B]">Slightly over target; tighten transitions.</p>
+                <p className="mt-2 text-sm text-[var(--warning)]">Slightly over target; tighten transitions.</p>
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">Recovery queue</p>
-                <ListChecks className="h-4 w-4 text-[#E5E7EB]" />
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Recovery queue</p>
+                <ListChecks className="h-4 w-4" />
               </div>
               <div className="mt-3 space-y-2">
                 {[
@@ -288,24 +284,24 @@ export default function LandingPage() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-center justify-between rounded-lg border border-[#111827] bg-[#111827] px-3 py-2"
+                    className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2"
                   >
                     <div>
-                      <p className="text-sm font-semibold text-[#E5E7EB]">{item.label}</p>
-                      <p className="text-xs text-[#9CA3AF]">{item.note}</p>
+                      <p className="text-sm font-semibold">{item.label}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{item.note}</p>
                     </div>
                     {item.status === "stable" && (
-                      <span className="rounded-full border border-[#22C55E] px-2 py-1 text-[11px] font-semibold text-[#22C55E]">
+                      <span className="rounded-full border border-[var(--success)] px-2 py-1 text-[11px] font-semibold text-[var(--success)]">
                         Solid
                       </span>
                     )}
                     {item.status === "warning" && (
-                      <span className="rounded-full border border-[#F59E0B] px-2 py-1 text-[11px] font-semibold text-[#F59E0B]">
+                      <span className="rounded-full border border-[var(--warning)] px-2 py-1 text-[11px] font-semibold text-[var(--warning)]">
                         Review
                       </span>
                     )}
                     {item.status === "error" && (
-                      <span className="rounded-full border border-[#EF4444] px-2 py-1 text-[11px] font-semibold text-[#EF4444]">
+                      <span className="rounded-full border border-[var(--error)] px-2 py-1 text-[11px] font-semibold text-[var(--error)]">
                         Re-drill
                       </span>
                     )}
@@ -319,9 +315,9 @@ export default function LandingPage() {
 
       <section id="how-it-works" className="relative mx-auto max-w-6xl px-6 pb-14">
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9CA3AF]">Practice pipeline</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Practice pipeline</p>
           <h2 className="text-3xl font-semibold">A calm, exam-grade workflow</h2>
-          <p className="text-base text-[#9CA3AF]">
+          <p className="text-base text-[var(--text-muted)]">
             Structure every session: plan the attempt, run disciplined drills, then lock in what actually matters.
           </p>
         </div>
@@ -346,15 +342,15 @@ export default function LandingPage() {
               detail: "Retention tracked across sessions."
             }
           ].map((item) => (
-            <Card key={item.title} className="border-[#111827] bg-[#111827] shadow-lg shadow-[#0F172A]">
+            <Card key={item.title} className="border-[var(--border)] bg-[var(--surface)] theme-shadow-soft">
               <CardHeader className="flex flex-row items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#4F46E5] bg-[#0F172A]">
-                  <item.icon className="h-5 w-5 text-[#E5E7EB]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--panel)]">
+                  <item.icon className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-xl text-[#E5E7EB]">{item.title}</CardTitle>
+                <CardTitle className="text-xl">{item.title}</CardTitle>
               </CardHeader>
-              <CardDescription className="text-[#9CA3AF]">{item.body}</CardDescription>
-              <p className="mt-4 text-sm text-[#E5E7EB]">{item.detail}</p>
+              <CardDescription className="text-[var(--text-muted)]">{item.body}</CardDescription>
+              <p className="mt-4 text-sm">{item.detail}</p>
             </Card>
           ))}
         </div>
@@ -362,13 +358,13 @@ export default function LandingPage() {
 
       <section className="relative mx-auto max-w-6xl px-6 pb-16">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-4 rounded-2xl border border-[#0F172A] bg-[#111827] p-6 shadow-2xl shadow-[#0F172A]">
+          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9CA3AF]">Progress board</p>
-                <h3 className="text-2xl font-semibold text-[#E5E7EB]">Clarity on what to fix next</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Progress board</p>
+                <h3 className="text-2xl font-semibold">Clarity on what to fix next</h3>
               </div>
-              <Gauge className="h-6 w-6 text-[#E5E7EB]" />
+              <Gauge className="h-6 w-6" />
             </div>
             <div className="grid gap-3 md:grid-cols-3">
               {[
@@ -394,15 +390,15 @@ export default function LandingPage() {
                   width: retentionProgress
                 }
               ].map((metric) => (
-                <div key={metric.label} className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
-                  <div className="flex items-center justify-between text-sm text-[#9CA3AF]">
+                <div key={metric.label} className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                  <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
                     <span>{metric.label}</span>
                     <span className="text-xs" style={{ color: metric.color }}>
                       {metric.change}
                     </span>
                   </div>
-                  <p className="mt-2 text-2xl font-semibold text-[#E5E7EB]">{metric.value}</p>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold">{metric.value}</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
                       className="h-full rounded-full transition-[width] duration-700 ease-out"
                       style={{ width: `${metric.width}%`, backgroundColor: metric.color }}
@@ -411,13 +407,13 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-            <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-[#E5E7EB]">Streaks that matter</p>
-                  <p className="text-xs text-[#9CA3AF]">Consistency rewards accuracy and pace; no streak games.</p>
+                  <p className="text-sm font-semibold">Streaks that matter</p>
+                  <p className="text-xs text-[var(--text-muted)]">Consistency rewards accuracy and pace; no streak games.</p>
                 </div>
-                <div className="rounded-full border border-[#4F46E5] px-2 py-1 text-[11px] font-semibold text-[#E5E7EB]">
+                <div className="rounded-full border border-[var(--accent)] px-2 py-1 text-[11px] font-semibold">
                   Weekly view
                 </div>
               </div>
@@ -427,23 +423,23 @@ export default function LandingPage() {
                   { label: "Flagged for review", value: "5", note: "scheduled tonight" },
                   { label: "Stabilized topics", value: "9", note: "holding at 85%+" }
                 ].map((item) => (
-                  <div key={item.label} className="rounded-lg border border-[#111827] bg-[#111827] p-3">
-                    <p className="text-sm text-[#9CA3AF]">{item.label}</p>
-                    <p className="text-xl font-semibold text-[#E5E7EB]">{item.value}</p>
-                    <p className="text-xs text-[#9CA3AF]">{item.note}</p>
+                  <div key={item.label} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+                    <p className="text-sm text-[var(--text-muted)]">{item.label}</p>
+                    <p className="text-xl font-semibold">{item.value}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{item.note}</p>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-[#0F172A] bg-[#111827] p-6 shadow-2xl shadow-[#0F172A]">
+          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9CA3AF]">After-session cadence</p>
-                <h3 className="text-xl font-semibold text-[#E5E7EB]">Keep moving forward</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">After-session cadence</p>
+                <h3 className="text-xl font-semibold">Keep moving forward</h3>
               </div>
-              <BookOpenCheck className="h-5 w-5 text-[#E5E7EB]" />
+              <BookOpenCheck className="h-5 w-5" />
             </div>
             <div className="space-y-3">
               {[
@@ -463,14 +459,14 @@ export default function LandingPage() {
                   status: "warning"
                 }
               ].map((item) => (
-                <div key={item.title} className="flex items-start gap-3 rounded-xl border border-[#111827] bg-[#0F172A] p-4">
+                <div key={item.title} className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
                   <div
                     className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border ${
                       item.status === "success"
-                        ? "border-[#22C55E] text-[#22C55E]"
+                        ? "border-[var(--success)] text-[var(--success)]"
                         : item.status === "warning"
-                          ? "border-[#F59E0B] text-[#F59E0B]"
-                          : "border-[#EF4444] text-[#EF4444]"
+                          ? "border-[var(--warning)] text-[var(--warning)]"
+                          : "border-[var(--error)] text-[var(--error)]"
                     }`}
                   >
                     {item.status === "success" && <Check className="h-4 w-4" />}
@@ -478,19 +474,19 @@ export default function LandingPage() {
                     {item.status === "error" && <AlertTriangle className="h-4 w-4" />}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-[#E5E7EB]">{item.title}</p>
-                    <p className="text-sm text-[#9CA3AF]">{item.body}</p>
+                    <p className="text-sm font-semibold">{item.title}</p>
+                    <p className="text-sm text-[var(--text-muted)]">{item.body}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="rounded-xl border border-[#0F172A] bg-[#0F172A] p-4">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-[#E5E7EB]">Schedule preview</p>
-                  <p className="text-xs text-[#9CA3AF]">Short, focused blocks across the week.</p>
+                  <p className="text-sm font-semibold">Schedule preview</p>
+                  <p className="text-xs text-[var(--text-muted)]">Short, focused blocks across the week.</p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[#E5E7EB]" />
+                <ArrowRight className="h-4 w-4" />
               </div>
               <div className="mt-3 space-y-2">
                 {[
@@ -500,17 +496,17 @@ export default function LandingPage() {
                 ].map((slot) => (
                   <div
                     key={slot.title}
-                    className="flex items-center justify-between rounded-lg border border-[#111827] bg-[#111827] px-3 py-2"
+                    className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2"
                   >
                     <div>
-                      <p className="text-sm font-semibold text-[#E5E7EB]">{slot.title}</p>
-                      <p className="text-xs text-[#9CA3AF]">{slot.detail}</p>
+                      <p className="text-sm font-semibold">{slot.title}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{slot.detail}</p>
                     </div>
                     <span
                       className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
                         slot.tone === "warning"
-                          ? "border border-[#F59E0B] text-[#F59E0B]"
-                          : "border border-[#4F46E5] text-[#E5E7EB]"
+                          ? "border border-[var(--warning)] text-[var(--warning)]"
+                          : "border border-[var(--accent)] text-[var(--text-primary)]"
                       }`}
                     >
                       Ready
@@ -524,16 +520,16 @@ export default function LandingPage() {
       </section>
 
       <section className="relative mx-auto max-w-6xl px-6 pb-20">
-        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-[#0F172A] bg-[#111827] p-6 shadow-2xl shadow-[#0F172A] md:flex-row md:items-center">
+        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong md:flex-row md:items-center">
           <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9CA3AF]">Ready to train</p>
-            <h3 className="text-2xl font-semibold text-[#E5E7EB]">Build exam confidence without the noise</h3>
-            <p className="text-sm text-[#9CA3AF]">Start a disciplined session now and see progress in minutes.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Ready to train</p>
+            <h3 className="text-2xl font-semibold">Build exam confidence without the noise</h3>
+            <p className="text-sm text-[var(--text-muted)]">Start a disciplined session now and see progress in minutes.</p>
           </div>
           <div className="flex gap-3">
             <Button
               size="lg"
-              className="bg-[#4F46E5] text-[#E5E7EB] hover:bg-[#7C3AED]"
+              className="bg-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--accent-strong)]"
               onClick={handleStart}
             >
               Start a session
@@ -541,7 +537,7 @@ export default function LandingPage() {
             <Button
               variant="secondary"
               size="lg"
-              className="border border-[#4F46E5] text-[#E5E7EB] hover:bg-[#111827]"
+              className="border border-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--surface)]"
               onClick={handlePreview}
             >
               See the workspace
