@@ -9,12 +9,15 @@ import {
   BookOpenCheck,
   Check,
   Clock3,
+  CreditCard,
   Gauge,
   ListChecks,
   PlayCircle,
   ShieldCheck,
+  Sparkles,
   Target,
-  TrendingUp
+  TrendingUp,
+  Users
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -32,6 +35,13 @@ const ROTATING_SUBJECTS = [
 const PRACTICE_MODES = ["Timed drills", "Precision recall", "Mixed review"] as const;
 const SET_LENGTHS = [15, 25, 40];
 
+type LandingStats = {
+  users: number | null;
+  studySets: number | null;
+  successStories: number | null;
+  updatedAt: string;
+};
+
 export default function LandingPage() {
   const router = useRouter();
 
@@ -42,6 +52,7 @@ export default function LandingPage() {
   const [sessionProgress, setSessionProgress] = useState(0);
   const [accuracyProgress, setAccuracyProgress] = useState(0);
   const [retentionProgress, setRetentionProgress] = useState(0);
+  const [landingStats, setLandingStats] = useState<LandingStats | null>(null);
 
   useEffect(() => {
     const id = setInterval(
@@ -61,8 +72,43 @@ export default function LandingPage() {
     return () => clearTimeout(timeout);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadLandingStats = async () => {
+      try {
+        const res = await fetch("/api/landing-stats");
+        if (!res.ok) return;
+        const json = (await res.json()) as Partial<LandingStats>;
+        if (cancelled) return;
+        setLandingStats({
+          users: typeof json.users === "number" ? json.users : null,
+          studySets: typeof json.studySets === "number" ? json.studySets : null,
+          successStories: typeof json.successStories === "number" ? json.successStories : null,
+          updatedAt: typeof json.updatedAt === "string" ? json.updatedAt : new Date().toISOString()
+        });
+      } catch (err) {
+        // ignore; stats are optional
+      }
+    };
+
+    loadLandingStats();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleStart = () => router.push("/auth/signup");
   const handlePreview = () => router.push("/onboarding");
+
+  const formatCompact = (value: number) =>
+    new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 }).format(value);
+
+  const learnersDisplay =
+    typeof landingStats?.users === "number" ? formatCompact(landingStats.users) : "Early access";
+  const setsDisplay =
+    typeof landingStats?.studySets === "number" ? formatCompact(landingStats.studySets) : "—";
+  const winsDisplay =
+    typeof landingStats?.successStories === "number" ? formatCompact(landingStats.successStories) : "Share yours";
 
   return (
     <main className="relative isolate overflow-hidden bg-[var(--bg)] text-[var(--text-primary)]">
@@ -80,9 +126,88 @@ export default function LandingPage() {
                 Deliberate practice for serious exams
               </h1>
               <p className="max-w-2xl text-base text-[var(--text-muted)]">
-                StudyPilot keeps you focused on pace, accuracy, and retention. Every session feels like the exam: no
-                noise, no gimmicks.
+                StudyPilot turns your topic (or notes) into exam-grade drills with pacing, accuracy, and retention
+                feedback. Less busywork, more performance.
               </p>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                Who it&apos;s for
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {[
+                  {
+                    icon: Target,
+                    title: "High-stakes exam takers",
+                    body: "USMLE, LSAT, CFA, SAT, AP, certifications"
+                  },
+                  {
+                    icon: Clock3,
+                    title: "Anyone training timing",
+                    body: "Pace targets and time pressure built in"
+                  },
+                  {
+                    icon: ShieldCheck,
+                    title: "People who forget later",
+                    body: "Misses recycle into spaced stabilization"
+                  },
+                  {
+                    icon: Sparkles,
+                    title: "Students with messy notes",
+                    body: "Generate drills fast, then refine weak spots"
+                  }
+                ].map((item) => (
+                  <div key={item.title} className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--panel)]">
+                      <item.icon className="h-4 w-4" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold">{item.title}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{item.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-sm text-[var(--text-muted)]">
+                Quizlet and Anki are great for memorization. StudyPilot is built for{" "}
+                <span className="text-[var(--text-primary)]">performing under time pressure</span>.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                {
+                  label: "Learners",
+                  value: learnersDisplay,
+                  note: "Accounts created",
+                  icon: Users
+                },
+                {
+                  label: "Study sets",
+                  value: setsDisplay,
+                  note: "Saved in StudyPilot",
+                  icon: BookOpenCheck
+                },
+                {
+                  label: "Exam wins",
+                  value: winsDisplay,
+                  note: "Success stories shared",
+                  icon: TrendingUp
+                }
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
+                >
+                  <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span className="font-semibold uppercase tracking-[0.18em]">{item.label}</span>
+                    <item.icon className="h-4 w-4" aria-hidden />
+                  </div>
+                  <p className="mt-2 text-2xl font-semibold">{item.value}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{item.note}</p>
+                </div>
+              ))}
             </div>
 
             <div className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
@@ -151,6 +276,15 @@ export default function LandingPage() {
                   Preview question style
                   <PlayCircle className="h-5 w-5 text-[var(--text-muted)]" />
                 </Button>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-muted)]">
+                <span className="inline-flex items-center gap-2">
+                  <CreditCard className="h-3.5 w-3.5" />
+                  Free plan available — no card needed to start.
+                </span>
+                <a href="#pricing" className="underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--text-primary)]">
+                  See pricing
+                </a>
               </div>
 
               <div className="grid gap-3 md:grid-cols-3">
@@ -313,7 +447,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="how-it-works" className="relative mx-auto max-w-6xl px-6 pb-14">
+      <section id="how-it-works" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 pb-14">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Practice pipeline</p>
           <h2 className="text-3xl font-semibold">A calm, exam-grade workflow</h2>
@@ -352,6 +486,195 @@ export default function LandingPage() {
               <CardDescription className="text-[var(--text-muted)]">{item.body}</CardDescription>
               <p className="mt-4 text-sm">{item.detail}</p>
             </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl px-6 pb-16">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Why it works</p>
+          <h2 className="text-3xl font-semibold">Built for outcomes, not collections</h2>
+          <p className="max-w-3xl text-base text-[var(--text-muted)]">
+            StudyPilot complements your bank and flashcards: generate targeted sets, drill them under realistic timing,
+            then recycle weak spots until they stick.
+          </p>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              title: "StudyPilot",
+              top: "Exam-mode drills + analytics",
+              bottom: "Pace, accuracy, and retention in one loop.",
+              highlight: true
+            },
+            {
+              title: "Quizlet",
+              top: "Fast definitions & term recall",
+              bottom: "Less support for timing + exam pressure.",
+              highlight: false
+            },
+            {
+              title: "Anki",
+              top: "Powerful spaced repetition",
+              bottom: "More setup; not built around exam pacing.",
+              highlight: false
+            },
+            {
+              title: "Official banks",
+              top: "Authentic question exposure",
+              bottom: "Still need structure to fix weak areas.",
+              highlight: false
+            }
+          ].map((item) => (
+            <Card
+              key={item.title}
+              className={`bg-[var(--surface)] ${item.highlight ? "border-[var(--accent)]" : "border-[var(--border)]"}`}
+            >
+              <CardHeader className="mb-0 flex flex-col gap-1">
+                <CardTitle className="text-xl">{item.title}</CardTitle>
+                <CardDescription className="text-[var(--text-muted)]">{item.top}</CardDescription>
+              </CardHeader>
+              <p className="mt-4 text-sm">{item.bottom}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section id="pricing" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 pb-16">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Pricing</p>
+          <h2 className="text-3xl font-semibold">Simple tiers, clear upgrades</h2>
+          <p className="max-w-3xl text-base text-[var(--text-muted)]">
+            Start with the free plan. Upgrade for higher limits and priority AI models when you&apos;re ramping up.
+          </p>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          <Card className="border-[var(--border)] bg-[var(--surface)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Free</CardTitle>
+                <CardDescription>For getting the workflow dialed in.</CardDescription>
+              </div>
+              <span className="rounded-full border border-[var(--success)] px-2 py-1 text-[11px] font-semibold text-[var(--success)]">
+                No card
+              </span>
+            </div>
+            <div className="mt-4">
+              <p className="text-4xl font-semibold">$0</p>
+              <p className="text-sm text-[var(--text-muted)]">per month</p>
+            </div>
+            <ul className="mt-5 space-y-2 text-sm">
+              {[
+                "20 saves per month",
+                "Flashcards, quizzes, plans",
+                "Basic analytics and review loop"
+              ].map((feature) => (
+                <li key={feature} className="flex items-start gap-2 text-[var(--text-muted)]">
+                  <Check className="mt-0.5 h-4 w-4 text-[var(--success)]" />
+                  <span className="text-[var(--text-primary)]">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Button size="lg" className="mt-6 w-full" onClick={handleStart}>
+              Start free
+            </Button>
+          </Card>
+
+          <Card className="border-[var(--accent)] bg-[var(--surface)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Pro</CardTitle>
+                <CardDescription>For heavier volume and faster iterations.</CardDescription>
+              </div>
+              <span className="rounded-full border border-[var(--accent)] bg-[var(--panel)] px-2 py-1 text-[11px] font-semibold">
+                Recommended
+              </span>
+            </div>
+            <div className="mt-4 flex items-end gap-2">
+              <p className="text-4xl font-semibold">$12</p>
+              <p className="pb-1 text-sm text-[var(--text-muted)]">/ mo</p>
+            </div>
+            <ul className="mt-5 space-y-2 text-sm">
+              {[
+                "Higher monthly limits (unlimited coming soon)",
+                "Priority Gemini/OpenAI models",
+                "Advanced analytics and export"
+              ].map((feature) => (
+                <li key={feature} className="flex items-start gap-2 text-[var(--text-muted)]">
+                  <Check className="mt-0.5 h-4 w-4 text-[var(--accent)]" />
+                  <span className="text-[var(--text-primary)]">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Button size="lg" className="mt-6 w-full" onClick={handleStart}>
+              Start free, then upgrade
+            </Button>
+            <p className="mt-3 text-xs text-[var(--text-muted)]">
+              Secure checkout via Stripe. Monthly billing — cancel anytime.
+            </p>
+          </Card>
+
+          <Card className="border-[var(--border)] bg-[var(--surface)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Team</CardTitle>
+                <CardDescription>For shared decks and centralized billing.</CardDescription>
+              </div>
+              <span className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)]">
+                Coming soon
+              </span>
+            </div>
+            <div className="mt-4">
+              <p className="text-4xl font-semibold">Talk to us</p>
+              <p className="text-sm text-[var(--text-muted)]">seat-based pricing</p>
+            </div>
+            <ul className="mt-5 space-y-2 text-sm">
+              {["Shared workspaces", "Centralized billing & controls", "Onboarding + support"].map((feature) => (
+                <li key={feature} className="flex items-start gap-2 text-[var(--text-muted)]">
+                  <Check className="mt-0.5 h-4 w-4 text-[var(--text-muted)]" />
+                  <span className="text-[var(--text-primary)]">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="mt-6 w-full border border-[var(--border)]"
+              onClick={handleStart}
+            >
+              Join early access
+            </Button>
+          </Card>
+        </div>
+
+        <div className="mt-6 grid gap-3 rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5 md:grid-cols-3">
+          {[
+            {
+              icon: CreditCard,
+              title: "No surprises",
+              body: "Free plan is $0. Pro is monthly."
+            },
+            {
+              icon: ShieldCheck,
+              title: "Secure billing",
+              body: "Stripe Checkout for paid plans."
+            },
+            {
+              icon: Gauge,
+              title: "Real feedback",
+              body: "Track pace, accuracy, and retention."
+            }
+          ].map((item) => (
+            <div key={item.title} className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--panel)]">
+                <item.icon className="h-4 w-4" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">{item.title}</p>
+                <p className="text-xs text-[var(--text-muted)]">{item.body}</p>
+              </div>
+            </div>
           ))}
         </div>
       </section>
@@ -529,19 +852,19 @@ export default function LandingPage() {
           <div className="flex gap-3">
             <Button
               size="lg"
-                  className="bg-[var(--accent)] hover:bg-[var(--accent-strong)]"
-                  onClick={handleStart}
-                >
-                  Start a session
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="border border-[var(--accent)] hover:bg-[var(--surface)]"
-                  onClick={handlePreview}
-                >
-                  See the workspace
-                </Button>
+              className="bg-[var(--accent)] hover:bg-[var(--accent-strong)]"
+              onClick={handleStart}
+            >
+              Start a session
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="border border-[var(--accent)] hover:bg-[var(--surface)]"
+              onClick={handlePreview}
+            >
+              See the workspace
+            </Button>
           </div>
         </div>
       </section>

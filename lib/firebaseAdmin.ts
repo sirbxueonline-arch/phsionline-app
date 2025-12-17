@@ -1,6 +1,7 @@
 // Optional Firebase Admin helper used by API routes that need token verification.
 import { getApps, initializeApp, cert, App } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 let adminApp: App | undefined;
 
@@ -25,6 +26,16 @@ export async function verifyToken(idToken: string) {
     return decoded;
   } catch (err) {
     console.error("Failed to verify token", err);
+    return null;
+  }
+}
+
+export function getAdminFirestore() {
+  if (!adminApp) return null;
+  try {
+    return getFirestore(adminApp);
+  } catch (err) {
+    console.error("Failed to init admin Firestore", err);
     return null;
   }
 }
