@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { getAdminFirestore } from "@/lib/firebaseAdmin";
 
 type LandingStats = {
   users: number | null;
@@ -27,21 +26,8 @@ function parseNullableInt(value: string | undefined) {
 export async function GET() {
   const updatedAt = new Date().toISOString();
 
-  let users = parseNullableInt(process.env.LANDING_USER_COUNT);
+  const users = parseNullableInt(process.env.LANDING_USER_COUNT);
   const successStories = parseNullableInt(process.env.LANDING_SUCCESS_STORIES_COUNT);
-
-  if (users === null) {
-    const adminDb = getAdminFirestore();
-    if (adminDb) {
-      try {
-        const snap = await adminDb.collection("users").count().get();
-        const count = snap.data()?.count;
-        users = typeof count === "number" ? count : null;
-      } catch (err) {
-        users = null;
-      }
-    }
-  }
 
   let studySets: number | null = null;
   if (supabaseServer) {
@@ -69,4 +55,3 @@ export async function GET() {
     }
   });
 }
-
