@@ -88,21 +88,12 @@ export const Navbar = () => {
           <ThemeToggle landing={isLanding} />
           {isAuthed ? (
             <>
-              <Link href="/generate" className="hidden md:block">
+              <Link href="/onboarding" className="hidden md:block">
                 <Button
                   size="sm"
                   className="bg-[var(--accent)] text-[var(--text-primary)] shadow-md shadow-[var(--bg)] hover:bg-[var(--accent-strong)]"
                 >
-                  New study set
-                </Button>
-              </Link>
-              <Link href="/upgrade">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-[var(--accent)] text-[var(--text-primary)] hover:bg-[var(--surface)]"
-                >
-                  Upgrade
+                  Start free drill
                 </Button>
               </Link>
               <Button
@@ -138,7 +129,7 @@ export const Navbar = () => {
                   size="sm"
                   className="bg-[var(--accent)] text-[var(--text-primary)] shadow-md shadow-[var(--bg)] hover:bg-[var(--accent-strong)]"
                 >
-                  Start a study set
+                  Start free drill
                 </Button>
               </Link>
             </>

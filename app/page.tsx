@@ -12,9 +12,7 @@ import {
   CreditCard,
   Gauge,
   ListChecks,
-  PlayCircle,
   ShieldCheck,
-  Sparkles,
   Target,
   TrendingUp,
   Users
@@ -25,15 +23,21 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Input } from "@/components/ui/input";
 
 const ROTATING_SUBJECTS = [
-  "USMLE Step 1 - Neuro",
-  "CFA Level I - Ethics",
-  "AP Chemistry - Kinetics",
-  "LSAT - Logical Reasoning",
-  "SAT Math - Functions"
+  "Paste notes for SAT Math",
+  "Import LSAT logic games PDF",
+  "Drop CFA ethics summaries",
+  "Recent misses in USMLE neuro",
+  "Weak topics from AP Chem"
 ];
 
-const PRACTICE_MODES = ["Timed drills", "Precision recall", "Mixed review"] as const;
-const SET_LENGTHS = [15, 25, 40];
+const EXAMS = ["SAT", "USMLE", "LSAT", "CFA"] as const;
+const PRACTICE_MODES = ["Timed drills", "Targeted review", "Smart review"] as const;
+const FOCUS_OPTIONS = ["Weak topics", "Recent misses", "Full drill"] as const;
+const LENGTH_OPTIONS = [
+  { label: "Quick", value: 10 },
+  { label: "Standard", value: 20 },
+  { label: "Marathon", value: 40 }
+] as const;
 
 type LandingStats = {
   users: number | null;
@@ -46,9 +50,11 @@ export default function LandingPage() {
   const router = useRouter();
 
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [subject, setSubject] = useState("");
+  const [exam, setExam] = useState<(typeof EXAMS)[number]>("SAT");
+  const [subject, setSubject] = useState("SAT");
   const [mode, setMode] = useState<(typeof PRACTICE_MODES)[number]>("Timed drills");
-  const [length, setLength] = useState<number>(25);
+  const [focus, setFocus] = useState<(typeof FOCUS_OPTIONS)[number]>("Weak topics");
+  const [length, setLength] = useState<number>(20);
   const [sessionProgress, setSessionProgress] = useState(0);
   const [accuracyProgress, setAccuracyProgress] = useState(0);
   const [retentionProgress, setRetentionProgress] = useState(0);
@@ -104,16 +110,14 @@ export default function LandingPage() {
     new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 }).format(value);
 
   const learnersDisplay =
-    typeof landingStats?.users === "number" ? formatCompact(landingStats.users) : "Early access";
+    typeof landingStats?.users === "number" ? formatCompact(landingStats.users) : "Free plan available";
   const setsDisplay =
     typeof landingStats?.studySets === "number" ? formatCompact(landingStats.studySets) : "—";
   const winsDisplay =
-    typeof landingStats?.successStories === "number" ? formatCompact(landingStats.successStories) : "Share yours";
+    typeof landingStats?.successStories === "number" ? formatCompact(landingStats.successStories) : "In beta";
 
   return (
     <main className="relative isolate overflow-hidden bg-[var(--bg)] text-[var(--text-primary)]">
-      <div className="pointer-events-none absolute inset-0 theme-gradient" />
-
       <section className="relative mx-auto max-w-6xl px-6 pb-16 pt-28">
         <div className="grid items-start gap-8 lg:grid-cols-[1.08fr_0.92fr]">
           <div className="space-y-6">
@@ -123,55 +127,13 @@ export default function LandingPage() {
             </div>
             <div className="space-y-3">
               <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
-                Deliberate practice for serious exams
+                Train for exam day with targeted drills
               </h1>
               <p className="max-w-2xl text-base text-[var(--text-muted)]">
-                StudyPilot turns your topic (or notes) into exam-grade drills with pacing, accuracy, and retention
-                feedback. Less busywork, more performance.
+                We turn your notes and weak spots into timed practice with instant feedback.
               </p>
-            </div>
-
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                Who it&apos;s for
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {[
-                  {
-                    icon: Target,
-                    title: "High-stakes exam takers",
-                    body: "USMLE, LSAT, CFA, SAT, AP, certifications"
-                  },
-                  {
-                    icon: Clock3,
-                    title: "Anyone training timing",
-                    body: "Pace targets and time pressure built in"
-                  },
-                  {
-                    icon: ShieldCheck,
-                    title: "People who forget later",
-                    body: "Misses recycle into spaced stabilization"
-                  },
-                  {
-                    icon: Sparkles,
-                    title: "Students with messy notes",
-                    body: "Generate drills fast, then refine weak spots"
-                  }
-                ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--panel)]">
-                      <item.icon className="h-4 w-4" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold">{item.title}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{item.body}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-4 text-sm text-[var(--text-muted)]">
-                Quizlet and Anki are great for memorization. StudyPilot is built for{" "}
-                <span className="text-[var(--text-primary)]">performing under time pressure</span>.
+              <p className="text-sm text-[var(--text-muted)]">
+                Built for serious exams like USMLE LSAT SAT CFA.
               </p>
             </div>
 
@@ -192,7 +154,7 @@ export default function LandingPage() {
                 {
                   label: "Exam wins",
                   value: winsDisplay,
-                  note: "Success stories shared",
+                  note: "Documented exam wins",
                   icon: TrendingUp
                 }
               ].map((item) => (
@@ -210,27 +172,58 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <div className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
+            <div className="space-y-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Choose your exam</p>
+                  <p className="text-sm text-[var(--text-muted)]">We pin this choice so every drill matches your test.</p>
+                </div>
+                <span className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-3 py-1 text-[11px] font-semibold text-[var(--text-primary)]">
+                  Exam: {exam}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {EXAMS.map((option) => (
+                  <Button
+                    key={option}
+                    variant="secondary"
+                    className={`flex-1 min-w-[110px] border text-sm ${
+                      exam === option ? "border-[var(--text-primary)] bg-[var(--panel)] font-semibold" : "border-[var(--border)] hover:border-[var(--text-primary)]"
+                    }`}
+                    onClick={() => {
+                      setExam(option);
+                      setSubject((current) => {
+                        const matchesExam = EXAMS.includes(current as (typeof EXAMS)[number]);
+                        return !current || matchesExam ? option : current;
+                      });
+                    }}
+                  >
+                    {option}
+                  </Button>
+                ))}
+              </div>
+
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Subject or exam</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Paste notes or a topic</p>
                 <Input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder={ROTATING_SUBJECTS[placeholderIndex]}
                   className="h-12 text-base placeholder:text-[var(--text-muted)]"
                 />
+                <p className="text-xs text-[var(--text-muted)]">No notes? Start with our core set for your exam.</p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Practice mode</p>
                   <div className="flex flex-wrap gap-2">
                     {PRACTICE_MODES.map((option) => (
                       <Button
                         key={option}
-                        variant={mode === option ? "default" : "secondary"}
+                        variant="secondary"
                         className={`flex-1 min-w-[120px] text-sm ${
-                          mode === option ? "shadow-md" : "border-[var(--border)] hover:border-[var(--accent)]"
+                          mode === option ? "border border-[var(--text-primary)] bg-[var(--panel)] font-semibold" : "border border-[var(--border)] hover:border-[var(--text-primary)]"
                         }`}
                         onClick={() => setMode(option)}
                       >
@@ -240,51 +233,75 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Focus</p>
+                  <div className="flex flex-wrap gap-2">
+                    {FOCUS_OPTIONS.map((option) => (
+                      <Button
+                        key={option}
+                        variant="secondary"
+                        className={`flex-1 min-w-[120px] text-sm ${
+                          focus === option ? "border border-[var(--text-primary)] bg-[var(--panel)] font-semibold" : "border border-[var(--border)] hover:border-[var(--text-primary)]"
+                        }`}
+                        onClick={() => setFocus(option)}
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)]">We will find your weak spots after two drills.</p>
+                </div>
+                <div className="space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Set length</p>
                   <div className="flex flex-wrap gap-2">
-                    {SET_LENGTHS.map((count) => (
+                    {LENGTH_OPTIONS.map((option) => (
                       <Button
-                        key={count}
-                        variant={length === count ? "default" : "secondary"}
-                        className={`flex-1 min-w-[90px] text-sm ${
-                          length === count ? "shadow-md" : "border-[var(--border)] hover:border-[var(--accent)]"
+                        key={option.value}
+                        variant="secondary"
+                        className={`flex-1 min-w-[110px] text-sm ${
+                          length === option.value ? "border border-[var(--text-primary)] bg-[var(--panel)] font-semibold" : "border border-[var(--border)] hover:border-[var(--text-primary)]"
                         }`}
-                        onClick={() => setLength(count)}
+                        onClick={() => setLength(option.value)}
                       >
-                        {count} questions
+                        {option.label} · {option.value}
                       </Button>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-2">
                 <Button
                   size="lg"
                   className="flex w-full items-center justify-between text-base"
                   onClick={handleStart}
                 >
-                  Start focused session
+                  Start free drill
                   <ArrowRight className="h-5 w-5" />
                 </Button>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="flex w-full items-center justify-between border border-[var(--border)] text-base hover:border-[var(--accent)]"
-                  onClick={handlePreview}
-                >
-                  Preview question style
-                  <PlayCircle className="h-5 w-5 text-[var(--text-muted)]" />
-                </Button>
+                <div className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)]">
+                  <span className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-2 py-1 font-semibold">No card needed</span>
+                  <span className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-2 py-1 font-semibold">Cancel anytime</span>
+                  <a href="#pricing" className="underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--text-primary)]">
+                    See pricing
+                  </a>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-muted)]">
-                <span className="inline-flex items-center gap-2">
-                  <CreditCard className="h-3.5 w-3.5" />
-                  Free plan available — no card needed to start.
-                </span>
-                <a href="#pricing" className="underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--text-primary)]">
-                  See pricing
-                </a>
+
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">First session flow</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[
+                    { title: "Pick exam", note: "Ask on first load; stays pinned up top." },
+                    { title: "Pick focus", note: "Weak topics, Recent misses, or Full drill." },
+                    { title: "Pick length", note: "Quick 10 · Standard 20 · Marathon 40." },
+                    { title: "Start drill", note: "Keyboard friendly and timed." }
+                  ].map((item) => (
+                    <div key={item.title} className="rounded-lg border border-[var(--border)] bg-[var(--panel)] p-3">
+                      <p className="text-sm font-semibold">{item.title}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{item.note}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="grid gap-3 md:grid-cols-3">
@@ -297,22 +314,25 @@ export default function LandingPage() {
                   <p className="text-xs text-[var(--text-muted)]">+6% vs last week</p>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
-                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
+                      className="h-full rounded-full bg-[var(--success)] transition-[width] duration-700 ease-out"
                       style={{ width: `${accuracyProgress}%` }}
                     />
                   </div>
+                  <button className="mt-2 text-left text-xs text-[var(--text-muted)] underline underline-offset-4" title="We grade accuracy by correct answers on first attempt with timing in range.">
+                    How we grade
+                  </button>
                 </div>
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
                   <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
-                    <span>Timing</span>
+                    <span>Today</span>
                     <Clock3 className="h-4 w-4 text-[var(--warning)]" />
                   </div>
-                  <p className="mt-2 text-2xl font-semibold">0:48</p>
-                  <p className="text-xs text-[var(--text-muted)]">Target 0:45</p>
+                  <p className="mt-2 text-2xl font-semibold">48 questions today</p>
+                  <p className="text-xs text-[var(--text-muted)]">Goal 30 questions today</p>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
-                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
-                      style={{ width: "82%" }}
+                      className="h-full rounded-full bg-[var(--warning)] transition-[width] duration-700 ease-out"
+                      style={{ width: "80%" }}
                     />
                   </div>
                 </div>
@@ -325,38 +345,41 @@ export default function LandingPage() {
                   <p className="text-xs text-[var(--text-muted)]">Stabilizing</p>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                     <div
-                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
+                      className="h-full rounded-full bg-[var(--success)] transition-[width] duration-700 ease-out"
                       style={{ width: `${retentionProgress}%` }}
                     />
                   </div>
+                  <button className="mt-2 text-left text-xs text-[var(--text-muted)] underline underline-offset-4" title="Retention is tracked by how often you recall on schedule without help.">
+                    How we grade
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
+          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Session preview</p>
                 <p className="text-lg font-semibold">Neurophysiology drill</p>
                 <p className="text-sm text-[var(--text-muted)]">Exam-style stems with immediate feedback.</p>
               </div>
-              <div className="rounded-full border border-[var(--accent)] bg-[var(--panel)] px-3 py-1 text-xs font-semibold">
+              <div className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-3 py-1 text-xs font-semibold text-[var(--text-primary)]">
                 Focused
               </div>
             </div>
 
             <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Question stem</p>
-              <p className="mt-2 text-base font-semibold">
+              <p className="mt-2 text-lg font-semibold">
                 A patient presents with slowed reflexes after chronic opioid use. Which receptor activity most directly
                 mediates the observed respiratory depression?
               </p>
               <div className="mt-3 space-y-2 text-sm">
                 {[
-                  { label: "A", text: "NMDA receptor blockade", tone: "neutral" },
+                  { label: "A", text: "NMDA receptor blockade", tone: "warning" },
                   { label: "B", text: "Mu receptor hyperpolarization", tone: "success" },
-                  { label: "C", text: "Kappa receptor antagonism", tone: "neutral" },
+                  { label: "C", text: "Kappa receptor antagonism", tone: "warning" },
                   { label: "D", text: "Delta receptor sensitization", tone: "error" }
                 ].map((option) => (
                   <div
@@ -364,6 +387,8 @@ export default function LandingPage() {
                     className={`flex items-start gap-2 rounded-lg border px-3 py-2 ${
                       option.tone === "success"
                         ? "border-[var(--success)] bg-[var(--surface)]"
+                        : option.tone === "warning"
+                          ? "border-[var(--warning)] bg-[var(--surface)]"
                         : option.tone === "error"
                           ? "border-[var(--error)] bg-[var(--surface)]"
                           : "border-[var(--border)] bg-[var(--surface)]"
@@ -372,14 +397,32 @@ export default function LandingPage() {
                     <span className="mt-0.5 text-xs text-[var(--text-muted)]">{option.label}</span>
                     <span>{option.text}</span>
                     {option.tone === "success" && <Check className="ml-auto h-4 w-4 text-[var(--success)]" />}
+                    {option.tone === "warning" && <AlertTriangle className="ml-auto h-4 w-4 text-[var(--warning)]" />}
                     {option.tone === "error" && <AlertTriangle className="ml-auto h-4 w-4 text-[var(--error)]" />}
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-sm text-[var(--success)]">Marked correct; move to spaced review</p>
+              <div className="mt-4 space-y-2">
+                <p className="text-sm text-[var(--success)]">Correct answer. We will resurface this later.</p>
+                <p className="text-sm text-[var(--text-muted)]">Good job. Next question arrives tomorrow to lock it in.</p>
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-muted)]">
+                  <span>Keyboard: A · B · C · D to answer. Space to submit.</span>
+                  <button className="underline underline-offset-4" title="We keep feedback tight; open this to see rationale.">
+                    Why
+                  </button>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="border border-[var(--border)]"
+                  onClick={handlePreview}
+                >
+                  Review later (send to queue)
+                </Button>
+              </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-3">
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                   <span>Session progress</span>
@@ -387,7 +430,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
                   <div
-                    className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out"
+                    className="h-full rounded-full bg-[var(--success)] transition-[width] duration-700 ease-out"
                     style={{ width: `${sessionProgress}%` }}
                   />
                 </div>
@@ -395,13 +438,26 @@ export default function LandingPage() {
               </div>
               <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-3">
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span>Pace</span>
-                  <span>0:48 / q</span>
+                  <span>Progress today</span>
+                  <span>48 questions</span>
                 </div>
                 <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface)]">
-                  <div className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-700 ease-out" style={{ width: "82%" }} />
+                  <div className="h-full rounded-full bg-[var(--warning)] transition-[width] duration-700 ease-out" style={{ width: "80%" }} />
                 </div>
-                <p className="mt-2 text-sm text-[var(--warning)]">Slightly over target; tighten transitions.</p>
+                <p className="mt-2 text-sm text-[var(--text-muted)]">Goal 30 questions today.</p>
+              </div>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] p-3">
+                <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span>Daily streak</span>
+                  <span>3 days</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm text-[var(--text-muted)]">
+                  <span>Due today 18</span>
+                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-[11px] font-semibold text-[var(--text-primary)]">
+                    Queue
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-[var(--text-muted)]">Keep it alive with one drill.</p>
               </div>
             </div>
 
@@ -447,6 +503,38 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="relative mx-auto max-w-6xl px-6 pb-14">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Set creation</p>
+            <h3 className="text-xl font-semibold">Import notes in seconds</h3>
+            <ul className="space-y-1 text-sm text-[var(--text-muted)]">
+              <li>Accept paste for fast starts.</li>
+              <li>Accept PDF uploads for long notes.</li>
+              <li>Create draft items automatically.</li>
+            </ul>
+            <p className="text-xs text-[var(--text-muted)]">If no notes use “Start with our core set for your exam.”</p>
+          </div>
+          <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Quality gate</p>
+            <h3 className="text-xl font-semibold">Check coverage before publish</h3>
+            <ul className="space-y-1 text-sm text-[var(--text-muted)]">
+              <li>Coverage, Difficulty, and Leak risk shown upfront.</li>
+              <li>Hold sets until gaps are filled.</li>
+            </ul>
+          </div>
+          <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Session UX</p>
+            <h3 className="text-xl font-semibold">Keyboard-fast drills</h3>
+            <ul className="space-y-1 text-sm text-[var(--text-muted)]">
+              <li>A · B · C · D to answer. Space to submit.</li>
+              <li>Review later sends items to the queue.</li>
+              <li>One feedback line; details sit behind “Why.”</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <section id="how-it-works" className="relative mx-auto max-w-6xl scroll-mt-28 px-6 pb-14">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Practice pipeline</p>
@@ -476,9 +564,9 @@ export default function LandingPage() {
               detail: "Retention tracked across sessions."
             }
           ].map((item) => (
-            <Card key={item.title} className="border-[var(--border)] bg-[var(--surface)] theme-shadow-soft">
+            <Card key={item.title} className="border-[var(--border)] bg-[var(--surface)]">
               <CardHeader className="flex flex-row items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--panel)]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--panel)]">
                   <item.icon className="h-5 w-5" />
                 </div>
                 <CardTitle className="text-xl">{item.title}</CardTitle>
@@ -526,10 +614,7 @@ export default function LandingPage() {
               highlight: false
             }
           ].map((item) => (
-            <Card
-              key={item.title}
-              className={`bg-[var(--surface)] ${item.highlight ? "border-[var(--accent)]" : "border-[var(--border)]"}`}
-            >
+            <Card key={item.title} className="bg-[var(--surface)] border-[var(--border)]">
               <CardHeader className="mb-0 flex flex-col gap-1">
                 <CardTitle className="text-xl">{item.title}</CardTitle>
                 <CardDescription className="text-[var(--text-muted)]">{item.top}</CardDescription>
@@ -545,7 +630,7 @@ export default function LandingPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Pricing</p>
           <h2 className="text-3xl font-semibold">Simple tiers, clear upgrades</h2>
           <p className="max-w-3xl text-base text-[var(--text-muted)]">
-            Start with the free plan. Upgrade for higher limits and priority AI models when you&apos;re ramping up.
+            Free plan available with limits on set size and review depth. Upgrade when you need longer drills and deeper analytics.
           </p>
         </div>
 
@@ -566,9 +651,9 @@ export default function LandingPage() {
             </div>
             <ul className="mt-5 space-y-2 text-sm">
               {[
-                "20 saves per month",
-                "Flashcards, quizzes, plans",
-                "Basic analytics and review loop"
+                "Limit set size and review depth",
+                "Core drills (Quick + Standard)",
+                "Import notes and PDFs"
               ].map((feature) => (
                 <li key={feature} className="flex items-start gap-2 text-[var(--text-muted)]">
                   <Check className="mt-0.5 h-4 w-4 text-[var(--success)]" />
@@ -581,13 +666,13 @@ export default function LandingPage() {
             </Button>
           </Card>
 
-          <Card className="border-[var(--accent)] bg-[var(--surface)]">
+          <Card className="border-[var(--border)] bg-[var(--surface)]">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <CardTitle className="text-xl">Pro</CardTitle>
-                <CardDescription>For heavier volume and faster iterations.</CardDescription>
+                <CardDescription>Unlock long drills and advanced analytics.</CardDescription>
               </div>
-              <span className="rounded-full border border-[var(--accent)] bg-[var(--panel)] px-2 py-1 text-[11px] font-semibold">
+              <span className="rounded-full border border-[var(--border)] bg-[var(--panel)] px-2 py-1 text-[11px] font-semibold text-[var(--text-primary)]">
                 Recommended
               </span>
             </div>
@@ -597,12 +682,12 @@ export default function LandingPage() {
             </div>
             <ul className="mt-5 space-y-2 text-sm">
               {[
-                "Higher monthly limits (unlimited coming soon)",
-                "Priority Gemini/OpenAI models",
-                "Advanced analytics and export"
+                "Unlock Marathon drills (40 questions)",
+                "Advanced analytics and export",
+                "Targeted review depth with smart queues"
               ].map((feature) => (
                 <li key={feature} className="flex items-start gap-2 text-[var(--text-muted)]">
-                  <Check className="mt-0.5 h-4 w-4 text-[var(--accent)]" />
+                  <Check className="mt-0.5 h-4 w-4 text-[var(--success)]" />
                   <span className="text-[var(--text-primary)]">{feature}</span>
                 </li>
               ))}
@@ -667,7 +752,7 @@ export default function LandingPage() {
             }
           ].map((item) => (
             <div key={item.title} className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--panel)]">
+              <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--panel)]">
                 <item.icon className="h-4 w-4" />
               </div>
               <div className="space-y-1">
@@ -681,7 +766,7 @@ export default function LandingPage() {
 
       <section className="relative mx-auto max-w-6xl px-6 pb-16">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
+          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Progress board</p>
@@ -695,21 +780,21 @@ export default function LandingPage() {
                   label: "Accuracy",
                   value: "78%",
                   change: "+6% week",
-                  color: "#22C55E",
+                  color: "var(--success)",
                   width: accuracyProgress
                 },
                 {
                   label: "Pace control",
                   value: "0:48",
                   change: "Target 0:45",
-                  color: "#F59E0B",
+                  color: "var(--warning)",
                   width: 82
                 },
                 {
                   label: "Retention",
                   value: "64%",
                   change: "Stabilizing",
-                  color: "#4F46E5",
+                  color: "var(--error)",
                   width: retentionProgress
                 }
               ].map((metric) => (
@@ -736,7 +821,7 @@ export default function LandingPage() {
                   <p className="text-sm font-semibold">Streaks that matter</p>
                   <p className="text-xs text-[var(--text-muted)]">Consistency rewards accuracy and pace; no streak games.</p>
                 </div>
-                <div className="rounded-full border border-[var(--accent)] px-2 py-1 text-[11px] font-semibold">
+                <div className="rounded-full border border-[var(--border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-primary)]">
                   Weekly view
                 </div>
               </div>
@@ -756,7 +841,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong">
+          <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">After-session cadence</p>
@@ -829,7 +914,7 @@ export default function LandingPage() {
                       className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
                         slot.tone === "warning"
                           ? "border border-[var(--warning)] text-[var(--warning)]"
-                          : "border border-[var(--accent)] text-[var(--text-primary)]"
+                          : "border border-[var(--border)] text-[var(--text-primary)]"
                       }`}
                     >
                       Ready
@@ -843,28 +928,34 @@ export default function LandingPage() {
       </section>
 
       <section className="relative mx-auto max-w-6xl px-6 pb-20">
-        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 theme-shadow-strong md:flex-row md:items-center">
+        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 md:flex-row md:items-center">
           <div className="space-y-1">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Ready to train</p>
             <h3 className="text-2xl font-semibold">Build exam confidence without the noise</h3>
             <p className="text-sm text-[var(--text-muted)]">Start a disciplined session now and see progress in minutes.</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
               size="lg"
               className="bg-[var(--accent)] hover:bg-[var(--accent-strong)]"
               onClick={handleStart}
             >
-              Start a session
+              Start free drill
             </Button>
             <Button
               variant="secondary"
               size="lg"
-              className="border border-[var(--accent)] hover:bg-[var(--surface)]"
+              className="border border-[var(--border)] hover:bg-[var(--surface)]"
               onClick={handlePreview}
             >
-              See the workspace
+              See drill preview
             </Button>
+            <p className="text-xs text-[var(--text-muted)]">
+              <span id="policy">Data stays private.</span>{" "}
+              <a className="underline decoration-[var(--border)] underline-offset-4" href="#policy">
+                Read the short policy
+              </a>
+            </p>
           </div>
         </div>
       </section>
