@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LogOut, Moon, Sun } from "lucide-react";
 
 import { useAuth } from "./AuthProvider";
@@ -37,12 +37,24 @@ export const Navbar = () => {
   const isAuthed = !!user;
   const isLanding = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 2);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
   const authedLinks = [
@@ -78,7 +90,7 @@ export const Navbar = () => {
           StudyPilot
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-6">
           <nav className="hidden items-center gap-3 text-sm font-medium text-text-muted md:flex">
             {(isAuthed ? authedLinks : marketingLinks).map((link) => (
               <Link
@@ -91,55 +103,75 @@ export const Navbar = () => {
             ))}
           </nav>
 
-          {isAuthed ? (
-            <>
-              <Button
-                size="sm"
-                className="hidden md:inline-flex bg-accent text-[var(--text-on-accent)] hover:bg-accent-strong"
-                onClick={() => router.push("/pricing")}
-              >
-                Upgrade
-              </Button>
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
-                type="button"
-              >
-              Dashboard
-            </button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={signOutUser}
-                className="text-sm"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </Button>
-            </>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/#how-it-works"
-                className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
-              >
-                How it works
-              </Link>
-              <Link
-                href="/#pricing"
-                className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/auth/signin"
-                className="text-sm font-semibold text-text-primary transition-colors hover:text-accent"
-              >
-                Log in
-              </Link>
-            </div>
-          )}
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            {isAuthed ? (
+              <>
+                <Button
+                  size="sm"
+                  className="bg-accent text-[var(--text-on-accent)] shadow-sm hover:bg-accent-strong"
+                  onClick={() => router.push("/pricing")}
+                >
+                  Upgrade
+                </Button>
+                <div className="relative" ref={menuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen((prev) => !prev)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-sm font-semibold text-text-primary shadow-sm ring-1 ring-border"
+                    aria-haspopup="menu"
+                    aria-expanded={menuOpen}
+                  >
+                    {(user?.email?.[0] || "U").toUpperCase()}
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute right-0 mt-2 w-44 rounded-xl border border-border bg-panel p-1 shadow-sm">
+                      <button
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-primary hover:bg-surface"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          router.push("/settings");
+                        }}
+                      >
+                        Settings
+                      </button>
+                      <button
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-primary hover:bg-surface"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          signOutUser();
+                        }}
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/#how-it-works"
+                  className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
+                >
+                  How it works
+                </Link>
+                <Link
+                  href="/#pricing"
+                  className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
+                >
+                  Pricing
+                </Link>
+                <Link
+                  href="/auth/signin"
+                  className="text-sm font-semibold text-text-primary transition-colors hover:text-accent"
+                >
+                  Log in
+                </Link>
+              </div>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>
