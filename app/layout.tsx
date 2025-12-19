@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="app-backdrop" aria-hidden="true" />
         <Providers>
           <Navbar />
-          {children}
+          <div className="pb-24">{children}</div>
           <Footer />
         </Providers>
       </body>
