@@ -1,7 +1,15 @@
 import "./globals.css";
-import { Providers } from "./providers";
-import { Navbar } from "@/components/Navbar";
+import { Inter } from "next/font/google";
 import { Metadata } from "next";
+
+import { Navbar } from "@/components/Navbar";
+import { Providers } from "./providers";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter"
+});
 
 export const metadata: Metadata = {
   title: "StudyPilot | AI Study Companion",
@@ -16,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen theme-bg transition-colors duration-300">
+      <body className={`${inter.variable} min-h-screen bg-background text-text-primary transition-colors duration-300`}>
         <Providers>
           <Navbar />
           {children}

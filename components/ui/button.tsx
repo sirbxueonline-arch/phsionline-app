@@ -7,11 +7,11 @@ const base =
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] disabled:opacity-60 disabled:cursor-not-allowed";
 
 const variants: Record<string, string> = {
-  default: "bg-[var(--accent)] text-[#E5E7EB] hover:bg-[var(--accent-strong)]",
-  outline: "border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--surface)]",
-  ghost: "text-[var(--accent)] hover:bg-[var(--surface)]",
+  default: "bg-[var(--accent)] text-[var(--text-on-accent)] hover:bg-[var(--accent-strong)]",
+  outline: "border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface)]",
+  ghost: "text-[var(--text-primary)] hover:bg-[var(--surface)]",
   secondary:
-    "border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--accent-strong)]"
+    "border border-[var(--border)] bg-transparent text-[var(--text-primary)] hover:bg-[var(--surface)]"
 };
 
 const sizes: Record<string, string> = {

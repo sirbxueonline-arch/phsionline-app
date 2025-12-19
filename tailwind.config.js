@@ -10,17 +10,25 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        display: ["'Space Grotesk'", "Inter", "system-ui", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"]
+        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"]
       },
       colors: {
-        brand: {
-          DEFAULT: "#7C3AED",
-          foreground: "#F8F7FF"
-        }
-      },
-      boxShadow: {
-        glow: "0 0 120px 40px rgba(124, 58, 237, 0.25)"
+        background: "var(--bg)",
+        surface: "var(--surface)",
+        panel: "var(--panel)",
+        border: "var(--border)",
+        text: {
+          primary: "var(--text-primary)",
+          muted: "var(--text-muted)"
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          strong: "var(--accent-strong)"
+        },
+        success: "var(--success)",
+        warning: "var(--warning)",
+        error: "var(--error)"
       }
     }
   },
