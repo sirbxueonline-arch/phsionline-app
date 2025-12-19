@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
@@ -86,8 +87,9 @@ export const Navbar = () => {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link
           href="/"
-          className="text-base font-semibold tracking-[0.01em] text-text-primary transition-colors hover:text-accent"
+          className="flex items-center gap-2 text-base font-semibold tracking-[0.01em] text-text-primary transition-colors hover:text-accent"
         >
+          <Image src="/logo.svg" alt="StudyPilot logo" width={28} height={28} className="h-7 w-7" />
           StudyPilot
         </Link>
 
