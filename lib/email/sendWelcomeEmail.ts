@@ -1,8 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendWelcomeEmail(email: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+  const resend = new Resend(apiKey);
+
   const html = `
     <div style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0b1021; color: #e8edf5; padding: 32px;">
       <div style="max-width: 480px; margin: 0 auto; background: #0f172a; border: 1px solid #1c2740; border-radius: 12px; padding: 24px;">
