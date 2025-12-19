@@ -20,7 +20,7 @@ const ThemeToggle = () => {
   return (
     <button
       aria-label="Toggle theme"
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background hover:border-text-primary hover:text-text-primary"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-border/60 text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background hover:border-text-primary hover:text-text-primary"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
       {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -49,9 +49,10 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "inset-x-0 top-0 z-50 w-full",
-        isLanding ? "absolute bg-transparent" : "sticky bg-panel/80 backdrop-blur border-b border-border"
+        "inset-x-0 top-0 z-50 w-full backdrop-blur-sm",
+        isLanding ? "absolute" : "sticky"
       )}
+      style={{ backgroundColor: "rgba(12, 20, 38, 0.05)" }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link
@@ -67,7 +68,7 @@ export const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full px-3 py-1 transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="rounded-full px-3 py-1 transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {link.label}
               </Link>
@@ -101,12 +102,26 @@ export const Navbar = () => {
               </Button>
             </>
           ) : (
-            <Link
-              href="/auth/signin"
-              className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
-            >
-              Log in
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/#how-it-works"
+                className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
+              >
+                How it works
+              </Link>
+              <Link
+                href="/#pricing"
+                className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/auth/signin"
+                className="text-sm font-semibold text-text-primary transition-colors hover:text-accent"
+              >
+                Log in
+              </Link>
+            </div>
           )}
           <ThemeToggle />
         </div>
