@@ -193,7 +193,7 @@ export default function GeneratePage() {
                 Credits: {usageValue} / {usageLimit}
               </span>
               <div className="h-2 w-20 rounded-full bg-slate-200 dark:bg-slate-700">
-                <div className="h-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600" style={{ width: `${usagePercent}%` }} />
+                <div className="h-2 rounded-full bg-accent" style={{ width: `${usagePercent}%` }} />
               </div>
             </div>
           </div>
@@ -210,25 +210,25 @@ export default function GeneratePage() {
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold text-slate-900 dark:text-[#E5E7EB]">Create your study set</h1>
+        <h1 className="text-3xl font-semibold text-text-primary">Create your study set</h1>
       </div>
 
       <Card className="rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
         <CardContent className="space-y-8 p-6 sm:p-8">
-          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            <span className="rounded-full bg-purple-100 px-3 py-1 font-semibold text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-100 dark:ring-purple-700/40">
+          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-text-muted">
+            <span className="rounded-full border border-accent/30 bg-panel px-3 py-1 font-semibold text-text-primary">
               1. Input
             </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
+            <span className="rounded-full border border-transparent px-3 py-1 font-semibold text-text-muted">
               2. Study mode
             </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
+            <span className="rounded-full border border-transparent px-3 py-1 font-semibold text-text-muted">
               3. Create
             </span>
           </div>
 
           <div className="space-y-6">
-            <div className="space-y-4 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm dark:border-[#1F2A44] dark:from-[#0B1022] dark:to-[#0F172A]">
+            <div className="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-50 dark:ring-purple-700/40">
@@ -239,9 +239,7 @@ export default function GeneratePage() {
                     <p className="text-lg font-semibold text-slate-900 dark:text-[#E5E7EB]">Paste a topic or notes</p>
                   </div>
                 </div>
-                <div className="rounded-full bg-white px-3 py-1 text-xs text-slate-600 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
-                  Best with bullet points.
-                </div>
+                <p className="text-xs text-text-muted">Best with bullet points; keep it concise.</p>
               </div>
 
               <div className="space-y-3">
@@ -255,7 +253,7 @@ export default function GeneratePage() {
                   placeholder={defaultPrompt}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
+                  className="min-h-[220px] border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:outline-none dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
                 />
                 <div className="flex flex-wrap gap-2">
                   {EXAMPLES.map((ex) => (
@@ -263,13 +261,13 @@ export default function GeneratePage() {
                       key={ex}
                       type="button"
                       onClick={() => setPrompt(ex)}
-                      className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700 hover:border-purple-300 hover:bg-purple-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:border-purple-400/60 dark:hover:bg-purple-900/30"
+                      className="rounded-full border border-slate-200 bg-surface px-3 py-1 text-xs text-text-muted transition hover:border-accent/40 hover:text-text-primary dark:border-[#1F2A44] dark:bg-[#0B1022]"
                     >
                       {ex}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Short prompts are fine; notes add context.</p>
+                <p className="text-xs text-text-muted">Short prompts are fine; notes add context.</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -284,7 +282,7 @@ export default function GeneratePage() {
                     onChange={(e) => setSubject(e.target.value)}
                     className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
                   />
-                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Shows up in your library.</p>
+                  <p className="text-xs text-text-muted">Shows up in your library.</p>
                 </div>
                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-[#E5E7EB]">
                   <Stars className="h-4 w-4 text-purple-600" /> Smart defaults: medium, mixed, 10 items.
@@ -328,8 +326,8 @@ export default function GeneratePage() {
                       onClick={() => setTool(fmt.key as Tool)}
                       className={`flex h-full flex-col items-start gap-3 rounded-xl border px-4 py-3 text-left transition ${
                         isActive
-                          ? "border-purple-300 bg-purple-50 shadow-sm dark:border-purple-500/60 dark:bg-purple-900/30"
-                          : "border-slate-200 bg-white hover:border-purple-200 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:hover:border-purple-400/50"
+                          ? "border-accent/50 bg-surface"
+                          : "border-slate-200 bg-white hover:border-accent/40 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:hover:border-purple-400/50"
                       }`}
                     >
                       <div className="mt-1">{fmt.icon}</div>
@@ -337,15 +335,12 @@ export default function GeneratePage() {
                         <p className="font-semibold text-slate-900 dark:text-[#E5E7EB]">{fmt.title}</p>
                         <p className="text-sm text-slate-500 dark:text-[#94A3B8]">{fmt.helper}</p>
                       </div>
-                      <span className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ring-1 ring-slate-200 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
-                        Default: 10 items | medium
-                      </span>
                     </button>
                   );
                 })}
               </div>
 
-              <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]">
+              <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-text-muted dark:border-[#1F2A44] dark:bg-[#0B1022]">
                 We start with 10 items, medium difficulty, and mixed question types. Adjust only if you need to.
               </div>
             </div>
@@ -361,7 +356,7 @@ export default function GeneratePage() {
                 <button
                   type="button"
                   onClick={() => setShowAdvanced((prev) => !prev)}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-purple-300 hover:text-purple-700 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-accent/40 hover:text-text-primary dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   {showAdvanced ? "Hide advanced" : "Advanced"}
@@ -401,8 +396,8 @@ export default function GeneratePage() {
                             onClick={() => setDifficulty(lvl.key as typeof difficulty)}
                             className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
                               active
-                                ? "border-purple-400 bg-purple-50 text-purple-900 shadow-sm dark:border-purple-500/60 dark:bg-purple-900/30 dark:text-purple-100"
-                                : "border-slate-200 bg-white text-slate-700 hover:border-purple-200 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
+                                ? "border-accent/50 bg-surface text-text-primary"
+                                : "border-slate-200 bg-white text-slate-700 hover:border-accent/40 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
                             }`}
                           >
                             <p className="font-semibold">{lvl.label}</p>
@@ -443,8 +438,8 @@ export default function GeneratePage() {
                             onClick={() => setQuestionMix(opt.key as typeof questionMix)}
                             className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
                               active
-                                ? "border-purple-400 bg-purple-50 text-purple-900 shadow-sm dark:border-purple-500/60 dark:bg-purple-900/30 dark:text-purple-100"
-                                : "border-slate-200 bg-white text-slate-700 hover:border-purple-200 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
+                                ? "border-accent/50 bg-surface text-text-primary"
+                                : "border-slate-200 bg-white text-slate-700 hover:border-accent/40 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:hover:border-purple-400/60"
                             }`}
                           >
                             <p className="font-semibold">{opt.label}</p>
@@ -465,7 +460,7 @@ export default function GeneratePage() {
                   </div>
                   <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 transition-all"
+                      className="h-2 rounded-full bg-accent transition-all"
                       style={{ width: `${((stageIndex + 1) / GENERATE_STAGES.length) * 100}%` }}
                     />
                   </div>
@@ -477,7 +472,7 @@ export default function GeneratePage() {
                 <Button
                   onClick={handleGenerate}
                   disabled={loading || limitReached}
-                  className="min-w-[180px] bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl"
+                  className="min-w-[180px] bg-accent text-[var(--text-on-accent)] shadow-sm hover:bg-accent-strong"
                   aria-busy={loading}
                 >
                   {loading ? loadingStage : "Create my study set"}
@@ -486,7 +481,7 @@ export default function GeneratePage() {
                   onClick={cancelGeneration}
                   variant="ghost"
                   disabled={!loading}
-                  className="text-slate-700 hover:underline dark:text-[#E5E7EB]"
+                  className="text-text-muted hover:text-text-primary"
                 >
                   Cancel
                 </Button>
@@ -499,7 +494,7 @@ export default function GeneratePage() {
                   <p className="text-sm text-amber-600 dark:text-amber-300">Limit reached. Upgrade to keep creating.</p>
                 )}
                 {!loading && !error && (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">We will take you to a study view with save options.</p>
+                  <p className="text-sm text-text-muted">You can adjust everything later.</p>
                 )}
               </div>
             </div>

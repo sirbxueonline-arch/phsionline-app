@@ -19,9 +19,9 @@
   --error: #ef4444;
   --text-on-accent: #ffffff;
   --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --bg-layer-1: linear-gradient(140deg, #f7f9fc, #f4f7fb);
-  --bg-layer-2: radial-gradient(circle at 22% 20%, rgba(124, 58, 237, 0.12), transparent 38%);
-  --bg-layer-3: radial-gradient(circle at 78% 4%, rgba(59, 130, 246, 0.1), transparent 36%);
+  --bg-layer-1: radial-gradient(circle at 50% 32%, rgba(124, 58, 237, 0.06), transparent 42%);
+  --bg-layer-2: radial-gradient(circle at 68% 22%, rgba(59, 130, 246, 0.05), transparent 40%);
+  --bg-layer-3: linear-gradient(180deg, #fbfdff 0%, #f9fbff 100%);
 }
 
 .dark {
@@ -42,8 +42,8 @@
   --text-on-accent: #ffffff;
   --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.32);
   --bg-layer-1: linear-gradient(140deg, #0b1021, #0f172a);
-  --bg-layer-2: radial-gradient(circle at 22% 18%, rgba(124, 58, 237, 0.18), transparent 42%);
-  --bg-layer-3: radial-gradient(circle at 78% 6%, rgba(59, 130, 246, 0.14), transparent 38%);
+  --bg-layer-2: radial-gradient(circle at 22% 18%, rgba(124, 58, 237, 0.14), transparent 42%);
+  --bg-layer-3: radial-gradient(circle at 78% 6%, rgba(59, 130, 246, 0.12), transparent 38%);
 }
 
 html,
@@ -64,4 +64,15 @@ a {
 
 .shadow-soft {
   box-shadow: var(--shadow-soft);
+}
+
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg);
+  background-image: var(--bg-layer-1), var(--bg-layer-2), var(--bg-layer-3);
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
 }

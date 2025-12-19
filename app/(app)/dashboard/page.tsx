@@ -6,9 +6,9 @@ import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSupabaseClient } from "@/lib/supabase";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ArrowRight, Gauge, Sparkles, BookOpen, CheckCircle2, BarChart2, Search, Plus, Trophy, Bell } from "lucide-react";
+import { Sparkles, CheckCircle2 } from "lucide-react";
 
 type Resource = {
   id: string;
@@ -66,237 +66,174 @@ export default function DashboardPage() {
 
   const chartArray = Object.entries(mockChartData).map(([type, count]) => ({ type, count }));
   const usagePct = Math.min(100, ((usage ?? 0) / 20) * 100);
+  const suggestions = [
+    "Flashcards: Intro to photosynthesis (6 cards, medium)",
+    "Quiz: World War II timeline (8 questions)",
+    "Study plan: Calculus exam in 2 weeks"
+  ];
+  const leaderboard = [
+    { label: "Focus streak", value: "3 sessions this week" },
+    { label: "Recent activity", value: `${resources.length || 0} items saved` },
+    { label: "Confidence", value: "Improving pace + accuracy" }
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-sm backdrop-blur dark:border-[#1F2A44] dark:bg-[#0B1022]">
-        <div className="flex items-center gap-3 text-slate-700 dark:text-[#E5E7EB]">
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-purple-100 text-lg font-semibold text-purple-700 dark:bg-purple-900/50 dark:text-purple-200">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-border bg-panel/70 p-5 shadow-sm">
+        <div className="flex items-center gap-3 text-text-primary">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface text-lg font-semibold text-accent ring-1 ring-border">
             {profile?.name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "P"}
           </span>
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-[#94A3B8]">Dashboard</p>
-            <h1 className="text-2xl font-semibold text-slate-900 dark:text-[#E5E7EB]">
+            <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Dashboard</p>
+            <h1 className="text-2xl font-semibold">
               Welcome, {profile?.name || user?.email?.split("@")[0] || "Pilot"}
             </h1>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]">
-            <Search className="h-4 w-4" /> Search
-          </div>
-          <Button
-            variant="outline"
-            className="rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
-          >
-            <Bell className="mr-2 h-4 w-4" /> Alerts
-          </Button>
-          <Link href="/generate">
-            <Button className="rounded-full bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-sm">
-              <Plus className="mr-2 h-4 w-4" /> Generate
-            </Button>
-          </Link>
-        </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-r from-white via-indigo-50/60 to-white p-6 shadow-sm dark:border-[#1F2A44] dark:bg-gradient-to-r dark:from-[#0B1022] dark:via-[#0F172A] dark:to-[#0B1022]">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-purple-700 ring-1 ring-purple-100 dark:bg-transparent dark:text-purple-200 dark:ring-purple-900/60">
-                  <Sparkles className="h-4 w-4" /> Continue learning
-                </div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-[#E5E7EB]">Generate something new today</h2>
-                <p className="max-w-xl text-sm text-slate-600 dark:text-[#94A3B8]">
-                  Flashcards, quizzes, plans, or explanations - keep your streak alive.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Link href="/generate">
-                    <Button className="rounded-full bg-purple-600 text-white shadow hover:bg-purple-700">
-                      Generate now <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Link href="/library">
-                    <Button
-                      variant="outline"
-                      className="rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
-                    >
-                      View library
-                    </Button>
-                  </Link>
-                </div>
+      <div className="space-y-6">
+        <Card className="rounded-3xl border border-border bg-panel p-6 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                <Sparkles className="h-4 w-4 text-accent" /> Generate
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white/90 px-5 py-4 text-sm text-slate-700 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]">
-                <p className="text-xs uppercase tracking-wide text-purple-600 dark:text-purple-300">Usage</p>
-                <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-[#E5E7EB]">{usage ?? "?"} / 20</p>
-                <div className="mt-3 h-2 w-44 rounded-full bg-purple-100 dark:bg-purple-900/40">
-                  <div className="h-2 rounded-full bg-purple-600" style={{ width: `${usagePct}%` }} />
-                </div>
-                <p className="mt-2 text-xs text-slate-500 dark:text-[#94A3B8]">Resets monthly</p>
-              </div>
+              <h2 className="text-2xl font-semibold text-text-primary">Generate something new today</h2>
+              <p className="max-w-xl text-sm text-text-muted">
+                One focused action to create your next study set. Flashcards, quizzes, or both—ready for exam day.
+              </p>
             </div>
+            <Link href="/generate">
+              <Button className="bg-accent text-[var(--text-on-accent)] shadow-sm hover:bg-accent-strong">
+                Generate
+              </Button>
+            </Link>
           </div>
+        </Card>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { label: "Monthly saves", value: `${usage ?? "?"} / 20`, icon: <Gauge className="h-4 w-4 text-purple-600" />, color: "bg-purple-50 text-purple-700" },
-              { label: "Recent items", value: resources.length || 0, icon: <BookOpen className="h-4 w-4 text-emerald-600" />, color: "bg-emerald-50 text-emerald-700" },
-              { label: "Generation mix", value: Object.keys(mockChartData).length, icon: <BarChart2 className="h-4 w-4 text-amber-600" />, color: "bg-amber-50 text-amber-700" },
-              { label: "Leaderboard", value: "Top 10%", icon: <Trophy className="h-4 w-4 text-indigo-600" />, color: "bg-indigo-50 text-indigo-700" }
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]"
-              >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="flex flex-col border border-border bg-panel shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-accent" />
+                Recommended for you
+              </CardTitle>
+              <CardDescription className="text-text-muted">Use a suggestion to start instantly.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {suggestions.map((prompt, idx) => (
                 <div
-                  className={`inline-flex items-center gap-2 rounded-full px-2 py-1 text-xs font-semibold ${stat.color} dark:bg-purple-900/40 dark:text-purple-100`}
-                >
-                  {stat.icon}
-                  <span>{stat.label}</span>
-                </div>
-                <p className="mt-3 text-2xl font-semibold text-slate-900 dark:text-[#E5E7EB]">{stat.value}</p>
-                <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Updated just now</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid auto-rows-[1fr] gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <Card className="flex min-h-[240px] flex-col">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-purple-600" />
-                  Quick start
-                </CardTitle>
-                <CardDescription>Jump into your most common flows.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
-                <Link href="/generate">
-                  <Button className="w-full rounded-full bg-purple-600 text-white shadow hover:bg-purple-700">
-                    Generate new set
-                  </Button>
-                </Link>
-                <Link href="/study">
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
-                  >
-                    Start a study session
-                  </Button>
-                </Link>
-                <div className="mt-auto rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB]">
-                  Save time: pick a preset prompt from the AI suggestions below.
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="flex min-h-[240px] flex-col">
-              <CardHeader>
-                <CardTitle className="dark:text-[#E5E7EB]">Recent saves</CardTitle>
-                <CardDescription className="dark:text-[#94A3B8]">Keep momentum with your latest items.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
-                <div className="flex-1 space-y-3">
-                  {loading && <p className="text-sm text-slate-500 dark:text-[#94A3B8]">Loading...</p>}
-                  {!loading && resources.length === 0 && (
-                    <p className="text-sm text-slate-500 dark:text-[#94A3B8]">No items yet. Generate your first resource.</p>
+                  key={prompt}
+                  className={cn(
+                    "flex items-center justify-between rounded-xl border px-3 py-2 text-sm transition",
+                    idx === 0
+                      ? "border-accent/30 bg-surface"
+                      : "border-border bg-panel hover:border-accent/40"
                   )}
-                  {resources.map((res) => (
-                    <Link
-                      key={res.id}
-                      href={`/library/${res.id}`}
-                      className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-2 text-sm shadow-sm transition hover:border-purple-200 hover:bg-purple-50 dark:border-[#1F2A44] dark:hover:bg-[#0B1022]"
+                >
+                  <p className="flex items-center gap-2 text-text-primary">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    {prompt}
+                  </p>
+                  <Link href="/generate">
+                    <Button
+                      size="sm"
+                      className="bg-accent text-[var(--text-on-accent)] shadow-sm hover:bg-accent-strong"
                     >
-                      <div>
-                        <p className="font-medium capitalize dark:text-[#E5E7EB]">{res.title || res.type}</p>
-                        <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-                          {res.type} - {res.subject || "General"} - {formatDate(res.created_at)}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-purple-50 px-2 py-1 text-xs capitalize text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-100 dark:ring-purple-800">
-                        {res.type}
-                      </span>
-                    </Link>
-                  ))}
+                      Use suggestion
+                    </Button>
+                  </Link>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-            <Card className="flex min-h-[240px] flex-col">
-              <CardHeader>
-                <CardTitle className="dark:text-[#E5E7EB]">Usage</CardTitle>
-                <CardDescription className="dark:text-[#94A3B8]">Free tier allows 20 saves/month.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
-                <div className="rounded-xl border border-slate-200/70 bg-slate-50 p-3 dark:border-[#1F2A44] dark:bg-[#0B1022]">
-                  <p className="text-sm text-slate-500 dark:text-[#94A3B8]">You&apos;ve saved</p>
-                  <p className="text-3xl font-semibold dark:text-[#E5E7EB]">{usage ?? "?"}</p>
-                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Resets monthly</p>
-                </div>
-                <div className="h-2 rounded-full bg-purple-100 dark:bg-purple-900/40">
-                  <div className="h-2 rounded-full bg-purple-600 dark:bg-purple-500" style={{ width: `${usagePct}%` }} />
-                </div>
-                <Link href="/upgrade">
-                  <Button
-                    variant="outline"
-                    className="mt-auto w-full rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
+          <Card className="flex flex-col border border-border bg-panel shadow-sm">
+            <CardHeader>
+              <CardTitle>Recent saves</CardTitle>
+              <CardDescription className="text-text-muted">Keep momentum with your latest items.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-1 flex-col gap-3 !space-y-0">
+              <div className="flex-1 space-y-3">
+                {loading && <p className="text-sm text-text-muted">Loading...</p>}
+                {!loading && resources.length === 0 && (
+                  <p className="text-sm text-text-muted">No items yet. Generate your first resource.</p>
+                )}
+                {resources.map((res) => (
+                  <Link
+                    key={res.id}
+                    href={`/library/${res.id}`}
+                    className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm transition hover:border-accent/40 hover:bg-surface"
                   >
-                    Upgrade to unlock more
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
+                    <div>
+                      <p className="font-medium capitalize text-text-primary">{res.title || res.type}</p>
+                      <p className="text-xs text-text-muted">
+                        {res.type} - {res.subject || "General"} - {formatDate(res.created_at)}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-surface px-2 py-1 text-xs capitalize text-text-muted ring-1 ring-border">
+                      {res.type}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="space-y-4">
-          <Card className="border-slate-200 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
-              <CardTitle className="dark:text-[#E5E7EB]">Analytics snapshot</CardTitle>
-              <CardDescription className="dark:text-[#94A3B8]">Mix of content types generated.</CardDescription>
+              <CardTitle>Analytics snapshot</CardTitle>
+              <CardDescription className="text-text-muted">
+                Overview only — not a performance score.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-56">
+              <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartArray}>
-                    <XAxis dataKey="type" />
-                    <YAxis allowDecimals={false} />
+                    <XAxis dataKey="type" stroke="var(--text-muted)" />
+                    <YAxis allowDecimals={false} stroke="var(--text-muted)" />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#7C3AED" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="count" fill="var(--border)" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 shadow-sm dark:border-[#1F2A44] dark:bg-[#0B1022]">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
-              <CardTitle className="dark:text-[#E5E7EB]">AI suggestions</CardTitle>
-              <CardDescription className="dark:text-[#94A3B8]">Prompts curated for faster starts.</CardDescription>
+              <CardTitle>Usage</CardTitle>
+              <CardDescription className="text-text-muted">
+                Free plan includes 20 saves per month.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {[
-                "Flashcards: Intro to photosynthesis (6 cards, medium)",
-                "Quiz: World War II timeline (8 questions)",
-                "Study plan: Calculus exam in 2 weeks"
-              ].map((prompt) => (
-                <div
-                  key={prompt}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-sm transition hover:border-purple-200 hover:bg-purple-50 dark:border-[#1F2A44] dark:hover:bg-[#0B1022]"
-                >
-                  <p className="flex items-center gap-2 dark:text-[#E5E7EB]">
-                    <CheckCircle2 className="h-4 w-4 text-purple-600" />
-                    {prompt}
-                  </p>
-                  <Link href="/generate">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-full border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1F2A44] dark:text-[#E5E7EB] dark:hover:bg-[#0B1022]"
-                    >
-                      Use
-                    </Button>
-                  </Link>
+            <CardContent className="space-y-3">
+              <div className="rounded-xl border border-border bg-surface p-3">
+                <p className="text-sm text-text-muted">You&apos;ve saved</p>
+                <p className="text-3xl font-semibold text-text-primary">{usage ?? "?"}</p>
+                <p className="text-xs text-text-muted">Resets monthly</p>
+              </div>
+              <div className="h-2 rounded-full bg-accent/10">
+                <div className="h-2 rounded-full bg-accent" style={{ width: `${usagePct}%` }} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-border shadow-sm">
+            <CardHeader>
+              <CardTitle>Leaderboard</CardTitle>
+              <CardDescription className="text-text-muted">Calm, personal progress.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-text-muted">
+              {leaderboard.map((item) => (
+                <div key={item.label} className="rounded-lg border border-border bg-surface px-3 py-2">
+                  <p className="text-xs uppercase tracking-[0.12em] text-text-muted">{item.label}</p>
+                  <p className="text-text-primary">{item.value}</p>
                 </div>
               ))}
             </CardContent>

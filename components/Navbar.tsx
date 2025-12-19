@@ -56,7 +56,7 @@ export const Navbar = () => {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link
           href="/"
-          className="text-base font-semibold tracking-tight text-text-primary transition-colors hover:text-accent"
+          className="text-base font-semibold tracking-[0.01em] text-text-primary transition-colors hover:text-accent"
         >
           StudyPilot
         </Link>
@@ -67,7 +67,7 @@ export const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full px-3 py-1 transition-colors hover:text-text-primary"
+                className="rounded-full px-3 py-1 transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {link.label}
               </Link>
