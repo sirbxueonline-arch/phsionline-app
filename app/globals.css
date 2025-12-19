@@ -12,13 +12,16 @@
   --text-muted: #324158;
   --text-surface: #0b1021;
   --text-muted-surface: #324158;
-  --accent: #ff8a3d;
-  --accent-strong: #ff6b1f;
+  --accent: #7c3aed;
+  --accent-strong: #6b2fd0;
   --success: #3dd598;
   --warning: #f59e0b;
   --error: #ef4444;
   --text-on-accent: #ffffff;
   --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --bg-layer-1: linear-gradient(140deg, #f7f9fc, #f4f7fb);
+  --bg-layer-2: radial-gradient(circle at 22% 20%, rgba(124, 58, 237, 0.12), transparent 38%);
+  --bg-layer-3: radial-gradient(circle at 78% 4%, rgba(59, 130, 246, 0.1), transparent 36%);
 }
 
 .dark {
@@ -31,13 +34,16 @@
   --text-muted: #9fb0c5;
   --text-surface: #e8edf5;
   --text-muted-surface: #9fb0c5;
-  --accent: #ff8a3d;
-  --accent-strong: #ff6b1f;
+  --accent: #7c3aed;
+  --accent-strong: #6b2fd0;
   --success: #3dd598;
   --warning: #f59e0b;
   --error: #ef4444;
   --text-on-accent: #ffffff;
   --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.32);
+  --bg-layer-1: linear-gradient(140deg, #0b1021, #0f172a);
+  --bg-layer-2: radial-gradient(circle at 22% 18%, rgba(124, 58, 237, 0.18), transparent 42%);
+  --bg-layer-3: radial-gradient(circle at 78% 6%, rgba(59, 130, 246, 0.14), transparent 38%);
 }
 
 html,

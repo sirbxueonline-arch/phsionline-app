@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LogOut, Moon, Sun } from "lucide-react";
 
 import { useAuth } from "./AuthProvider";
 import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 const ThemeToggle = () => {
   const { resolvedTheme, setTheme } = useTheme();
@@ -28,13 +29,20 @@ const ThemeToggle = () => {
 };
 
 export const Navbar = () => {
+  const pathname = usePathname();
   const router = useRouter();
   const { user, signOutUser } = useAuth();
 
   const isAuthed = !!user;
+  const isLanding = pathname === "/";
 
   return (
-    <header className="w-full">
+    <header
+      className={cn(
+        "inset-x-0 top-0 z-50 w-full",
+        isLanding ? "absolute bg-transparent" : "sticky bg-panel/80 backdrop-blur border-b border-border"
+      )}
+    >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link
           href="/"

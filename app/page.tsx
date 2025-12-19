@@ -8,8 +8,12 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <main className="bg-background text-text-primary">
-      <section className="mx-auto flex min-h-[calc(100vh-120px)] max-w-[640px] flex-col items-center justify-center px-6 py-20 text-center">
+    <main className="relative z-0 overflow-hidden bg-background text-text-primary">
+      <div className="pointer-events-none fixed inset-0 -z-10 opacity-100" style={{ background: "var(--bg-layer-1)" }} />
+      <div className="pointer-events-none fixed inset-0 -z-10 opacity-100" style={{ background: "var(--bg-layer-2)" }} />
+      <div className="pointer-events-none fixed inset-0 -z-10 opacity-100" style={{ background: "var(--bg-layer-3)" }} />
+
+      <section className="relative mx-auto flex min-h-[calc(100vh-120px)] max-w-[640px] flex-col items-center justify-center px-6 py-20 text-center">
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-panel/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">
             <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
