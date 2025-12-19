@@ -11,13 +11,12 @@ export default function LandingPage() {
     <main className="relative z-0 overflow-hidden bg-background text-text-primary">
       <div className="hero-glow" aria-hidden="true" />
 
-      <section className="relative mx-auto flex min-h-[calc(100vh-140px)] max-w-[640px] flex-col items-center justify-center px-6 py-20 text-center">
+      <section className="relative mx-auto flex min-h-[calc(100vh-140px)] max-w-[640px] flex-col items-center justify-center px-6 py-24 text-center">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-panel/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-            <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">
             Exam-focused prep
-          </div>
-          <h1 className="text-4xl font-bold leading-[1.15] tracking-tight sm:text-5xl">
+          </p>
+          <h1 className="text-5xl font-bold leading-[1.18] tracking-tight sm:text-6xl">
             Turn any topic into <span className="font-extrabold">exam-ready practice.</span>
           </h1>
           <p className="text-lg leading-relaxed text-text-muted">
@@ -43,7 +42,7 @@ export default function LandingPage() {
           </Button>
         </div>
 
-        <p className="mt-6 text-sm text-text-muted">
+        <p className="mt-4 text-sm text-text-muted">
           Designed for focused exam preparation—built for results, not streaks.
         </p>
       </section>
