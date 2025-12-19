@@ -113,6 +113,21 @@ export const Navbar = () => {
                 >
                   Upgrade
                 </Button>
+                <div className="hidden items-center gap-2 md:flex">
+                  {[
+                    { href: "/study", label: "Study" },
+                    { href: "/referrals", label: "Referrals" },
+                    { href: "/settings/profile", label: "Settings" }
+                  ].map((pill) => (
+                    <Link
+                      key={pill.href}
+                      href={pill.href}
+                      className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-muted transition hover:border-accent/40 hover:text-text-primary"
+                    >
+                      {pill.label}
+                    </Link>
+                  ))}
+                </div>
                 <div className="relative" ref={menuRef}>
                   <button
                     type="button"
