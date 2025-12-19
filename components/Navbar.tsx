@@ -29,12 +29,21 @@ const ThemeToggle = () => {
 };
 
 export const Navbar = () => {
+  const { resolvedTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOutUser } = useAuth();
 
   const isAuthed = !!user;
   const isLanding = pathname === "/";
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 2);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const authedLinks = [
     { href: "/dashboard", label: "Dashboard" },
@@ -49,10 +58,17 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "inset-x-0 top-0 z-50 w-full backdrop-blur-sm",
+        "inset-x-0 top-0 z-50 w-full transition-colors",
+        scrolled && "backdrop-blur-sm",
         isLanding ? "absolute" : "sticky"
       )}
-      style={{ backgroundColor: "rgba(12, 20, 38, 0.05)" }}
+      style={{
+        backgroundColor: scrolled
+          ? resolvedTheme === "dark"
+            ? "rgba(15, 23, 42, 0.06)"
+            : "rgba(247, 249, 252, 0.04)"
+          : "transparent"
+      }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link
