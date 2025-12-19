@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -30,10 +30,51 @@ export default function SignUpPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [referrerName, setReferrerName] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [user, router]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const refParam = searchParams.get("ref");
+
+    const getCookieRef = () => {
+      const match = document.cookie.match(/(?:^|; )referrer=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    };
+
+    const stored = localStorage.getItem("studypilot_referrer");
+    const ref = refParam || stored || getCookieRef();
+    if (ref) {
+      setReferralCode(ref);
+      localStorage.setItem("studypilot_referrer", ref);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchReferrer = async () => {
+      if (!referralCode) return;
+      try {
+        const q = query(collection(db, "users"), where("referralCode", "==", referralCode));
+        const snap = await getDocs(q);
+        const docMatch = snap.docs?.[0];
+        if (docMatch) {
+          const data = docMatch.data();
+          const name = (data?.name as string) || (data?.email as string)?.split("@")[0];
+          setReferrerName(name || referralCode);
+        } else {
+          setReferrerName(referralCode);
+        }
+      } catch (err) {
+        setReferrerName(referralCode);
+      }
+    };
+    fetchReferrer();
+  }, [referralCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +95,8 @@ export default function SignUpPage() {
         name: form.name,
         email: form.email,
         createdAt: new Date().toISOString(),
-        referralCode: cred.user.uid.slice(0, 8)
+        referralCode: cred.user.uid.slice(0, 8),
+        referredBy: referralCode || null
       });
       router.push("/onboarding");
     } catch (err: any) {
@@ -68,7 +110,18 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const cred = await signInWithPopup(auth, googleProvider);
+      await setDoc(
+        doc(db, "users", cred.user.uid),
+        {
+          name: cred.user.displayName || "",
+          email: cred.user.email,
+          createdAt: new Date().toISOString(),
+          referralCode: cred.user.uid.slice(0, 8),
+          referredBy: referralCode || null
+        },
+        { merge: true }
+      );
       router.push("/onboarding");
     } catch (err: any) {
       if (err?.code?.includes("popup-blocked")) {
@@ -88,6 +141,9 @@ export default function SignUpPage() {
         </div>
         <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Create your account</h1>
         <p className="text-slate-600 dark:text-slate-200">Generate smarter study materials with AI.</p>
+        {referrerName && (
+          <p className="text-sm text-text-muted">You&apos;re being invited by {referrerName}.</p>
+        )}
       </div>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
