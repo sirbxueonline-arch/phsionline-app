@@ -6,14 +6,25 @@ import { getFirestore } from "firebase-admin/firestore";
 let adminApp: App | undefined;
 
 const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+const projectId = process.env.FIREBASE_PROJECT_ID;
+const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
-if (typeof window === "undefined" && !adminApp && serviceAccountJson) {
+const canInitWithJson = typeof serviceAccountJson === "string" && serviceAccountJson.trim().length > 0;
+const canInitWithFields = projectId && clientEmail && privateKey;
+
+if (typeof window === "undefined" && !adminApp && (canInitWithJson || canInitWithFields)) {
   try {
-    adminApp = initializeApp({
-      credential: cert(JSON.parse(serviceAccountJson))
-    });
+    const credential = canInitWithJson
+      ? cert(JSON.parse(serviceAccountJson as string))
+      : cert({
+          projectId,
+          clientEmail,
+          privateKey: privateKey as string
+        });
+    adminApp = initializeApp({ credential });
   } catch (err) {
-    console.warn("firebase-admin init skipped", err);
+    console.warn("firebase-admin init failed", err);
   }
 } else if (getApps().length) {
   adminApp = getApps()[0];
