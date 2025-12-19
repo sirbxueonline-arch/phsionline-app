@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupabaseClient } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 type Resource = {
   id: string;
@@ -26,16 +27,13 @@ export default function StudySessionPage() {
 
   useEffect(() => {
     const fetchResource = async () => {
-      const client = await getSupabaseClient();
-      if (!client || !user || !params?.id) return;
-      const { data } = await client
-        .from("resources")
-        .select("*")
-        .eq("id", params.id as string)
-        .eq("user_id", user.uid)
-        .single();
-      if (data && data.type !== "usage-log") {
-        setResource(data as Resource);
+      if (!user || !params?.id) return;
+      const snap = await getDoc(doc(db, "resources", params.id as string));
+      if (snap.exists()) {
+        const data = snap.data() as any;
+        if (data.userId === user.uid && data.type !== "usage-log") {
+          setResource({ id: snap.id, ...data });
+        }
       }
     };
     fetchResource();

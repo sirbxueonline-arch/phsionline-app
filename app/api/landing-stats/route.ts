@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { adminDb } from "@/lib/firebaseAdmin";
 
 type LandingStats = {
   users: number | null;
@@ -7,11 +7,6 @@ type LandingStats = {
   successStories: number | null;
   updatedAt: string;
 };
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseServer =
-  supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
 
 const USAGE_TYPE = "usage-log";
 
@@ -30,13 +25,10 @@ export async function GET() {
   const successStories = parseNullableInt(process.env.LANDING_SUCCESS_STORIES_COUNT);
 
   let studySets: number | null = null;
-  if (supabaseServer) {
+  if (adminDb) {
     try {
-      const { count, error } = await supabaseServer
-        .from("resources")
-        .select("id", { count: "exact", head: true })
-        .neq("type", USAGE_TYPE);
-      if (!error) studySets = count ?? 0;
+      const snap = await adminDb.collection("resources").get();
+      studySets = snap.docs.filter((d) => (d.data() as any)?.type !== USAGE_TYPE).length;
     } catch (err) {
       studySets = null;
     }

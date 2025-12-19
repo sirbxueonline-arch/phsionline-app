@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupabaseClient } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
+import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-type Resource = { id: string; type: string; created_at?: string };
+type Resource = { id: string; type: string; createdAt?: string };
 
 const COLORS = ["#7C3AED", "#22C55E", "#0EA5E9", "#F97316"];
 
@@ -16,15 +17,17 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     const fetchResources = async () => {
-      const client = await getSupabaseClient();
-      if (!client || !user) return;
-      const { data } = await client
-        .from("resources")
-        .select("id,type,created_at")
-        .eq("user_id", user.uid)
-        .neq("type", "usage-log")
-        .order("created_at", { ascending: true });
-      if (data) setResources(data as Resource[]);
+      if (!user) return;
+      const q = fsQuery(
+        collection(db, "resources"),
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "asc")
+      );
+      const snap = await getDocs(q);
+      const items = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as any) }))
+        .filter((r) => r.type !== "usage-log");
+      setResources(items as Resource[]);
     };
     fetchResources();
   }, [user]);
@@ -40,7 +43,7 @@ export default function AnalyticsPage() {
   const weeklyCounts = useMemo(() => {
     const weeks: Record<string, number> = {};
     resources.forEach((r) => {
-      const date = r.created_at ? new Date(r.created_at) : new Date();
+      const date = (r as any).createdAt ? new Date((r as any).createdAt) : new Date();
       const label = `${date.getFullYear()}-W${getWeekNumber(date)}`;
       weeks[label] = (weeks[label] || 0) + 1;
     });

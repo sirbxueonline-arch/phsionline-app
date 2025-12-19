@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { verifyToken } from "@/lib/firebaseAdmin";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabaseServer =
-  supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
+import { adminDb, verifyToken } from "@/lib/firebaseAdmin";
 const USAGE_TYPE = "usage-log";
 const USAGE_LIMIT = 20;
 
@@ -33,24 +27,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!supabaseServer) {
-      return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
+    if (!adminDb) {
+      return NextResponse.json({ error: "Server DB not configured" }, { status: 500 });
     }
 
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-    const { count, error } = await supabaseServer
-      .from("resources")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", uid)
-      .eq("type", USAGE_TYPE)
-      .gte("created_at", startOfMonth);
+    const snap = await adminDb
+      .collection("resources")
+      .where("userId", "==", uid)
+      .where("type", "==", USAGE_TYPE)
+      .where("createdAt", ">=", startOfMonth)
+      .get();
 
-    if (error) {
-      console.error("Usage fetch error", error.message);
-      return NextResponse.json({ error: "Usage fetch failed" }, { status: 500 });
-    }
-
-    return NextResponse.json({ usage: count ?? 0, limit: USAGE_LIMIT });
+    return NextResponse.json({ usage: snap.size ?? 0, limit: USAGE_LIMIT });
   } catch (err) {
     console.error("Usage API error", err);
     return NextResponse.json({ error: "Usage fetch failed" }, { status: 500 });

@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupabaseClient } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
+import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 type Resource = { id: string; title: string; type: string; subject?: string | null };
 
@@ -15,14 +16,17 @@ export default function StudyPage() {
 
   useEffect(() => {
     const fetchResources = async () => {
-      const client = await getSupabaseClient();
-      if (!client || !user) return;
-      const { data } = await client
-        .from("resources")
-        .select("id,title,type,subject")
-        .eq("user_id", user.uid)
-        .in("type", ["flashcards", "quiz"]);
-      if (data) setResources(data as Resource[]);
+      if (!user) return;
+      const q = fsQuery(
+        collection(db, "resources"),
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+      const snap = await getDocs(q);
+      const items = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as any) }))
+        .filter((r) => ["flashcards", "quiz", "both"].includes(r.type));
+      setResources(items as Resource[]);
     };
     fetchResources();
   }, [user]);

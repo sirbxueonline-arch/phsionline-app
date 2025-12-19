@@ -5,17 +5,18 @@ import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupabaseClient } from "@/lib/supabase";
 import { cn, formatDate } from "@/lib/utils";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Sparkles, CheckCircle2 } from "lucide-react";
+import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 type Resource = {
   id: string;
   title: string;
   type: string;
   subject?: string | null;
-  created_at?: string;
+  createdAt?: string;
 };
 
 export default function DashboardPage() {
@@ -27,29 +28,16 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchResources = async () => {
       setLoading(true);
-      const client = await getSupabaseClient();
-      if (!client || !user) {
+      if (!user) {
         setLoading(false);
         return;
       }
       const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const [{ data }, { count }] = await Promise.all([
-        client
-          .from("resources")
-          .select("id,title,type,subject,created_at")
-          .eq("user_id", user.uid)
-          .neq("type", "usage-log")
-          .order("created_at", { ascending: false })
-          .limit(5),
-        client
-          .from("resources")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.uid)
-          .eq("type", "usage-log")
-          .gte("created_at", startOfMonth)
-      ]);
-      if (data) setResources(data as Resource[]);
-      if (typeof count === "number") setUsage(count);
+      const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      setResources(items.filter((r) => r.type !== "usage-log").slice(0, 5) as Resource[]);
+      setUsage(items.filter((r) => r.type === "usage-log" && r.createdAt >= startOfMonth).length);
       setLoading(false);
     };
     fetchResources();
@@ -170,8 +158,8 @@ export default function DashboardPage() {
                     <div>
                       <p className="font-medium capitalize text-text-primary">{res.title || res.type}</p>
                       <p className="text-xs text-text-muted">
-                        {res.type} - {res.subject || "General"} - {formatDate(res.created_at)}
-                      </p>
+                  {res.type} - {res.subject || "General"} - {formatDate(res.createdAt)}
+                </p>
                     </div>
                     <span className="rounded-full bg-surface px-2 py-1 text-xs capitalize text-text-muted ring-1 ring-border">
                       {res.type}

@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getSupabaseClient } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import { Flashcard } from "@/components/Flashcard";
 import { QuizQuestion } from "@/components/QuizQuestion";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 type Resource = {
   id: string;
@@ -27,19 +28,16 @@ export default function ResourceDetailPage() {
     const fetchResource = async () => {
       if (!params?.id) return;
       setLoading(true);
-      const client = await getSupabaseClient();
-      if (!client || !user) {
+      if (!user) {
         setLoading(false);
         return;
       }
-      const { data } = await client
-        .from("resources")
-        .select("*")
-        .eq("id", params.id as string)
-        .eq("user_id", user.uid)
-        .single();
-      if (data && data.type !== "usage-log") {
-        setResource(data as Resource);
+      const snap = await getDoc(doc(db, "resources", params.id as string));
+      if (snap.exists()) {
+        const data = snap.data() as any;
+        if (data.userId === user.uid && data.type !== "usage-log") {
+          setResource({ id: snap.id, ...data });
+        }
       }
       setLoading(false);
     };

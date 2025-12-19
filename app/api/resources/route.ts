@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { verifyToken } from "@/lib/firebaseAdmin";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabaseServer = supabaseUrl && supabaseServiceRole ? createClient(supabaseUrl, supabaseServiceRole) : null;
+import { adminDb, verifyToken } from "@/lib/firebaseAdmin";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  if (!supabaseServer) {
-    return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
-  }
+  if (!adminDb) return NextResponse.json({ error: "Server DB not configured" }, { status: 500 });
 
   const authHeader = req.headers.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
@@ -39,22 +32,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing content or type" }, { status: 400 });
   }
 
-  const { data, error } = await supabaseServer
-    .from("resources")
-    .insert({
-      user_id: uid,
+  try {
+    const docRef = await adminDb.collection("resources").add({
+      userId: uid,
       type,
       title: title || `Generated ${type}`,
       subject: subject || null,
-      content
-    })
-    .select("id")
-    .single();
-
-  if (error) {
+      content,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+    return NextResponse.json({ id: docRef.id });
+  } catch (error: any) {
     console.error("Save resource failed", error);
-    return NextResponse.json({ error: error.message || "Save failed" }, { status: 500 });
+    return NextResponse.json({ error: "Save failed" }, { status: 500 });
   }
-
-  return NextResponse.json({ id: data?.id });
 }

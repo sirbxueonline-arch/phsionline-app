@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupabaseClient } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import { formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 type Resource = {
   id: string;
   title: string;
   type: string;
   subject?: string | null;
-  created_at?: string;
+  createdAt?: string;
   content?: any;
 };
 
@@ -27,18 +28,16 @@ export default function LibraryPage() {
   useEffect(() => {
     const fetchResources = async () => {
       setLoading(true);
-      const client = await getSupabaseClient();
-      if (!client || !user) {
+      if (!user) {
         setLoading(false);
         return;
       }
-      const { data } = await client
-        .from("resources")
-        .select("*")
-        .eq("user_id", user.uid)
-        .neq("type", "usage-log")
-        .order("created_at", { ascending: false });
-      if (data) setResources(data as Resource[]);
+      const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      const items = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as any) }))
+        .filter((r) => r.type !== "usage-log");
+      setResources(items as Resource[]);
       setLoading(false);
     };
     fetchResources();
