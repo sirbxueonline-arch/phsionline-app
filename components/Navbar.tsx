@@ -64,7 +64,7 @@ export const Navbar = () => {
   ];
   const marketingLinks = [
     { href: "/#how-it-works", label: "How it works" },
-    { href: "/#pricing", label: "Pricing" }
+    { href: "/pricing", label: "Pricing" }
   ];
 
   return (
@@ -157,7 +157,7 @@ export const Navbar = () => {
                   How it works
                 </Link>
                 <Link
-                  href="/#pricing"
+                  href="/pricing"
                   className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
                 >
                   Pricing
