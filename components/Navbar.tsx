@@ -36,7 +36,10 @@ export const Navbar = () => {
   return (
     <header className="w-full">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="text-base font-semibold tracking-tight text-text-primary transition-colors hover:text-accent">
+        <Link
+          href="/"
+          className="text-base font-semibold tracking-tight text-text-primary transition-colors hover:text-accent"
+        >
           StudyPilot
         </Link>
 

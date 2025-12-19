@@ -10,7 +10,11 @@ export default function LandingPage() {
   return (
     <main className="bg-background text-text-primary">
       <section className="mx-auto flex min-h-[calc(100vh-120px)] max-w-[640px] flex-col items-center justify-center px-6 py-20 text-center">
-        <div className="space-y-4">
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-panel/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">
+            <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+            Exam-focused prep
+          </div>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Turn any topic into exam-ready practice.
           </h1>
