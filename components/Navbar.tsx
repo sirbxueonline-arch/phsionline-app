@@ -36,6 +36,16 @@ export const Navbar = () => {
   const isAuthed = !!user;
   const isLanding = pathname === "/";
 
+  const authedLinks = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/generate", label: "Generate" },
+    { href: "/analytics", label: "Analytics" }
+  ];
+  const marketingLinks = [
+    { href: "/#how-it-works", label: "How it works" },
+    { href: "/#pricing", label: "Pricing" }
+  ];
+
   return (
     <header
       className={cn(
@@ -52,13 +62,32 @@ export const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-3">
+          <nav className="hidden items-center gap-3 text-sm font-medium text-text-muted md:flex">
+            {(isAuthed ? authedLinks : marketingLinks).map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-full px-3 py-1 transition-colors hover:text-text-primary"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
           {isAuthed ? (
             <>
+              <Button
+                size="sm"
+                className="hidden md:inline-flex bg-accent text-[var(--text-on-accent)] hover:bg-accent-strong"
+                onClick={() => router.push("/pricing")}
+              >
+                Upgrade
+              </Button>
               <button
                 onClick={() => router.push("/dashboard")}
-              className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
-              type="button"
-            >
+                className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
+                type="button"
+              >
               Dashboard
             </button>
               <Button
