@@ -98,6 +98,11 @@ export default function SignUpPage() {
         referralCode: cred.user.uid.slice(0, 8),
         referredBy: referralCode || null
       });
+      void fetch("/api/email/welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email })
+      }).catch(() => {});
       router.push("/onboarding");
     } catch (err: any) {
       setError(formatAuthError(err));
@@ -122,6 +127,13 @@ export default function SignUpPage() {
         },
         { merge: true }
       );
+      if (cred.user.email) {
+        void fetch("/api/email/welcome", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: cred.user.email })
+        }).catch(() => {});
+      }
       router.push("/onboarding");
     } catch (err: any) {
       if (err?.code?.includes("popup-blocked")) {
