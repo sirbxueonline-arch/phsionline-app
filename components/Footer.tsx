@@ -10,7 +10,7 @@ const LINKS = [
 
 export const Footer = () => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 bg-panel/95 px-6 py-4 text-sm text-text-muted backdrop-blur">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 px-6 py-4 text-sm text-text-muted backdrop-blur-sm">
       <div className="mx-auto flex max-w-5xl items-center justify-between">
         <span className="font-semibold text-text-primary">StudyPilot</span>
         <div className="flex items-center gap-4">
