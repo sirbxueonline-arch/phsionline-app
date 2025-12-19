@@ -44,7 +44,8 @@ export const Navbar = () => {
 
   const landingLinks = [
     { href: "/#how-it-works", label: "How it works" },
-    { href: "/#pricing", label: "Pricing" }
+    { href: "/#pricing", label: "Pricing" },
+    { href: "/#learn-more", label: "Learn more" }
   ];
 
   const authedLinks = [
@@ -69,16 +70,13 @@ export const Navbar = () => {
               <p className="text-xs text-[var(--text-muted)]">Structured exam prep</p>
             </div>
           </Link>
-          <span className="hidden rounded-full border border-[#22C55E] px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#22C55E] sm:inline-flex">
-            Stable build
-          </span>
           <div className="hidden items-center gap-2 text-sm text-[var(--text-muted)] sm:flex">
             {(isAuthed ? authedLinks : landingLinks).map(({ href, label }) => (
               <NavLink
                 key={href}
                 href={href}
                 label={label}
-                active={pathname === href || pathname?.startsWith(href.replace("/#", ""))}
+                active={pathname === href || (!href.includes("#") && pathname?.startsWith(href))}
               />
             ))}
           </div>
