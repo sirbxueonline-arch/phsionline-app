@@ -90,7 +90,7 @@ export default function LibraryPage() {
               <div>
                 <p className="text-lg font-semibold">{res.title}</p>
                 <p className="text-sm text-slate-500">
-                  {res.type} | {res.subject || "General"} | {formatDate(res.created_at)}
+                  {res.type} | {res.subject || "General"} | {formatDate(res.createdAt)}
                 </p>
               </div>
               <Link href={`/library/${res.id}`}>
