@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, updateDoc, where, increment } from "firebase/firestore";
 import { CheckCircle2, Copy, Gift, Share2, Sparkles, Users } from "lucide-react";
 
 export default function ReferralsPage() {
@@ -17,6 +17,7 @@ export default function ReferralsPage() {
   const referralCode = profile?.referralCode || user?.uid?.slice(0, 8) || "code";
   const referralLink = `https://studypilot.online/?ref=${referralCode}`;
   const shareMessage = `I study with StudyPilot for focused flashcards, quizzes, and plans. Join me: ${referralLink}`;
+  const displayName = profile?.name || user?.displayName || user?.email?.split("@")[0] || "StudyPilot";
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -35,6 +36,7 @@ export default function ReferralsPage() {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(referralLink);
     setCopied(true);
+    void trackReferralShare();
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -51,11 +53,33 @@ export default function ReferralsPage() {
         await navigator.clipboard.writeText(shareMessage);
         setShared("copied");
       }
+      void trackReferralShare();
     } catch (err) {
       await navigator.clipboard.writeText(shareMessage);
       setShared("copied");
+      void trackReferralShare();
     } finally {
       setTimeout(() => setShared("idle"), 2500);
+    }
+  };
+
+  const trackReferralShare = async () => {
+    if (!user) return;
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(
+        userRef,
+        {
+          name: displayName,
+          referralShares: increment(1),
+          referralPoints: increment(10),
+          lastReferralShareName: displayName,
+          lastReferralShareAt: new Date().toISOString()
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.error("Failed to record referral share", err);
     }
   };
 
@@ -82,7 +106,8 @@ export default function ReferralsPage() {
               <input
                 readOnly
                 value={referralLink}
-                className="flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-purple-400 focus:outline-none dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
+                onClick={handleCopy}
+                className="flex-1 cursor-pointer rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-purple-400 focus:outline-none dark:border-[#1F2A44] dark:bg-[#0B1022] dark:text-[#E5E7EB] dark:placeholder:text-[#94A3B8]"
               />
               <Button onClick={handleCopy} className="bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-md">
                 {copied ? (
