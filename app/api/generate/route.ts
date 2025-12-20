@@ -43,22 +43,34 @@ export async function POST(req: NextRequest) {
     }
 
     // Usage limit check (20 per month)
+    let overLimit = false;
     if (adminDb) {
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      const snap = await adminDb
-        .collection("resources")
-        .where("userId", "==", uid)
-        .where("type", "==", USAGE_TYPE)
-        .where("createdAt", ">=", startOfMonth.toISOString())
-        .get();
-      if (snap.size >= USAGE_LIMIT) {
-        return NextResponse.json({ error: "Monthly limit reached" }, { status: 429 });
+      try {
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const snap = await adminDb
+          .collection("resources")
+          .where("userId", "==", uid)
+          .where("type", "==", USAGE_TYPE)
+          .where("createdAt", ">=", startOfMonth.toISOString())
+          .get();
+        if (snap.size >= USAGE_LIMIT) {
+          overLimit = true;
+        }
+      } catch (err) {
+        console.warn("Usage check skipped due to DB error", err);
       }
+    }
+    if (overLimit) {
+      return NextResponse.json({ error: "Monthly limit reached" }, { status: 429 });
     }
 
     if (!apiKey) {
       console.warn("AI provider not configured");
-      return NextResponse.json({ error: "AI provider not configured" }, { status: 500 });
+      const fallback = mockPayload(tool, text, settings, true);
+      return NextResponse.json(
+        { ...fallback, error: "AI provider not configured", mocked: true },
+        { status: 200 }
+      );
     }
 
     const prompt = buildPrompt(tool, text, settings);
@@ -84,9 +96,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(parsed);
     } catch (error: any) {
       console.error("Gemini error", error?.message || error);
+      const fallback = mockPayload(tool, text, settings, true);
       return NextResponse.json(
-        { error: "Gemini request failed", detail: error?.message || "Model unavailable" },
-        { status: 500 }
+        {
+          ...fallback,
+          error: "AI provider unavailable; returned sample output",
+          detail: error?.message || "Model unavailable",
+          mocked: true
+        },
+        { status: 200 }
       );
     }
   } catch (err) {

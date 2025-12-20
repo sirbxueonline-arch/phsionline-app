@@ -28,18 +28,26 @@ export async function GET(req: NextRequest) {
     }
 
     if (!adminDb) {
-      return NextResponse.json({ error: "Server DB not configured" }, { status: 500 });
+      console.warn("Usage API: admin DB not configured; returning zero usage");
+      return NextResponse.json({ usage: 0, limit: USAGE_LIMIT, status: "untracked" });
     }
 
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-    const snap = await adminDb
-      .collection("resources")
-      .where("userId", "==", uid)
-      .where("type", "==", USAGE_TYPE)
-      .where("createdAt", ">=", startOfMonth)
-      .get();
+    let usage = 0;
+    try {
+      const snap = await adminDb
+        .collection("resources")
+        .where("userId", "==", uid)
+        .where("type", "==", USAGE_TYPE)
+        .where("createdAt", ">=", startOfMonth)
+        .get();
+      usage = snap.size ?? 0;
+    } catch (err) {
+      console.warn("Usage API: DB query failed, falling back to zero usage", err);
+      usage = 0;
+    }
 
-    return NextResponse.json({ usage: snap.size ?? 0, limit: USAGE_LIMIT });
+    return NextResponse.json({ usage, limit: USAGE_LIMIT });
   } catch (err) {
     console.error("Usage API error", err);
     return NextResponse.json({ error: "Usage fetch failed" }, { status: 500 });
