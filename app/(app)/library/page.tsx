@@ -78,8 +78,23 @@ export default function LibraryPage() {
 
   const cleanedTitle = (res: Resource) => {
     const raw = res.title || "";
-    const stripped = raw.replace(/^(study set\\s*-\\s*)/i, "").replace(/^(generated\\s*)/i, "").trim();
+    const stripped = raw.replace(/^(study set\s*-\s*)/i, "").replace(/^(generated\s*)/i, "").trim();
     return stripped || prettyType(res.type);
+  };
+
+  const getSummary = (res: Resource) => {
+    const content = (res as any)?.content;
+    const hasFlashcards = Array.isArray(content?.flashcards) && content.flashcards.length > 0;
+    const hasQuiz = Array.isArray(content?.quiz) && content.quiz.length > 0;
+    if (res.type === "flashcards" && hasFlashcards) return content.flashcards[0]?.question || "";
+    if (res.type === "quiz" && hasQuiz) return content.quiz[0]?.question || "";
+    if (res.type === "both") {
+      const parts = [];
+      if (hasFlashcards) parts.push(content.flashcards[0]?.question);
+      if (hasQuiz) parts.push(content.quiz[0]?.question);
+      return parts.filter(Boolean).join(" • ");
+    }
+    return "";
   };
 
   return (
@@ -126,6 +141,7 @@ export default function LibraryPage() {
               <div>
                 <p className="text-lg font-semibold capitalize">{cleanedTitle(res)}</p>
                 {res.subject && <p className="text-sm text-slate-500">{res.subject}</p>}
+                {getSummary(res) && <p className="text-sm text-slate-500">{getSummary(res)}</p>}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Link href={`/study/${res.id}`}>
