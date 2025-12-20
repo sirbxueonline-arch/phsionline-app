@@ -154,26 +154,12 @@ export const Navbar = () => {
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/#how-it-works"
-                  className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
-                >
-                  How it works
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="text-sm font-medium text-text-muted transition-colors hover:text-text-primary"
-                >
-                  Pricing
-                </Link>
-                <Link
-                  href="/auth/signin"
-                  className="text-sm font-semibold text-text-primary transition-colors hover:text-accent"
-                >
-                  Log in
-                </Link>
-              </div>
+              <Link
+                href="/auth/signin"
+                className="text-sm font-semibold text-text-primary transition-colors hover:text-accent"
+              >
+                Log in
+              </Link>
             )}
             <ThemeToggle />
           </div>
