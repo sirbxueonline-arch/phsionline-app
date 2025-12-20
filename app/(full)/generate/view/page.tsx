@@ -36,6 +36,8 @@ export default function FullscreenGenerateView() {
   const [quizUnlocked, setQuizUnlocked] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const quizSectionRef = useRef<HTMLDivElement | null>(null);
+  const flipResetTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const FLIP_DURATION_MS = 400;
   const data = params.get("data");
   const decoded: FullResult = useMemo(() => {
     if (!data) return null;
@@ -82,11 +84,11 @@ export default function FullscreenGenerateView() {
   useEffect(() => {
     setCurrentCard(0);
     setCardFlipped(false);
+    if (flipResetTimeout.current) {
+      clearTimeout(flipResetTimeout.current);
+      flipResetTimeout.current = null;
+    }
   }, [flashcards.length]);
-
-  useEffect(() => {
-    setCardFlipped(false);
-  }, [currentCard]);
 
   useEffect(() => {
     const hasFlashcards = flashcards.length > 0;
@@ -97,6 +99,15 @@ export default function FullscreenGenerateView() {
     setCurrentQuestion(0);
     setAnswers({});
   }, [flashcards.length, quizItems.length]);
+
+  useEffect(
+    () => () => {
+      if (flipResetTimeout.current) {
+        clearTimeout(flipResetTimeout.current);
+      }
+    },
+    []
+  );
 
   const unlockQuiz = () => {
     setQuizUnlocked(true);
@@ -112,8 +123,30 @@ export default function FullscreenGenerateView() {
       return <p className="text-sm text-slate-400 text-center">No flashcards available.</p>;
     }
     const card = flashcards[Math.min(currentCard, flashcards.length - 1)];
-    const goNextCard = () => setCurrentCard((n) => Math.min(n + 1, flashcards.length - 1));
-    const goPrevCard = () => setCurrentCard((n) => Math.max(0, n - 1));
+    const goToCard = (targetIndex: number) => {
+      if (flipResetTimeout.current) {
+        clearTimeout(flipResetTimeout.current);
+        flipResetTimeout.current = null;
+      }
+      if (cardFlipped) {
+        setCardFlipped(false);
+        flipResetTimeout.current = setTimeout(() => {
+          setCurrentCard(targetIndex);
+          flipResetTimeout.current = null;
+        }, FLIP_DURATION_MS);
+      } else {
+        setCurrentCard(targetIndex);
+      }
+    };
+
+    const goNextCard = () => {
+      const target = Math.min(currentCard + 1, flashcards.length - 1);
+      if (target !== currentCard) goToCard(target);
+    };
+    const goPrevCard = () => {
+      const target = Math.max(0, currentCard - 1);
+      if (target !== currentCard) goToCard(target);
+    };
 
     return (
       <div className="space-y-4 max-w-4xl mx-auto">
