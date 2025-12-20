@@ -33,13 +33,17 @@ export const Flashcard = ({
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.4 }}
-        className="preserve-3d flex w-full items-center justify-center text-center"
+        className="relative flex h-full w-full items-center justify-center text-center preserve-3d"
+        style={{ transformStyle: "preserve-3d" }}
       >
-        <div className="backface-hidden w-full">
+        <div className="backface-hidden w-full" style={{ backfaceVisibility: "hidden" }}>
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Question</p>
           <p className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-50">{item.question}</p>
         </div>
-        <div className="absolute inset-0 flex backface-hidden rotateY-180">
+        <div
+          className="absolute inset-0 flex backface-hidden rotateY-180"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+        >
           <div className="flex w-full flex-col items-center justify-center text-center">
             <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Answer</p>
             <p className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-50">{item.answer}</p>

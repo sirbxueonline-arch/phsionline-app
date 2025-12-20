@@ -87,3 +87,17 @@ a {
     radial-gradient(circle at 50% 42%, rgba(124, 58, 237, 0.05), transparent 55%),
     var(--bg);
 }
+
+@layer utilities {
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .rotateY-180 {
+    transform: rotateY(180deg);
+  }
+}
