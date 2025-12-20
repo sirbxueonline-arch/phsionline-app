@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
-import { db } from "@/lib/firebase";
-import { doc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { CheckCircle2, Copy, Gift, Share2, Sparkles, Users } from "lucide-react";
 
 export default function ReferralsPage() {
@@ -17,7 +15,6 @@ export default function ReferralsPage() {
   const referralCode = profile?.referralCode || user?.uid?.slice(0, 8) || "code";
   const referralLink = `https://studypilot.online/?ref=${referralCode}`;
   const shareMessage = `I study with StudyPilot for focused flashcards, quizzes, and plans. Join me: ${referralLink}`;
-  const displayName = profile?.name || user?.displayName || user?.email?.split("@")[0] || "StudyPilot";
 
   useEffect(() => {
     const joined = (profile as any)?.referralJoined || 0;
@@ -28,7 +25,6 @@ export default function ReferralsPage() {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    void trackReferralShare();
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -45,33 +41,11 @@ export default function ReferralsPage() {
         await navigator.clipboard.writeText(shareMessage);
         setShared("copied");
       }
-      void trackReferralShare();
     } catch (err) {
       await navigator.clipboard.writeText(shareMessage);
       setShared("copied");
-      void trackReferralShare();
     } finally {
       setTimeout(() => setShared("idle"), 2500);
-    }
-  };
-
-  const trackReferralShare = async () => {
-    if (!user) return;
-    try {
-      const userRef = doc(db, "users", user.uid);
-      await setDoc(
-        userRef,
-        {
-          name: displayName,
-          referralShares: increment(1),
-          referralPoints: increment(10),
-          lastReferralShareName: displayName,
-          lastReferralShareAt: new Date().toISOString()
-        },
-        { merge: true }
-      );
-    } catch (err) {
-      console.error("Failed to record referral share", err);
     }
   };
 
