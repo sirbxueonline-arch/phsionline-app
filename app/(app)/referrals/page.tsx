@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { CheckCircle2, Copy, Gift, Share2, Sparkles, Users } from "lucide-react";
 
@@ -13,6 +13,7 @@ export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState<"idle" | "shared" | "copied">("idle");
   const [stats, setStats] = useState({ joined: 0, points: 0 });
+  const [joins, setJoins] = useState<{ id: string; name: string; emailMasked: string; createdAt?: string }[]>([]);
 
   const referralCode = profile?.referralCode || user?.uid?.slice(0, 8) || "code";
   const referralLink = `https://studypilot.online/?ref=${referralCode}`;
@@ -38,6 +39,31 @@ export default function ReferralsPage() {
       }
     };
     refreshStats();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchJoins = async () => {
+      if (!user) return;
+      try {
+        const q = query(collection(db, "referralsLog"), where("referrerId", "==", user.uid));
+        const snap = await getDocs(q);
+        const items = snap.docs
+          .map((d) => {
+            const data = d.data() as any;
+            return {
+              id: d.id,
+              name: data?.joinedName || "New user",
+              emailMasked: data?.joinedEmailMasked || "*****",
+              createdAt: data?.createdAt
+            };
+          })
+          .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        setJoins(items);
+      } catch (err) {
+        // best-effort; leave empty
+      }
+    };
+    fetchJoins();
   }, [user]);
 
   const handleCopy = async () => {
@@ -164,6 +190,25 @@ export default function ReferralsPage() {
           <CardContent className="space-y-3 text-sm text-text-primary">
             <p>Join me on StudyPilot for focused flashcards, quizzes, and plans—no distractions.</p>
             <p className="text-text-muted">Perks will roll out gradually, kept simple and useful.</p>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl border border-border bg-panel shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg text-text-primary">Recent joins</CardTitle>
+            <CardDescription className="text-text-muted">People who signed up with your link.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {joins.length === 0 && <p className="text-sm text-text-muted">No referrals yet.</p>}
+            {joins.map((join) => (
+              <div key={join.id} className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2">
+                <div>
+                  <p className="text-sm font-semibold text-text-primary">{join.name}</p>
+                  <p className="text-xs text-text-muted">{join.emailMasked}</p>
+                </div>
+                <p className="text-xs text-text-muted">{join.createdAt ? new Date(join.createdAt).toLocaleDateString() : ""}</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>

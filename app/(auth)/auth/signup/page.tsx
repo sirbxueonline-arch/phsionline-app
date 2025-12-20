@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, where, increment } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, setDoc, where, increment } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,12 @@ const formatAuthError = (err: any) => {
     return "This browser blocks pop-ups. Use the email form or try the Google redirect option.";
   if (code.includes("popup-closed-by-user")) return "The Google window was closed before completing. Please try again.";
   return err?.message || "We couldn't sign you up. Please try again.";
+};
+
+const maskEmail = (email: string) => {
+  if (!email || !email.includes("@")) return "*****";
+  const [userPart, domain] = email.split("@");
+  return `${userPart[0] ?? ""}***@${domain}`;
 };
 
 export default function SignUpPage() {
@@ -92,9 +98,24 @@ export default function SignUpPage() {
         },
         { merge: true }
       );
+      return referrerDoc.id;
     } catch (err) {
       // best-effort; do not block signup
       console.error("Failed to reward referrer", err);
+    }
+  };
+
+  const logReferralRegistration = async (referrerId: string, name: string, email?: string, joinedUserId?: string) => {
+    try {
+      await addDoc(collection(db, "referralsLog"), {
+        referrerId,
+        joinedUserId: joinedUserId || null,
+        joinedName: name,
+        joinedEmailMasked: maskEmail(email || ""),
+        createdAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error("Failed to log referral registration", err);
     }
   };
 
@@ -121,7 +142,10 @@ export default function SignUpPage() {
         referredBy: referralCode || null
       });
       if (referralCode) {
-        void rewardReferrer(referralCode);
+        const referrerId = await rewardReferrer(referralCode);
+        if (referrerId) {
+          void logReferralRegistration(referrerId, form.name || cred.user.email || referralCode, form.email, cred.user.uid);
+        }
       }
       void fetch("/api/email/welcome", {
         method: "POST",
@@ -153,7 +177,15 @@ export default function SignUpPage() {
         { merge: true }
       );
       if (referralCode) {
-        void rewardReferrer(referralCode);
+        const referrerId = await rewardReferrer(referralCode);
+        if (referrerId) {
+          void logReferralRegistration(
+            referrerId,
+            cred.user.displayName || cred.user.email || referralCode,
+            cred.user.email || undefined,
+            cred.user.uid
+          );
+        }
       }
       if (cred.user.email) {
         void fetch("/api/email/welcome", {
