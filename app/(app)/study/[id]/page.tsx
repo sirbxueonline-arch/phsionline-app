@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
+import { Flashcard } from "@/components/Flashcard";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -21,9 +22,9 @@ export default function StudySessionPage() {
   const { user } = useAuth();
   const [resource, setResource] = useState<Resource | null>(null);
   const [idx, setIdx] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
   const [score, setScore] = useState(0);
   const [complete, setComplete] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
     const fetchResource = async () => {
@@ -45,9 +46,9 @@ export default function StudySessionPage() {
   const quiz = resource.content?.quiz || [];
 
   const handleNext = () => {
-    setShowAnswer(false);
     if (resource.type === "flashcards" && idx < flashcards.length - 1) {
       setIdx((i) => i + 1);
+      setFlipped(false);
     } else if (resource.type === "quiz" && idx < quiz.length - 1) {
       setIdx((i) => i + 1);
     } else {
@@ -86,24 +87,29 @@ export default function StudySessionPage() {
               <Button onClick={() => router.push("/dashboard")}>Back to dashboard</Button>
             </div>
           ) : resource.type === "flashcards" ? (
-            <>
-              <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
-                <p className="text-sm uppercase text-slate-500">Question</p>
-                <p className="text-lg font-semibold">{flashcards[idx]?.question}</p>
-              </div>
-              {showAnswer && (
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
-                  <p className="text-sm uppercase text-emerald-700 dark:text-emerald-200">Answer</p>
-                  <p className="text-lg font-semibold">{flashcards[idx]?.answer}</p>
+            <div className="space-y-3">
+              <Flashcard item={flashcards[idx]} flipped={flipped} onFlip={setFlipped} />
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-sm text-slate-500">
+                  Card {Math.min(idx + 1, flashcards.length)} of {flashcards.length}
                 </div>
-              )}
-              <div className="flex gap-3">
-                <Button onClick={() => setShowAnswer(true)} variant="outline">
-                  Reveal answer
-                </Button>
-                <Button onClick={handleNext}>Next</Button>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIdx((i) => Math.max(0, i - 1));
+                      setFlipped(false);
+                    }}
+                    disabled={idx === 0}
+                  >
+                    Previous
+                  </Button>
+                  <Button onClick={handleNext} disabled={flashcards.length === 0}>
+                    Next
+                  </Button>
+                </div>
               </div>
-            </>
+            </div>
           ) : (
             <>
               <div className="space-y-2">
