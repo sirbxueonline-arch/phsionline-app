@@ -5,6 +5,19 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb"
     }
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin-allow-popups"
+          }
+        ]
+      }
+    ];
   }
 };
 
