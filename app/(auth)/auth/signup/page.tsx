@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, updateDoc, where, increment } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -76,6 +76,24 @@ export default function SignUpPage() {
     fetchReferrer();
   }, [referralCode]);
 
+  const rewardReferrer = async (code: string) => {
+    try {
+      const q = query(collection(db, "users"), where("referralCode", "==", code));
+      const snap = await getDocs(q);
+      const referrerDoc = snap.docs?.[0];
+      if (!referrerDoc) return;
+      const referrerRef = doc(db, "users", referrerDoc.id);
+      await updateDoc(referrerRef, {
+        referralPoints: increment(10),
+        referralJoined: increment(1),
+        lastReferralAt: new Date().toISOString()
+      });
+    } catch (err) {
+      // best-effort; do not block signup
+      console.error("Failed to reward referrer", err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirm) {
@@ -98,6 +116,9 @@ export default function SignUpPage() {
         referralCode: cred.user.uid.slice(0, 8),
         referredBy: referralCode || null
       });
+      if (referralCode) {
+        void rewardReferrer(referralCode);
+      }
       void fetch("/api/email/welcome", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,6 +148,9 @@ export default function SignUpPage() {
         },
         { merge: true }
       );
+      if (referralCode) {
+        void rewardReferrer(referralCode);
+      }
       if (cred.user.email) {
         void fetch("/api/email/welcome", {
           method: "POST",

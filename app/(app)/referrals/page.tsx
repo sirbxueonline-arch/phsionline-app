@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
 import { db } from "@/lib/firebase";
-import { collection, doc, getDocs, query, setDoc, updateDoc, where, increment } from "firebase/firestore";
+import { doc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { CheckCircle2, Copy, Gift, Share2, Sparkles, Users } from "lucide-react";
 
 export default function ReferralsPage() {
   const { user, profile } = useAuth();
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState<"idle" | "shared" | "copied">("idle");
-  const [stats, setStats] = useState({ joined: 0, pending: 0 });
+  const [stats, setStats] = useState({ joined: 0, points: 0 });
 
   const referralCode = profile?.referralCode || user?.uid?.slice(0, 8) || "code";
   const referralLink = `https://studypilot.online/?ref=${referralCode}`;
@@ -20,18 +20,10 @@ export default function ReferralsPage() {
   const displayName = profile?.name || user?.displayName || user?.email?.split("@")[0] || "StudyPilot";
 
   useEffect(() => {
-    const fetchStats = async () => {
-      if (!user) return;
-      try {
-        const q = query(collection(db, "billingAttempts"), where("referrer", "==", user.uid));
-        const snap = await getDocs(q);
-        setStats({ joined: snap.size, pending: Math.max(0, snap.size - 1) });
-      } catch (err) {
-        console.error("Failed to fetch referral stats", err);
-      }
-    };
-    fetchStats();
-  }, [user]);
+    const joined = (profile as any)?.referralJoined || 0;
+    const points = (profile as any)?.referralPoints || 0;
+    setStats({ joined, points });
+  }, [profile]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(referralLink);
@@ -123,7 +115,7 @@ export default function ReferralsPage() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <Stat label="Joined" value={stats.joined} accent="bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-100" />
-              <Stat label="Pending" value={stats.pending} accent="bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-100" />
+              <Stat label="Points" value={stats.points} accent="bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-100" />
             </div>
           </CardContent>
         </Card>
