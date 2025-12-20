@@ -9,6 +9,7 @@ const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+const databaseId = process.env.FIRESTORE_DATABASE_ID || process.env.FIREBASE_FIRESTORE_DATABASE_ID;
 
 const canInitWithJson = typeof serviceAccountJson === "string" && serviceAccountJson.trim().length > 0;
 const canInitWithFields = projectId && clientEmail && privateKey;
@@ -49,7 +50,10 @@ export async function verifyToken(idToken: string) {
 let adminDb: ReturnType<typeof getFirestore> | null = null;
 if (adminApp) {
   try {
-    adminDb = getFirestore(adminApp);
+    adminDb = getFirestore(adminApp, databaseId || undefined);
+    if (databaseId && databaseId !== "(default)") {
+      console.info(`firebase-admin using Firestore databaseId="${databaseId}"`);
+    }
   } catch (err) {
     console.warn("firebase-admin Firestore init failed", err);
   }
