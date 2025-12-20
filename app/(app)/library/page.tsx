@@ -23,22 +23,30 @@ export default function LibraryPage() {
   const { user } = useAuth();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     const fetchResources = async () => {
       setLoading(true);
+      setError(null);
       if (!user) {
         setLoading(false);
         return;
       }
-      const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      const items = snap.docs
-        .map((d) => ({ id: d.id, ...(d.data() as any) }))
-        .filter((r) => r.type !== "usage-log");
-      setResources(items as Resource[]);
-      setLoading(false);
+      try {
+        const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        const items = snap.docs
+          .map((d) => ({ id: d.id, ...(d.data() as any) }))
+          .filter((r) => r.type !== "usage-log");
+        setResources(items as Resource[]);
+      } catch (err) {
+        console.error("Failed to load library", err);
+        setError("Failed to load your library. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
     fetchResources();
   }, [user]);
@@ -70,6 +78,7 @@ export default function LibraryPage() {
         <p className="text-sm text-slate-500">{filtered.length} items</p>
       </div>
       {loading && <p className="text-sm text-slate-500">Loading...</p>}
+      {error && !loading && <p className="text-sm text-red-500">{error}</p>}
       {!loading && filtered.length === 0 && (
         <Card>
           <CardHeader>

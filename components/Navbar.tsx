@@ -92,7 +92,7 @@ export const Navbar = () => {
           className="flex items-center gap-2 text-base font-semibold tracking-[0.01em] text-text-primary transition-colors hover:text-accent"
         >
           <Image src="/logo.svg" alt="StudyPilot logo" width={28} height={28} className="h-7 w-7" />
-          StudyPilot
+          <span className="sr-only">StudyPilot</span>
         </Link>
 
         <div className="flex items-center gap-6">
