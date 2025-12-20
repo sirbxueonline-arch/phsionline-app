@@ -61,6 +61,8 @@ export const Navbar = () => {
   const authedLinks = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/generate", label: "Generate" },
+    { href: "/library", label: "Library" },
+    { href: "/study", label: "Study" },
     { href: "/analytics", label: "Analytics" },
     { href: "/referrals", label: "Referrals" }
   ];
