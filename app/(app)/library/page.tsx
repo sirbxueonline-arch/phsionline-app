@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/components/AuthProvider";
 import { formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { collection, getDocs, query as fsQuery, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 type Resource = {
@@ -35,11 +35,14 @@ export default function LibraryPage() {
         return;
       }
       try {
-        const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+        const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid));
         const snap = await getDocs(q);
         const items = snap.docs
           .map((d) => ({ id: d.id, ...(d.data() as any) }))
-          .filter((r) => r.type !== "usage-log");
+          .filter((r) => r.type !== "usage-log")
+          .sort(
+            (a, b) => new Date((b as any).createdAt || 0).getTime() - new Date((a as any).createdAt || 0).getTime()
+          );
         setResources(items as Resource[]);
       } catch (err) {
         console.error("Failed to load library", err);

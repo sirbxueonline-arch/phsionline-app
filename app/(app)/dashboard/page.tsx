@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { cn, formatDate } from "@/lib/utils";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Sparkles, CheckCircle2 } from "lucide-react";
-import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { collection, getDocs, query as fsQuery, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 type Resource = {
@@ -33,9 +33,13 @@ export default function DashboardPage() {
         return;
       }
       const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+      const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid));
       const snap = await getDocs(q);
-      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      const items = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as any) }))
+        .sort(
+          (a, b) => new Date((b as any).createdAt || 0).getTime() - new Date((a as any).createdAt || 0).getTime()
+        );
       setResources(items.filter((r) => r.type !== "usage-log").slice(0, 5) as Resource[]);
       setUsage(items.filter((r) => r.type === "usage-log" && r.createdAt >= startOfMonth).length);
       setLoading(false);

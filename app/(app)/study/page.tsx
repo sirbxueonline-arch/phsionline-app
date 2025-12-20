@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
-import { collection, getDocs, orderBy, query as fsQuery, where } from "firebase/firestore";
+import { collection, getDocs, query as fsQuery, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 type Resource = { id: string; title: string; type: string; subject?: string | null };
@@ -17,15 +17,14 @@ export default function StudyPage() {
   useEffect(() => {
     const fetchResources = async () => {
       if (!user) return;
-      const q = fsQuery(
-        collection(db, "resources"),
-        where("userId", "==", user.uid),
-        orderBy("createdAt", "desc")
-      );
+      const q = fsQuery(collection(db, "resources"), where("userId", "==", user.uid));
       const snap = await getDocs(q);
       const items = snap.docs
         .map((d) => ({ id: d.id, ...(d.data() as any) }))
-        .filter((r) => ["flashcards", "quiz", "both"].includes(r.type));
+        .filter((r) => ["flashcards", "quiz", "both"].includes(r.type))
+        .sort(
+          (a, b) => new Date((b as any).createdAt || 0).getTime() - new Date((a as any).createdAt || 0).getTime()
+        );
       setResources(items as Resource[]);
     };
     fetchResources();
