@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { CheckCircle2, Copy, Gift, Share2, Sparkles, Users } from "lucide-react";
 
 export default function ReferralsPage() {
@@ -21,6 +23,22 @@ export default function ReferralsPage() {
     const points = (profile as any)?.referralPoints || 0;
     setStats({ joined, points });
   }, [profile]);
+
+  useEffect(() => {
+    const refreshStats = async () => {
+      if (!user) return;
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        const data = snap.data();
+        const joined = (data as any)?.referralJoined || 0;
+        const points = (data as any)?.referralPoints || 0;
+        setStats({ joined, points });
+      } catch (err) {
+        // best-effort; keep existing stats
+      }
+    };
+    refreshStats();
+  }, [user]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(referralLink);

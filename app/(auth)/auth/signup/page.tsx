@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, updateDoc, where, increment } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where, increment } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -83,11 +83,15 @@ export default function SignUpPage() {
       const referrerDoc = snap.docs?.[0];
       if (!referrerDoc) return;
       const referrerRef = doc(db, "users", referrerDoc.id);
-      await updateDoc(referrerRef, {
-        referralPoints: increment(10),
-        referralJoined: increment(1),
-        lastReferralAt: new Date().toISOString()
-      });
+      await setDoc(
+        referrerRef,
+        {
+          referralPoints: increment(10),
+          referralJoined: increment(1),
+          lastReferralAt: new Date().toISOString()
+        },
+        { merge: true }
+      );
     } catch (err) {
       // best-effort; do not block signup
       console.error("Failed to reward referrer", err);
