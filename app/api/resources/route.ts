@@ -44,7 +44,14 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ id: docRef.id });
   } catch (error: any) {
+    const isNotFound =
+      error?.code === 5 ||
+      /not\s*found/i.test(error?.message || "") ||
+      /does not contain an active Cloud Firestore database/i.test(error?.message || "");
+    const hint = isNotFound
+      ? "Firestore not found: verify the Firebase project ID and that Firestore is enabled for the service account."
+      : "Save failed";
     console.error("Save resource failed", error);
-    return NextResponse.json({ error: "Save failed" }, { status: 500 });
+    return NextResponse.json({ error: hint }, { status: 500 });
   }
 }

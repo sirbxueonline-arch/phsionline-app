@@ -13,18 +13,23 @@ const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 const canInitWithJson = typeof serviceAccountJson === "string" && serviceAccountJson.trim().length > 0;
 const canInitWithFields = projectId && clientEmail && privateKey;
 
-if (typeof window === "undefined" && !adminApp && (canInitWithJson || canInitWithFields)) {
-  try {
-    const credential = canInitWithJson
-      ? cert(JSON.parse(serviceAccountJson as string))
-      : cert({
-          projectId,
-          clientEmail,
-          privateKey: privateKey as string
-        });
-    adminApp = initializeApp({ credential });
-  } catch (err) {
-    console.warn("firebase-admin init failed", err);
+if (typeof window === "undefined" && !adminApp) {
+  if (!canInitWithJson && !canInitWithFields) {
+    console.warn("firebase-admin init skipped: missing service account credentials");
+  } else {
+    try {
+      const credential = canInitWithJson
+        ? cert(JSON.parse(serviceAccountJson as string))
+        : cert({
+            projectId,
+            clientEmail,
+            privateKey: privateKey as string
+          });
+      const appOptions = projectId ? { credential, projectId } : { credential };
+      adminApp = initializeApp(appOptions);
+    } catch (err) {
+      console.warn("firebase-admin init failed", err);
+    }
   }
 } else if (getApps().length) {
   adminApp = getApps()[0];
@@ -41,4 +46,13 @@ export async function verifyToken(idToken: string) {
   }
 }
 
-export const adminDb = adminApp ? getFirestore(adminApp) : null;
+let adminDb: ReturnType<typeof getFirestore> | null = null;
+if (adminApp) {
+  try {
+    adminDb = getFirestore(adminApp);
+  } catch (err) {
+    console.warn("firebase-admin Firestore init failed", err);
+  }
+}
+
+export { adminDb };
