@@ -58,6 +58,30 @@ export default function LibraryPage() {
     ? resources.filter((r) => r.title.toLowerCase().includes(query.toLowerCase()))
     : resources;
 
+  const handleShare = (resId: string, title?: string) => {
+    if (typeof window === "undefined") return;
+    const url = `${window.location.origin}/library/${resId}`;
+    const shareTitle = title || "Study set";
+    if (navigator.share) {
+      navigator.share({ title: shareTitle, url }).catch(() => {
+        navigator.clipboard?.writeText(url).catch(() => {});
+      });
+    } else {
+      navigator.clipboard?.writeText(url).catch(() => {});
+    }
+  };
+
+  const prettyType = (type?: string) => {
+    if (!type) return "Resource";
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
+  const cleanedTitle = (res: Resource) => {
+    const raw = res.title || "";
+    const stripped = raw.replace(/^(study set\\s*-\\s*)/i, "").replace(/^(generated\\s*)/i, "").trim();
+    return stripped || prettyType(res.type);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -100,16 +124,29 @@ export default function LibraryPage() {
           <Card key={res.id} className="hover:border-brand/60">
             <CardContent className="flex items-center justify-between py-4">
               <div>
-                <p className="text-lg font-semibold">{res.title}</p>
-                <p className="text-sm text-slate-500">
-                  {res.type} | {res.subject || "General"} | {formatDate(res.createdAt)}
-                </p>
+                <p className="text-lg font-semibold capitalize">{cleanedTitle(res)}</p>
+                {res.subject && <p className="text-sm text-slate-500">{res.subject}</p>}
               </div>
-              <Link href={`/library/${res.id}`}>
-                <Button variant="outline" size="sm">
-                  Open
+              <div className="flex flex-wrap items-center gap-2">
+                <Link href={`/study/${res.id}`}>
+                  <Button variant="outline" size="sm">
+                    Retake
+                  </Button>
+                </Link>
+                <Link href={`/library/${res.id}`}>
+                  <Button variant="outline" size="sm">
+                    Open
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleShare(res.id, cleanedTitle(res))}
+                  className="whitespace-nowrap"
+                >
+                  Share
                 </Button>
-              </Link>
+              </div>
             </CardContent>
           </Card>
         ))}
