@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, query, setDoc, where, increment } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -82,40 +82,20 @@ export default function SignUpPage() {
     fetchReferrer();
   }, [referralCode]);
 
-  const rewardReferrer = async (code: string) => {
+  const notifyReferral = async (refCode: string, name?: string, email?: string, joinedUserId?: string) => {
     try {
-      const q = query(collection(db, "users"), where("referralCode", "==", code));
-      const snap = await getDocs(q);
-      const referrerDoc = snap.docs?.[0];
-      if (!referrerDoc) return;
-      const referrerRef = doc(db, "users", referrerDoc.id);
-      await setDoc(
-        referrerRef,
-        {
-          referralPoints: increment(10),
-          referralJoined: increment(1),
-          lastReferralAt: new Date().toISOString()
-        },
-        { merge: true }
-      );
-      return referrerDoc.id;
-    } catch (err) {
-      // best-effort; do not block signup
-      console.error("Failed to reward referrer", err);
-    }
-  };
-
-  const logReferralRegistration = async (referrerId: string, name: string, email?: string, joinedUserId?: string) => {
-    try {
-      await addDoc(collection(db, "referralsLog"), {
-        referrerId,
-        joinedUserId: joinedUserId || null,
-        joinedName: name,
-        joinedEmailMasked: maskEmail(email || ""),
-        createdAt: new Date().toISOString()
+      await fetch("/api/referrals/reward", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          refCode,
+          joinedName: name,
+          joinedEmail: email,
+          joinedUserId
+        })
       });
     } catch (err) {
-      console.error("Failed to log referral registration", err);
+      console.error("Referral notify failed", err);
     }
   };
 
@@ -142,10 +122,7 @@ export default function SignUpPage() {
         referredBy: referralCode || null
       });
       if (referralCode) {
-        const referrerId = await rewardReferrer(referralCode);
-        if (referrerId) {
-          void logReferralRegistration(referrerId, form.name || cred.user.email || referralCode, form.email, cred.user.uid);
-        }
+        void notifyReferral(referralCode, form.name || cred.user.email || undefined, form.email, cred.user.uid);
       }
       void fetch("/api/email/welcome", {
         method: "POST",
@@ -177,15 +154,12 @@ export default function SignUpPage() {
         { merge: true }
       );
       if (referralCode) {
-        const referrerId = await rewardReferrer(referralCode);
-        if (referrerId) {
-          void logReferralRegistration(
-            referrerId,
-            cred.user.displayName || cred.user.email || referralCode,
-            cred.user.email || undefined,
-            cred.user.uid
-          );
-        }
+        void notifyReferral(
+          referralCode,
+          cred.user.displayName || cred.user.email || undefined,
+          cred.user.email || undefined,
+          cred.user.uid
+        );
       }
       if (cred.user.email) {
         void fetch("/api/email/welcome", {
