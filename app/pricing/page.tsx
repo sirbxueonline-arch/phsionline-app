@@ -18,6 +18,19 @@ const plans = [
     priceYearly: "$96/yr (save 20%)",
     features: ["200 saves per month", "Priority generation", "Advanced customization", "Early access to new features"],
     cta: { label: "Upgrade", href: "/pricing/upgrade", variant: "default" }
+  },
+  {
+    name: "Teams",
+    description: "For study groups, classrooms, and small teams.",
+    priceMonthly: "$18/user/mo",
+    priceYearly: "$180/user/yr (save 17%)",
+    features: [
+      "Shared libraries & collaboration",
+      "Admin controls & permissions",
+      "Team analytics",
+      "Priority support"
+    ],
+    cta: { label: "Contact sales", href: "/pricing/contact", variant: "default" }
   }
 ] as const;
 
