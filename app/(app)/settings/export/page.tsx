@@ -44,7 +44,7 @@ export default function ExportSettingsPage() {
         <CardDescription>Download your profile and library data.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button onClick={handleExport}>Export JSON</Button>
+        <Button onClick={handleExport}>Export</Button>
         {message && <p className="text-sm text-slate-600 dark:text-slate-300">{message}</p>}
         <p className="text-xs text-slate-500">
           This is a basic export. Full GDPR-friendly export will arrive soon.
