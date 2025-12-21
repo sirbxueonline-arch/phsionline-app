@@ -39,7 +39,7 @@ const plans: Plan[] = [
       "Match your exact exam format and syllabus",
       "Cancel anytime • No lock-in"
     ],
-    cta: { label: "Start Pro", href: "/pricing/upgrade", variant: "default" }
+    cta: { label: "Start Pro", href: "/upgrade", variant: "default" }
   },
   {
     name: "Teams",
