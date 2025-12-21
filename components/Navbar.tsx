@@ -111,13 +111,12 @@ export const Navbar = () => {
           <div className="flex items-center gap-3">
             {isAuthed ? (
               <>
-                <Button
-                  size="sm"
-                  className="bg-accent text-[var(--text-on-accent)] shadow-sm hover:bg-accent-strong"
-                  onClick={() => router.push("/pricing")}
+                <Link
+                  href="/pricing"
+                  className="rounded-full px-3 py-1 text-sm font-semibold text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   Upgrade
-                </Button>
+                </Link>
                 <div className="relative" ref={menuRef}>
                   <button
                     type="button"
