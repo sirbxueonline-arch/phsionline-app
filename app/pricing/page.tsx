@@ -55,21 +55,25 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
 
   const renderPrice = (plan: Plan) => {
-    if (plan.name === "Free") return <p className="text-3xl font-semibold">Free</p>;
+    if (plan.name === "Free") return <p className="text-3xl font-semibold text-slate-900">Free</p>;
     const price = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
-    return <p className="text-2xl font-semibold text-text-primary">{price}</p>;
+    return <p className="text-2xl font-semibold text-slate-900">{price}</p>;
   };
 
   return (
-    <main className="relative mx-auto max-w-6xl px-6 py-16 text-text-primary">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 px-6 py-16 text-slate-900">
       <section className="space-y-4 text-center">
         <h1 className="text-3xl font-semibold sm:text-4xl">Simple, transparent pricing.</h1>
-        <p className="text-text-muted">StudyPilot is free to start. Upgrade only if you need more.</p>
-        <div className="mx-auto flex w-fit items-center rounded-full border border-border bg-panel p-1 shadow-sm">
+        <p className="text-slate-600">StudyPilot is free to start. Upgrade only if you need more.</p>
+        <div className="mx-auto flex w-fit items-center rounded-full border border-slate-200 bg-white p-1 shadow-sm">
           <Button
             size="sm"
             variant={billing === "monthly" ? "default" : "secondary"}
-            className={billing === "monthly" ? "bg-accent text-[var(--text-on-accent)]" : ""}
+            className={
+              billing === "monthly"
+                ? "bg-purple-600 text-white hover:bg-purple-700"
+                : "border-transparent text-slate-600 hover:text-slate-800"
+            }
             onClick={() => setBilling("monthly")}
           >
             Monthly
@@ -77,7 +81,11 @@ export default function PricingPage() {
           <Button
             size="sm"
             variant={billing === "yearly" ? "default" : "secondary"}
-            className={billing === "yearly" ? "bg-accent text-[var(--text-on-accent)]" : ""}
+            className={
+              billing === "yearly"
+                ? "bg-purple-600 text-white hover:bg-purple-700"
+                : "border-transparent text-slate-600 hover:text-slate-800"
+            }
             onClick={() => setBilling("yearly")}
           >
             Yearly
@@ -89,30 +97,25 @@ export default function PricingPage() {
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className="relative flex flex-col gap-4 rounded-2xl border border-border bg-panel/80 px-6 py-6 shadow-sm"
+            className="relative flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white/80 px-6 py-6 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="text-left space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-muted">{plan.name}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{plan.name}</p>
                 <p className="text-lg font-semibold">{plan.description}</p>
                 {plan.badge && (
-                  <span className="inline-flex items-center rounded-full bg-accent/15 px-2 py-1 text-xs font-semibold text-accent">
+                  <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
                     {plan.badge}
                   </span>
                 )}
                 {renderPrice(plan)}
-                {plan.name !== "Free" && (
-                  <p className="text-sm text-text-primary">
-                    Unlock faster generations, richer customization, and premium support built for serious learners.
-                  </p>
-                )}
               </div>
               <Link href={plan.cta.href}>
                 <Button
                   variant={plan.cta.variant}
                   className={
                     plan.cta.variant === "default"
-                      ? "bg-accent text-[var(--text-on-accent)] hover:bg-accent-strong shadow-sm"
+                      ? "bg-purple-600 text-white hover:bg-purple-700 shadow-sm"
                       : ""
                   }
                 >
@@ -120,10 +123,15 @@ export default function PricingPage() {
                 </Button>
               </Link>
             </div>
-            <ul className="space-y-2 text-sm text-text-muted">
+            {plan.name !== "Free" && (
+              <p className="text-sm text-slate-700">
+                Unlock faster generations, richer customization, and premium support built for serious learners.
+              </p>
+            )}
+            <ul className="space-y-2 text-sm text-slate-600">
               {plan.features.map((item) => (
                 <li key={item} className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500" aria-hidden="true" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -132,7 +140,7 @@ export default function PricingPage() {
         ))}
       </section>
 
-      <section className="mt-10 space-y-2 text-center text-sm text-text-muted">
+      <section className="mt-10 space-y-2 text-center text-sm text-slate-600">
         <p>No streaks. No pressure. Cancel anytime.</p>
         <p>Designed for focused exam prep.</p>
       </section>
