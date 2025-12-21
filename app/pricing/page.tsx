@@ -105,7 +105,7 @@ function PricingContent() {
   }, [processingPlan]);
 
   return (
-    <div className="space-y-10">
+    <div className="mx-auto max-w-6xl space-y-10 px-4 md:px-6">
       <header className="space-y-3 text-center">
         <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/70 dark:text-slate-200 dark:ring-slate-800">
           <Shield className="h-4 w-4" /> Plans
