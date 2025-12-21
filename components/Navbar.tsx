@@ -95,8 +95,8 @@ export const Navbar = () => {
           <span className="sr-only">StudyPilot</span>
         </Link>
 
-        <div className="flex items-center gap-6">
-          <nav className="hidden items-center gap-3 text-sm font-medium text-text-muted md:flex">
+        <div className="flex flex-1 items-center gap-6">
+          <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-medium text-text-muted md:flex">
             {(isAuthed ? authedLinks : marketingLinks).map((link) => (
               <Link
                 key={link.href}
