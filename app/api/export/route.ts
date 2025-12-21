@@ -19,23 +19,28 @@ export async function GET(request: Request) {
     }
 
     const userDoc = await adminDb.collection("users").doc(uid).get();
-    const resourcesSnap = await adminDb.collection("resources").where("userId", "==", uid).get();
 
-    const profile = userDoc.exists ? userDoc.data() : null;
-    const resources = resourcesSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const profile = userDoc.exists ? (userDoc.data() as Record<string, any>) : {};
+    const email = profile?.email || decoded.email || "unknown";
+    const displayName = profile?.name || profile?.displayName || decoded.name || "unknown";
+    const plan = profile?.plan || profile?.subscriptionPlan || "free";
 
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      profile,
-      resourcesCount: resources.length,
-      resources
-    };
+    const lines = [
+      "StudyPilot export",
+      `Exported: ${new Date().toISOString()}`,
+      `Email: ${email}`,
+      `Display name: ${displayName}`,
+      `User ID: ${uid}`,
+      `Plan: ${plan}`
+    ];
 
-    return new NextResponse(JSON.stringify(payload, null, 2), {
+    const payload = lines.join("\n");
+
+    return new NextResponse(payload, {
       status: 200,
       headers: {
-        "Content-Type": "application/json",
-        "Content-Disposition": 'attachment; filename="studypilot-export.json"'
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Disposition": 'attachment; filename="studypilot-export.txt"'
       }
     });
   } catch (err) {

@@ -29,7 +29,7 @@ export default function ExportSettingsPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "studypilot-export.json";
+      a.download = "studypilot-export.txt";
       a.click();
       setMessage("Export downloaded.");
     } catch (err) {
