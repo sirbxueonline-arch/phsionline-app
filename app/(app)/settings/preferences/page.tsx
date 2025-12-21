@@ -38,11 +38,12 @@ export default function PreferencesSettingsPage() {
     setTranslationSaving(true);
     setTranslationMessage(null);
     await updateDoc(doc(db, "users", user.uid), {
-      translateEverything: true
+      translateEverything: true,
+      preferredLanguage: "tr"
     });
     setTranslateAll(true);
     setTranslationSaving(false);
-    setTranslationMessage("Full translation enabled for your account (site, quizzes, and flashcards).");
+    setTranslationMessage("Turkish translation enabled for your account (site, quizzes, and flashcards).");
   };
 
   return (
@@ -90,12 +91,12 @@ export default function PreferencesSettingsPage() {
           </div>
         </div>
         <div className="space-y-2">
-          <p className="text-sm font-medium">Language</p>
+          <p className="text-sm font-medium">Language (Turkish)</p>
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Translate the entire app experience (including quizzes and flashcards) to your language.
+            Translate the entire app experience (including quizzes and flashcards) to Turkish.
           </p>
           <Button onClick={enableFullTranslation} disabled={translationSaving || translateAll}>
-            {translationSaving ? "Enabling translation..." : translateAll ? "Translation enabled" : "Translate everything"}
+            {translationSaving ? "Enabling Turkish translation..." : translateAll ? "Turkish enabled" : "Translate to Turkish"}
           </Button>
           {translationMessage && <p className="text-xs text-emerald-600 dark:text-emerald-400">{translationMessage}</p>}
         </div>
