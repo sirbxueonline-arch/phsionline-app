@@ -61,8 +61,8 @@ export default function PricingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 px-6 py-16 text-slate-900">
-      <section className="space-y-4 text-center">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 px-4 py-16 text-slate-900">
+      <section className="mx-auto max-w-5xl space-y-4 text-center">
         <h1 className="text-3xl font-semibold sm:text-4xl">Simple, transparent pricing.</h1>
         <p className="text-slate-600">StudyPilot is free to start. Upgrade only if you need more.</p>
         <div className="mx-auto flex w-fit items-center rounded-full border border-slate-200 bg-white p-1 shadow-sm">
@@ -93,11 +93,11 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="mt-12 grid gap-6 md:grid-cols-3">
+      <section className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3">
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className="relative flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white/80 px-6 py-6 shadow-sm"
+            className="relative flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="text-left space-y-1">
@@ -116,8 +116,9 @@ export default function PricingPage() {
                   className={
                     plan.cta.variant === "default"
                       ? "bg-purple-600 text-white hover:bg-purple-700 shadow-sm"
-                      : ""
+                      : "border border-slate-300 text-slate-700 hover:border-slate-400"
                   }
+                  size="sm"
                 >
                   {plan.cta.label}
                 </Button>
@@ -136,6 +137,20 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
+            <div className="pt-2">
+              <Link href={plan.cta.href}>
+                <Button
+                  variant={plan.cta.variant}
+                  className={
+                    plan.cta.variant === "default"
+                      ? "w-full bg-purple-600 text-white hover:bg-purple-700 shadow-sm"
+                      : "w-full border border-slate-300 text-slate-700 hover:border-slate-400"
+                  }
+                >
+                  {plan.cta.label}
+                </Button>
+              </Link>
+            </div>
           </div>
         ))}
       </section>
