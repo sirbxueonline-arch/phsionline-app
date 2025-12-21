@@ -29,7 +29,7 @@ const plans: Plan[] = [
   },
   {
     name: "Pro",
-    audience: "Daily exam prep without limits",
+    audience: "Daily exam prep without hitting limits",
     priceMonthly: "$10",
     priceYearly: "$8",
     badge: "Most popular",
@@ -43,7 +43,7 @@ const plans: Plan[] = [
   },
   {
     name: "Teams",
-    audience: "Teachers, tutors, study groups (5+ users)",
+    audience: "For shared libraries & analytics (5+ users)",
     priceMonthly: "$18",
     priceYearly: "$15",
     features: [
@@ -79,16 +79,6 @@ export default function PricingPage() {
       <div className="space-y-1">
         <p className="text-5xl font-semibold text-slate-900">{price}</p>
         <p className="text-sm text-slate-600">{interval}</p>
-        {billing === "yearly" && plan.name === "Pro" && (
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
-            Save 20%
-          </span>
-        )}
-        {billing === "yearly" && plan.name === "Teams" && (
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
-            Save ~17%
-          </span>
-        )}
       </div>
     );
   };
@@ -153,7 +143,7 @@ export default function PricingPage() {
                   className={
                     plan.cta.variant === "default"
                       ? "w-full bg-purple-600 text-white hover:bg-purple-700 shadow-sm"
-                      : "w-full border border-slate-300 text-slate-700 hover:border-slate-400"
+                      : "w-full border border-slate-300 text-slate-600 hover:border-slate-400"
                   }
                 >
                   {plan.cta.label}
@@ -170,12 +160,12 @@ export default function PricingPage() {
           <div className="grid grid-cols-4 border-b border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
             <span>Feature</span>
             <span className="text-center">Free</span>
-            <span className="text-center">Pro</span>
+            <span className="text-center text-purple-700">Pro</span>
             <span className="text-center">Teams</span>
           </div>
           <div className="divide-y divide-slate-200 text-sm text-slate-700">
             {[
-              { label: "Monthly study sets", values: ["20", "200+", "200+"] },
+              { label: "Monthly study sets", values: ["20", "Unlimited", "Unlimited"] },
               { label: "Faster generation", values: ["–", "✓", "✓"] },
               { label: "Exam-format customization", values: ["–", "✓", "✓"] },
               { label: "Collaboration", values: ["–", "–", "✓"] },
