@@ -7,19 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/components/AuthProvider";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { useLanguage } from "@/components/LanguageProvider";
 
 export default function PreferencesSettingsPage() {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
-  const { language, setLanguage } = useLanguage();
   const [saving, setSaving] = useState(false);
   const [defaultCards, setDefaultCards] = useState(6);
   const [defaultTool, setDefaultTool] = useState("flashcards");
-  const [translateAll, setTranslateAll] = useState(language === "tr");
-  const [preferredLanguage, setPreferredLanguage] = useState<"en" | "tr">(language);
-  const [translationSaving, setTranslationSaving] = useState(false);
-  const [translationMessage, setTranslationMessage] = useState<string | null>(null);
 
   useEffect(() => {
     // This would pull defaults from Firestore; stubbed with local state for now
@@ -34,25 +28,6 @@ export default function PreferencesSettingsPage() {
       defaultTool
     });
     setSaving(false);
-  };
-
-  const updateLanguage = async (lang: "en" | "tr") => {
-    if (!user) return;
-    setTranslationSaving(true);
-    setTranslationMessage(null);
-    await updateDoc(doc(db, "users", user.uid), {
-      translateEverything: lang !== "en",
-      preferredLanguage: lang
-    });
-    setPreferredLanguage(lang);
-    setTranslateAll(lang !== "en");
-    setLanguage(lang);
-    setTranslationSaving(false);
-    setTranslationMessage(
-      lang === "en"
-        ? "Language set to English (default)."
-        : "Turkish translation enabled for your account (site, quizzes, and flashcards)."
-    );
   };
 
   return (
@@ -98,30 +73,6 @@ export default function PreferencesSettingsPage() {
               </Button>
             ))}
           </div>
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Language</p>
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            Translate the entire app experience (including quizzes and flashcards). English is the default.
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant={preferredLanguage === "en" ? "default" : "outline"}
-              onClick={() => updateLanguage("en")}
-              disabled={translationSaving}
-            >
-              English
-            </Button>
-            <Button
-              variant={preferredLanguage === "tr" ? "default" : "outline"}
-              onClick={() => updateLanguage("tr")}
-              disabled={translationSaving}
-            >
-              Turkish
-            </Button>
-          </div>
-          {translationSaving && <p className="text-xs text-slate-500 dark:text-slate-400">Saving language...</p>}
-          {translationMessage && <p className="text-xs text-emerald-600 dark:text-emerald-400">{translationMessage}</p>}
         </div>
         <Button onClick={savePreferences} disabled={saving}>
           {saving ? "Saving..." : "Save preferences"}
