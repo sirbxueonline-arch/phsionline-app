@@ -64,7 +64,8 @@ export const Navbar = () => {
     { href: "/library", label: "Library" },
     { href: "/study", label: "Study" },
     { href: "/analytics", label: "Analytics" },
-    { href: "/referrals", label: "Referrals" }
+    { href: "/referrals", label: "Referrals" },
+    { href: "/pricing", label: "Upgrade" }
   ];
   const marketingLinks = [
     { href: "/#how-it-works", label: "How it works" },
@@ -111,12 +112,6 @@ export const Navbar = () => {
           <div className="flex items-center gap-3">
             {isAuthed ? (
               <>
-                <Link
-                  href="/pricing"
-                  className="rounded-full px-3 py-1 text-sm font-semibold text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  Upgrade
-                </Link>
                 <div className="relative" ref={menuRef}>
                   <button
                     type="button"
