@@ -14,7 +14,9 @@ const plans = [
   {
     name: "Pro",
     description: "For consistent exam prep.",
-    features: ["Unlimited saves", "Priority generation", "Advanced customization", "Early access to new features"],
+    priceMonthly: "$10/mo",
+    priceYearly: "$96/yr (save 20%)",
+    features: ["200 saves per month", "Priority generation", "Advanced customization", "Early access to new features"],
     cta: { label: "Upgrade", href: "/pricing/upgrade", variant: "default" }
   }
 ] as const;
@@ -39,6 +41,8 @@ export default function PricingPage() {
               <div className="text-left">
                 <p className="text-sm uppercase tracking-[0.16em] text-text-muted">{plan.name}</p>
                 <p className="text-xl font-semibold">{plan.description}</p>
+                {plan.priceMonthly && <p className="text-sm text-text-muted">{plan.priceMonthly}</p>}
+                {plan.priceYearly && <p className="text-sm text-text-muted">{plan.priceYearly}</p>}
               </div>
               <Link href={plan.cta.href}>
                 <Button
