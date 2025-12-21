@@ -7,15 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/components/AuthProvider";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function PreferencesSettingsPage() {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const [saving, setSaving] = useState(false);
   const [defaultCards, setDefaultCards] = useState(6);
   const [defaultTool, setDefaultTool] = useState("flashcards");
-  const [translateAll, setTranslateAll] = useState(false);
-  const [preferredLanguage, setPreferredLanguage] = useState<"en" | "tr">("en");
+  const [translateAll, setTranslateAll] = useState(language === "tr");
+  const [preferredLanguage, setPreferredLanguage] = useState<"en" | "tr">(language);
   const [translationSaving, setTranslationSaving] = useState(false);
   const [translationMessage, setTranslationMessage] = useState<string | null>(null);
 
@@ -44,6 +46,7 @@ export default function PreferencesSettingsPage() {
     });
     setPreferredLanguage(lang);
     setTranslateAll(lang !== "en");
+    setLanguage(lang);
     setTranslationSaving(false);
     setTranslationMessage(
       lang === "en"
