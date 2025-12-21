@@ -15,6 +15,7 @@ export default function PreferencesSettingsPage() {
   const [defaultCards, setDefaultCards] = useState(6);
   const [defaultTool, setDefaultTool] = useState("flashcards");
   const [translateAll, setTranslateAll] = useState(false);
+  const [preferredLanguage, setPreferredLanguage] = useState<"en" | "tr">("en");
   const [translationSaving, setTranslationSaving] = useState(false);
   const [translationMessage, setTranslationMessage] = useState<string | null>(null);
 
@@ -33,17 +34,22 @@ export default function PreferencesSettingsPage() {
     setSaving(false);
   };
 
-  const enableFullTranslation = async () => {
+  const updateLanguage = async (lang: "en" | "tr") => {
     if (!user) return;
     setTranslationSaving(true);
     setTranslationMessage(null);
     await updateDoc(doc(db, "users", user.uid), {
-      translateEverything: true,
-      preferredLanguage: "tr"
+      translateEverything: lang !== "en",
+      preferredLanguage: lang
     });
-    setTranslateAll(true);
+    setPreferredLanguage(lang);
+    setTranslateAll(lang !== "en");
     setTranslationSaving(false);
-    setTranslationMessage("Turkish translation enabled for your account (site, quizzes, and flashcards).");
+    setTranslationMessage(
+      lang === "en"
+        ? "Language set to English (default)."
+        : "Turkish translation enabled for your account (site, quizzes, and flashcards)."
+    );
   };
 
   return (
@@ -91,13 +97,27 @@ export default function PreferencesSettingsPage() {
           </div>
         </div>
         <div className="space-y-2">
-          <p className="text-sm font-medium">Language (Turkish)</p>
+          <p className="text-sm font-medium">Language</p>
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Translate the entire app experience (including quizzes and flashcards) to Turkish.
+            Translate the entire app experience (including quizzes and flashcards). English is the default.
           </p>
-          <Button onClick={enableFullTranslation} disabled={translationSaving || translateAll}>
-            {translationSaving ? "Enabling Turkish translation..." : translateAll ? "Turkish enabled" : "Translate to Turkish"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant={preferredLanguage === "en" ? "default" : "outline"}
+              onClick={() => updateLanguage("en")}
+              disabled={translationSaving}
+            >
+              English
+            </Button>
+            <Button
+              variant={preferredLanguage === "tr" ? "default" : "outline"}
+              onClick={() => updateLanguage("tr")}
+              disabled={translationSaving}
+            >
+              Turkish
+            </Button>
+          </div>
+          {translationSaving && <p className="text-xs text-slate-500 dark:text-slate-400">Saving language...</p>}
           {translationMessage && <p className="text-xs text-emerald-600 dark:text-emerald-400">{translationMessage}</p>}
         </div>
         <Button onClick={savePreferences} disabled={saving}>
