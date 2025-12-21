@@ -110,19 +110,6 @@ export default function PricingPage() {
                 )}
                 {renderPrice(plan)}
               </div>
-              <Link href={plan.cta.href}>
-                <Button
-                  variant={plan.cta.variant}
-                  className={
-                    plan.cta.variant === "default"
-                      ? "bg-purple-600 text-white hover:bg-purple-700 shadow-sm"
-                      : "border border-slate-300 text-slate-700 hover:border-slate-400"
-                  }
-                  size="sm"
-                >
-                  {plan.cta.label}
-                </Button>
-              </Link>
             </div>
             {plan.name !== "Free" && (
               <p className="text-sm text-slate-700">
@@ -137,7 +124,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <div className="pt-2">
+            <div className="mt-auto pt-2">
               <Link href={plan.cta.href}>
                 <Button
                   variant={plan.cta.variant}
