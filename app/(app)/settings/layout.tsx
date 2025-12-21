@@ -17,11 +17,14 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   const activeTab = tabs.find((t) => pathname?.startsWith(t.href))?.href || tabs[0].href;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm">
-      <div className="flex h-[80vh] w-full max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-        <aside className="w-64 shrink-0 border-r border-slate-200 bg-slate-50/80 p-6 dark:border-slate-800 dark:bg-slate-900/60">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-50">Settings</h2>
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/45 px-4 py-10 backdrop-blur-sm">
+      <div className="flex h-[82vh] w-full max-w-6xl overflow-hidden rounded-[28px] bg-gradient-to-br from-white to-slate-50 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.3)] ring-1 ring-slate-200 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800">
+        <aside className="w-68 shrink-0 border-r border-slate-200/80 bg-slate-50/80 px-6 py-8 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900/60">
+          <div className="mb-8 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+              Settings
+            </p>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-50">Control center</h2>
             <p className="text-sm text-slate-600 dark:text-slate-300">Manage your account and preferences.</p>
           </div>
           <nav className="space-y-1">
@@ -32,7 +35,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                   key={tab.href}
                   href={tab.href}
                   className={cn(
-                    "flex items-center rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center rounded-xl px-3 py-2 text-sm font-medium transition-all",
                     isActive
                       ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-50 dark:ring-slate-700"
                       : "text-slate-600 hover:bg-white hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100"
@@ -44,8 +47,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             })}
           </nav>
         </aside>
-        <div className="flex-1 overflow-y-auto bg-white px-8 py-6 dark:bg-slate-900">
-          <div className="max-w-3xl space-y-6">{children}</div>
+        <div className="flex-1 overflow-y-auto px-10 py-8">
+          <div className="max-w-3xl space-y-6 rounded-2xl bg-white/70 p-1 backdrop-blur-sm dark:bg-slate-900/70">
+            {children}
+          </div>
         </div>
       </div>
     </div>
