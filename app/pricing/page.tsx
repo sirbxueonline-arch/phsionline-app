@@ -59,8 +59,12 @@ export default function PricingPage() {
               <div className="text-left">
                 <p className="text-sm uppercase tracking-[0.16em] text-text-muted">{plan.name}</p>
                 <p className="text-xl font-semibold">{plan.description}</p>
-                {plan.priceMonthly && <p className="text-sm text-text-muted">{plan.priceMonthly}</p>}
-                {plan.priceYearly && <p className="text-sm text-text-muted">{plan.priceYearly}</p>}
+                {"priceMonthly" in plan && plan.priceMonthly && (
+                  <p className="text-sm text-text-muted">{plan.priceMonthly}</p>
+                )}
+                {"priceYearly" in plan && plan.priceYearly && (
+                  <p className="text-sm text-text-muted">{plan.priceYearly}</p>
+                )}
                 {plan.name !== "Free" && (
                   <p className="mt-2 text-sm text-text-primary">
                     Unlock faster generations, richer customization, and premium support built for serious learners.
