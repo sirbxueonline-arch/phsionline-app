@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,7 +54,7 @@ const plans: Plan[] = [
   }
 ];
 
-export default function PricingPage() {
+function PricingContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
@@ -205,5 +205,13 @@ export default function PricingPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="px-6 py-10 text-center text-sm text-slate-500">Loading pricing…</div>}>
+      <PricingContent />
+    </Suspense>
   );
 }
