@@ -1,10 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-const plans = [
+type Plan = {
+  name: string;
+  description: string;
+  priceMonthly?: string;
+  priceYearly?: string;
+  features: string[];
+  cta: { label: string; href: string; variant: "default" | "secondary" };
+};
+
+const plans: Plan[] = [
   {
     name: "Free",
     description: "Start with the essentials.",
@@ -37,36 +47,53 @@ const plans = [
     ],
     cta: { label: "Contact sales", href: "/pricing/contact", variant: "default" }
   }
-] as const;
+];
 
 export default function PricingPage() {
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+
   return (
-    <main className="relative mx-auto max-w-3xl px-6 py-16 text-text-primary">
+    <main className="relative mx-auto max-w-5xl px-6 py-16 text-text-primary">
       <section className="space-y-4 text-center">
         <h1 className="text-3xl font-semibold sm:text-4xl">Simple, transparent pricing.</h1>
-        <p className="text-text-muted">
-          StudyPilot is free to start. Upgrade only if you need more.
-        </p>
+        <p className="text-text-muted">StudyPilot is free to start. Upgrade only if you need more.</p>
+        <div className="mx-auto flex w-fit items-center rounded-full border border-border bg-panel p-1 shadow-sm">
+          <Button
+            size="sm"
+            variant={billing === "monthly" ? "default" : "secondary"}
+            className={billing === "monthly" ? "bg-accent text-[var(--text-on-accent)]" : ""}
+            onClick={() => setBilling("monthly")}
+          >
+            Monthly
+          </Button>
+          <Button
+            size="sm"
+            variant={billing === "yearly" ? "default" : "secondary"}
+            className={billing === "yearly" ? "bg-accent text-[var(--text-on-accent)]" : ""}
+            onClick={() => setBilling("yearly")}
+          >
+            Yearly
+          </Button>
+        </div>
       </section>
 
-      <section className="mt-12 space-y-6">
+      <section className="mt-12 grid gap-4 md:grid-cols-3">
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className="space-y-4 rounded-2xl border border-border bg-panel px-6 py-5 shadow-sm"
+            className="relative flex flex-col gap-4 rounded-2xl border border-border bg-panel px-6 py-5 shadow-sm"
           >
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-left">
-                <p className="text-sm uppercase tracking-[0.16em] text-text-muted">{plan.name}</p>
-                <p className="text-xl font-semibold">{plan.description}</p>
-                {"priceMonthly" in plan && plan.priceMonthly && (
-                  <p className="text-sm text-text-muted">{plan.priceMonthly}</p>
-                )}
-                {"priceYearly" in plan && plan.priceYearly && (
-                  <p className="text-sm text-text-muted">{plan.priceYearly}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-left space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-muted">{plan.name}</p>
+                <p className="text-lg font-semibold">{plan.description}</p>
+                {plan.name !== "Free" && (
+                  <p className="text-sm text-text-muted">
+                    {billing === "monthly" ? plan.priceMonthly : plan.priceYearly}
+                  </p>
                 )}
                 {plan.name !== "Free" && (
-                  <p className="mt-2 text-sm text-text-primary">
+                  <p className="text-sm text-text-primary">
                     Unlock faster generations, richer customization, and premium support built for serious learners.
                   </p>
                 )}
@@ -74,7 +101,11 @@ export default function PricingPage() {
               <Link href={plan.cta.href}>
                 <Button
                   variant={plan.cta.variant}
-                  className={plan.cta.variant === "default" ? "bg-accent text-[var(--text-on-accent)] hover:bg-accent-strong shadow-sm" : ""}
+                  className={
+                    plan.cta.variant === "default"
+                      ? "bg-accent text-[var(--text-on-accent)] hover:bg-accent-strong shadow-sm"
+                      : ""
+                  }
                 >
                   {plan.cta.label}
                 </Button>
