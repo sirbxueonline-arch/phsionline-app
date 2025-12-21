@@ -27,8 +27,8 @@ export async function POST(request: Request) {
   }
 
   const origin = headers().get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const successUrl = `${origin}/upgrade?status=success`;
-  const cancelUrl = `${origin}/upgrade?status=cancelled`;
+  const successUrl = `${origin}/pricing?status=success`;
+  const cancelUrl = `${origin}/pricing?status=cancelled`;
 
   const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = stripePricePro
     ? { price: stripePricePro, quantity: 1 }
