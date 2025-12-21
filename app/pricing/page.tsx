@@ -19,30 +19,35 @@ const plans: Plan[] = [
   {
     name: "Free",
     description: "Start with the essentials.",
-    features: ["20 saves per month", "Flashcards, quizzes, study plans", "Smart defaults", "Access to dashboard"],
+    features: [
+      "Create up to 20 study sets/month (about 2–3 sessions/week)",
+      "Flashcards, quizzes, study plans",
+      "Great for light review",
+      "Access to dashboard"
+    ],
     cta: { label: "Continue free", href: "/auth/signup", variant: "secondary" }
   },
   {
     name: "Pro",
-    description: "For consistent exam prep.",
+    description: "For serious exam prep.",
     priceMonthly: "$10/mo",
     priceYearly: "$96/yr (save 20%)",
     badge: "Most popular",
     features: [
-      "200 saves per month",
-      "Priority generation (faster, more accurate)",
-      "Advanced customization for flashcards/quiz",
-      "Early access to new features"
+      "Study daily without limits (200+ sets/month)",
+      "Faster, higher-quality questions with fewer errors",
+      "Match your exact exam format and syllabus",
+      "Cancel anytime • No lock-in"
     ],
-    cta: { label: "Upgrade", href: "/pricing/upgrade", variant: "default" }
+    cta: { label: "Start Pro", href: "/pricing/upgrade", variant: "default" }
   },
   {
     name: "Teams",
-    description: "For study groups, classrooms, and small teams.",
+    description: "For teachers, tutors, and organized study groups.",
     priceMonthly: "$18/user/mo",
     priceYearly: "$180/user/yr (save 17%)",
     features: [
-      "Shared libraries & collaboration",
+      "Shared libraries & collaboration (starting at 5 users)",
       "Admin controls & permissions",
       "Team analytics and usage insights",
       "Priority support and onboarding"
@@ -88,7 +93,7 @@ export default function PricingPage() {
             }
             onClick={() => setBilling("yearly")}
           >
-            Yearly
+            Yearly (save 20%)
           </Button>
         </div>
       </section>
@@ -109,6 +114,11 @@ export default function PricingPage() {
                   </span>
                 )}
                 {renderPrice(plan)}
+                {plan.name === "Pro" && (
+                  <p className="text-sm text-slate-700">
+                    Everything you need for daily exam prep—without hitting limits.
+                  </p>
+                )}
               </div>
             </div>
             {plan.name !== "Free" && (
@@ -124,6 +134,13 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
+            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">
+              {plan.name === "Free"
+                ? "For exploring and light review"
+                : plan.name === "Pro"
+                ? "For daily exam prep"
+                : "For classes, tutors, and study groups"}
+            </p>
             <div className="mt-auto pt-2">
               <Link href={plan.cta.href}>
                 <Button
