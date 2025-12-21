@@ -101,8 +101,8 @@ export default function PricingPage() {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="text-left space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{plan.name}</p>
-                <p className="text-lg font-semibold">{plan.description}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{plan.name}</p>
+                <p className="text-xl font-bold text-slate-900">{plan.description}</p>
                 {plan.badge && (
                   <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
                     {plan.badge}
