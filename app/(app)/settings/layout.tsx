@@ -18,7 +18,16 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/45 px-4 py-10 backdrop-blur-sm">
-      <div className="flex h-[82vh] w-full max-w-6xl overflow-hidden rounded-[28px] bg-gradient-to-br from-white to-slate-50 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.3)] ring-1 ring-slate-200 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800">
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.12),_transparent_35%),_radial-gradient(circle_at_20%_20%,_rgba(14,165,233,0.12),_transparent_30%)]" />
+      <div className="relative flex h-[82vh] w-full max-w-6xl overflow-hidden rounded-[28px] bg-gradient-to-br from-white to-slate-50 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.3)] ring-1 ring-slate-200 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800">
+        <button
+          type="button"
+          aria-label="Close settings"
+          onClick={() => window.history.back()}
+          className="absolute right-4 top-4 z-10 rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-slate-50"
+        >
+          ✕
+        </button>
         <aside className="w-68 shrink-0 border-r border-slate-200/80 bg-slate-50/80 px-6 py-8 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900/60">
           <div className="mb-8 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
