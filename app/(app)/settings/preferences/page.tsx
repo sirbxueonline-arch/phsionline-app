@@ -14,6 +14,9 @@ export default function PreferencesSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [defaultCards, setDefaultCards] = useState(6);
   const [defaultTool, setDefaultTool] = useState("flashcards");
+  const [translateAll, setTranslateAll] = useState(false);
+  const [translationSaving, setTranslationSaving] = useState(false);
+  const [translationMessage, setTranslationMessage] = useState<string | null>(null);
 
   useEffect(() => {
     // This would pull defaults from Firestore; stubbed with local state for now
@@ -28,6 +31,18 @@ export default function PreferencesSettingsPage() {
       defaultTool
     });
     setSaving(false);
+  };
+
+  const enableFullTranslation = async () => {
+    if (!user) return;
+    setTranslationSaving(true);
+    setTranslationMessage(null);
+    await updateDoc(doc(db, "users", user.uid), {
+      translateEverything: true
+    });
+    setTranslateAll(true);
+    setTranslationSaving(false);
+    setTranslationMessage("Full translation enabled for your account (site, quizzes, and flashcards).");
   };
 
   return (
@@ -73,6 +88,16 @@ export default function PreferencesSettingsPage() {
               </Button>
             ))}
           </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Language</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Translate the entire app experience (including quizzes and flashcards) to your language.
+          </p>
+          <Button onClick={enableFullTranslation} disabled={translationSaving || translateAll}>
+            {translationSaving ? "Enabling translation..." : translateAll ? "Translation enabled" : "Translate everything"}
+          </Button>
+          {translationMessage && <p className="text-xs text-emerald-600 dark:text-emerald-400">{translationMessage}</p>}
         </div>
         <Button onClick={savePreferences} disabled={saving}>
           {saving ? "Saving..." : "Save preferences"}
