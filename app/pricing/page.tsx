@@ -16,7 +16,12 @@ const plans = [
     description: "For consistent exam prep.",
     priceMonthly: "$10/mo",
     priceYearly: "$96/yr (save 20%)",
-    features: ["200 saves per month", "Priority generation", "Advanced customization", "Early access to new features"],
+    features: [
+      "200 saves per month",
+      "Priority generation (faster, more accurate)",
+      "Advanced customization for flashcards/quiz",
+      "Early access to new features"
+    ],
     cta: { label: "Upgrade", href: "/pricing/upgrade", variant: "default" }
   },
   {
@@ -27,8 +32,8 @@ const plans = [
     features: [
       "Shared libraries & collaboration",
       "Admin controls & permissions",
-      "Team analytics",
-      "Priority support"
+      "Team analytics and usage insights",
+      "Priority support and onboarding"
     ],
     cta: { label: "Contact sales", href: "/pricing/contact", variant: "default" }
   }
@@ -56,6 +61,11 @@ export default function PricingPage() {
                 <p className="text-xl font-semibold">{plan.description}</p>
                 {plan.priceMonthly && <p className="text-sm text-text-muted">{plan.priceMonthly}</p>}
                 {plan.priceYearly && <p className="text-sm text-text-muted">{plan.priceYearly}</p>}
+                {plan.name !== "Free" && (
+                  <p className="mt-2 text-sm text-text-primary">
+                    Unlock faster generations, richer customization, and premium support built for serious learners.
+                  </p>
+                )}
               </div>
               <Link href={plan.cta.href}>
                 <Button
