@@ -25,6 +25,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (typeof document !== "undefined") {
       document.documentElement.lang = language;
       document.documentElement.setAttribute("data-lang", language);
+      document.documentElement.setAttribute("translate", language === "en" ? "no" : "yes");
     }
     if (typeof window !== "undefined") {
       localStorage.setItem("preferredLanguage", language);
