@@ -3,14 +3,28 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function ExportSettingsPage() {
+  const { user } = useAuth();
   const [message, setMessage] = useState<string | null>(null);
 
   const handleExport = async () => {
+    if (!user) {
+      setMessage("Please sign in to export your data.");
+      return;
+    }
     setMessage("Preparing export...");
     try {
-      const res = await fetch("/api/export");
+      const token = await user.getIdToken();
+      const res = await fetch("/api/export", {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        throw new Error("Export failed");
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
