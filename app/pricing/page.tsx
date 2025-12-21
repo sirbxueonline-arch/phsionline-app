@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 type Plan = {
   name: string;
-  description: string;
+  audience: string;
   priceMonthly?: string;
   priceYearly?: string;
   badge?: string;
@@ -18,7 +18,7 @@ type Plan = {
 const plans: Plan[] = [
   {
     name: "Free",
-    description: "Start with the essentials.",
+    audience: "Try StudyPilot • Light review",
     features: [
       "Create up to 20 study sets/month (about 2–3 sessions/week)",
       "Flashcards, quizzes, study plans",
@@ -29,9 +29,9 @@ const plans: Plan[] = [
   },
   {
     name: "Pro",
-    description: "For serious exam prep.",
-    priceMonthly: "$10/mo",
-    priceYearly: "$96/yr (save 20%)",
+    audience: "Daily exam prep without limits",
+    priceMonthly: "$10",
+    priceYearly: "$8",
     badge: "Most popular",
     features: [
       "Study daily without limits (200+ sets/month)",
@@ -43,9 +43,9 @@ const plans: Plan[] = [
   },
   {
     name: "Teams",
-    description: "For teachers, tutors, and organized study groups.",
-    priceMonthly: "$18/user/mo",
-    priceYearly: "$180/user/yr (save 17%)",
+    audience: "Teachers, tutors, study groups (5+ users)",
+    priceMonthly: "$18",
+    priceYearly: "$15",
     features: [
       "Shared libraries & collaboration (starting at 5 users)",
       "Admin controls & permissions",
@@ -57,12 +57,40 @@ const plans: Plan[] = [
 ];
 
 export default function PricingPage() {
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");
 
   const renderPrice = (plan: Plan) => {
-    if (plan.name === "Free") return <p className="text-3xl font-semibold text-slate-900">Free</p>;
+    if (plan.name === "Free") {
+      return (
+        <div className="space-y-1">
+          <p className="text-5xl font-semibold text-slate-900">Free</p>
+          <p className="text-sm text-slate-600">No card needed</p>
+        </div>
+      );
+    }
     const price = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
-    return <p className="text-2xl font-semibold text-slate-900">{price}</p>;
+    const interval =
+      billing === "monthly"
+        ? "per month, billed monthly"
+        : plan.name === "Teams"
+        ? "per user / month, billed yearly"
+        : "per month, billed yearly";
+    return (
+      <div className="space-y-1">
+        <p className="text-5xl font-semibold text-slate-900">{price}</p>
+        <p className="text-sm text-slate-600">{interval}</p>
+        {billing === "yearly" && plan.name === "Pro" && (
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
+            Save 20%
+          </span>
+        )}
+        {billing === "yearly" && plan.name === "Teams" && (
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
+            Save ~17%
+          </span>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -93,7 +121,7 @@ export default function PricingPage() {
             }
             onClick={() => setBilling("yearly")}
           >
-            Yearly (save 20%)
+            Yearly (Save 20%)
           </Button>
         </div>
       </section>
@@ -102,45 +130,22 @@ export default function PricingPage() {
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className="relative flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm"
+            className={`relative flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm ${
+              plan.name === "Pro" ? "ring-2 ring-purple-200 shadow-md translate-y-[-4px]" : ""
+            }`}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="text-left space-y-1">
                 <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">{plan.name}</p>
-                <p className="text-xl font-bold text-slate-900">{plan.description}</p>
+                <p className="text-xl font-bold text-slate-900">{plan.audience}</p>
                 {plan.badge && (
                   <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
                     {plan.badge}
                   </span>
                 )}
                 {renderPrice(plan)}
-                {plan.name === "Pro" && (
-                  <p className="text-sm text-slate-700">
-                    Everything you need for daily exam prep—without hitting limits.
-                  </p>
-                )}
               </div>
             </div>
-            {plan.name !== "Free" && (
-              <p className="text-sm text-slate-700">
-                Unlock faster generations, richer customization, and premium support built for serious learners.
-              </p>
-            )}
-            <ul className="space-y-2 text-sm text-slate-600">
-              {plan.features.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500" aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">
-              {plan.name === "Free"
-                ? "For exploring and light review"
-                : plan.name === "Pro"
-                ? "For daily exam prep"
-                : "For classes, tutors, and study groups"}
-            </p>
             <div className="mt-auto pt-2">
               <Link href={plan.cta.href}>
                 <Button
@@ -157,6 +162,36 @@ export default function PricingPage() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="mx-auto mt-12 max-w-5xl space-y-4">
+        <h2 className="text-center text-lg font-semibold text-slate-900">Compare plans in detail</h2>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="grid grid-cols-4 border-b border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+            <span>Feature</span>
+            <span className="text-center">Free</span>
+            <span className="text-center">Pro</span>
+            <span className="text-center">Teams</span>
+          </div>
+          <div className="divide-y divide-slate-200 text-sm text-slate-700">
+            {[
+              { label: "Monthly study sets", values: ["20", "200+", "200+"] },
+              { label: "Faster generation", values: ["–", "✓", "✓"] },
+              { label: "Exam-format customization", values: ["–", "✓", "✓"] },
+              { label: "Collaboration", values: ["–", "–", "✓"] },
+              { label: "Admin & analytics", values: ["–", "–", "✓"] }
+            ].map((row) => (
+              <div key={row.label} className="grid grid-cols-4 px-4 py-3">
+                <span>{row.label}</span>
+                {row.values.map((val, idx) => (
+                  <span key={idx} className="text-center">
+                    {val}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="mt-10 space-y-2 text-center text-sm text-slate-600">
