@@ -20,6 +20,8 @@ type FullResult = {
   type?: string;
   title?: string;
   subject?: string;
+  savedResourceId?: string;
+  autoSaved?: boolean;
 } | null;
 
 export default function FullscreenGenerateView() {
@@ -28,6 +30,7 @@ export default function FullscreenGenerateView() {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [savedId, setSavedId] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showResult, setShowResult] = useState(false);
@@ -53,6 +56,14 @@ export default function FullscreenGenerateView() {
       return null;
     }
   }, [data]);
+
+  useEffect(() => {
+    const initialSaved = (decoded as any)?.savedResourceId || null;
+    setSavedId(initialSaved);
+    if (initialSaved) {
+      setSaveFeedback({ type: "success", message: "Saved to your library." });
+    }
+  }, [decoded]);
 
   const quizItems = useMemo(() => {
     if (!decoded || !("quiz" in decoded)) return [];
@@ -307,6 +318,10 @@ export default function FullscreenGenerateView() {
       setSaveFeedback({ type: "error", message: "Nothing to save yet. Generate content first." });
       return;
     }
+    if (savedId) {
+      setSaveFeedback({ type: "success", message: "Already saved to your library." });
+      return;
+    }
     if (!user) {
       setSaveFeedback({ type: "error", message: "Sign in to save this to your library." });
       return;
@@ -338,6 +353,9 @@ export default function FullscreenGenerateView() {
         const detail = await res.json().catch(() => null);
         throw new Error(detail?.error || "Save failed");
       }
+      const saved = await res.json().catch(() => null);
+      const newId = saved?.id || null;
+      setSavedId(newId);
       setSaveFeedback({ type: "success", message: "Saved to your library." });
     } catch (err: any) {
       console.error("Save failed", err);
@@ -463,11 +481,15 @@ export default function FullscreenGenerateView() {
               )}
               <Button
                 onClick={handleSave}
-                disabled={saving || !decoded}
+                disabled={saving || !decoded || !!savedId}
                 className="rounded-full bg-purple-600 text-white shadow-md hover:bg-purple-700 disabled:opacity-60"
               >
                 {saving ? (
                   "Saving..."
+                ) : savedId ? (
+                  <span className="flex items-center gap-2">
+                    <BookmarkCheck className="h-4 w-4" /> Saved
+                  </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <BookmarkCheck className="h-4 w-4" /> Save to library

@@ -2,12 +2,32 @@
 
 import React from "react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+
+type SocialLinks = {
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
+};
 
 type Profile = {
   name?: string;
+  displayName?: string;
   email?: string;
+  avatarUrl?: string | null;
+  social?: SocialLinks;
+  timezone?: string | null;
+  role?: string;
+  permissions?: string[];
+  onboarding?: {
+    completed?: boolean;
+    completedAt?: string | null;
+    step?: string | null;
+  };
+  onboardingCompleted?: boolean;
+  defaultTool?: string;
   themePreference?: "light" | "dark" | "system";
   referralCode?: string;
   interests?: string[];
@@ -22,6 +42,14 @@ type AuthContextValue = {
 };
 
 const AuthContext = React.createContext<AuthContextValue | undefined>(undefined);
+
+const getBrowserTimezone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+  } catch {
+    return null;
+  }
+};
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = React.useState<User | null>(null);
@@ -70,28 +98,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setProfile(null);
   }, []);
 
-  // Ensure each user has a referral code set
+  // Ensure each user has a profile document with defaults
   React.useEffect(() => {
     if (!user) return;
-    const ensureReferral = async () => {
+    const ensureProfile = async () => {
       try {
         const ref = doc(db, "users", user.uid);
         const snap = await getDoc(ref);
-        if (!snap.exists()) {
-          await setDoc(ref, {
-            email: user.email,
-            name: user.displayName || "Pilot",
-            createdAt: new Date().toISOString(),
-            referralCode: user.uid.slice(0, 8)
-          });
-        } else if (!snap.data()?.referralCode) {
-          await updateDoc(ref, { referralCode: user.uid.slice(0, 8) });
-        }
+        const existing = (snap.data() as Profile | undefined) || {};
+        const timezone = existing.timezone || getBrowserTimezone();
+        const profileDefaults = {
+          name: existing.name || user.displayName || "Pilot",
+          displayName: existing.displayName || existing.name || user.displayName || "Pilot",
+          email: existing.email || user.email || undefined,
+          avatarUrl: existing.avatarUrl ?? user.photoURL ?? null,
+          social: existing.social || {},
+          timezone: timezone || null,
+          role: existing.role || "user",
+          permissions: existing.permissions || [],
+          onboarding:
+            existing.onboarding || {
+              completed: existing.onboardingCompleted ?? false,
+              completedAt: null,
+              step: existing.onboardingCompleted ? "completed" : "pending"
+            },
+          onboardingCompleted: existing.onboardingCompleted ?? existing.onboarding?.completed ?? false,
+          referralCode: existing.referralCode || user.uid.slice(0, 8),
+          defaultTool: existing.defaultTool || "flashcards",
+          createdAt: (existing as any)?.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        await setDoc(ref, profileDefaults, { merge: true });
       } catch (err) {
-        console.error("Failed to ensure referral code", err);
+        console.error("Failed to ensure profile", err);
       }
     };
-    ensureReferral();
+    ensureProfile();
   }, [user]);
 
   return (

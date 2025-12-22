@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ const formatAuthError = (err: any) => {
   const code = err?.code || "";
   if (code.includes("email-already-in-use")) return "That email already has an account. Try signing in instead.";
   if (code.includes("weak-password")) return "Use a stronger password (8+ characters).";
-  if (code.includes("network-request-failed")) return "Network issue—please retry once your connection is stable.";
+  if (code.includes("network-request-failed")) return "Network issue - please retry once your connection is stable.";
   if (code.includes("operation-not-supported") || code.includes("popup-blocked"))
     return "This browser blocks pop-ups. Use the email form or try the Google redirect option.";
   if (code.includes("popup-closed-by-user")) return "The Google window was closed before completing. Please try again.";
@@ -28,6 +28,14 @@ const maskEmail = (email: string) => {
   if (!email || !email.includes("@")) return "*****";
   const [userPart, domain] = email.split("@");
   return `${userPart[0] ?? ""}***@${domain}`;
+};
+
+const getBrowserTimezone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+  } catch {
+    return null;
+  }
 };
 
 export default function SignUpPage() {
@@ -114,12 +122,25 @@ export default function SignUpPage() {
     try {
       const cred = await createUserWithEmailAndPassword(auth, form.email, form.password);
       await updateProfile(cred.user, { displayName: form.name });
+      const timezone = getBrowserTimezone();
+      const createdAt = new Date().toISOString();
       await setDoc(doc(db, "users", cred.user.uid), {
         name: form.name,
+        displayName: form.name,
         email: form.email,
-        createdAt: new Date().toISOString(),
+        createdAt,
+        updatedAt: createdAt,
         referralCode: cred.user.uid.slice(0, 8),
-        referredBy: referralCode || null
+        referredBy: referralCode || null,
+        avatarUrl: cred.user.photoURL || null,
+        timezone,
+        role: "user",
+        permissions: [],
+        social: {},
+        onboarding: { completed: false, step: "signup", completedAt: null },
+        onboardingCompleted: false,
+        defaultTool: "flashcards",
+        themePreference: "system"
       });
       if (referralCode) {
         void notifyReferral(referralCode, form.name || cred.user.email || undefined, form.email, cred.user.uid);
@@ -142,14 +163,36 @@ export default function SignUpPage() {
     setError(null);
     try {
       const cred = await signInWithPopup(auth, googleProvider);
+      const userRef = doc(db, "users", cred.user.uid);
+      const existingSnap = await getDoc(userRef);
+      const existing = (existingSnap.data() as any) || {};
+      const timezone = existing?.timezone || getBrowserTimezone();
+      const createdAt = existing?.createdAt || new Date().toISOString();
+      const onboardingCompleted =
+        existing?.onboardingCompleted ??
+        (existing?.onboarding ? existing.onboarding.completed : false) ??
+        false;
+      const onboarding =
+        existing?.onboarding || { completed: onboardingCompleted, completedAt: null, step: "signup" };
       await setDoc(
-        doc(db, "users", cred.user.uid),
+        userRef,
         {
-          name: cred.user.displayName || "",
+          name: cred.user.displayName || existing?.name || "",
+          displayName: cred.user.displayName || existing?.displayName || existing?.name || "",
           email: cred.user.email,
-          createdAt: new Date().toISOString(),
-          referralCode: cred.user.uid.slice(0, 8),
-          referredBy: referralCode || null
+          createdAt,
+          updatedAt: new Date().toISOString(),
+          referralCode: existing?.referralCode || cred.user.uid.slice(0, 8),
+          referredBy: existing?.referredBy || referralCode || null,
+          avatarUrl: cred.user.photoURL || existing?.avatarUrl || null,
+          timezone,
+          role: existing?.role || "user",
+          permissions: existing?.permissions || [],
+          social: existing?.social || {},
+          onboarding,
+          onboardingCompleted,
+          defaultTool: existing?.defaultTool || "flashcards",
+          themePreference: existing?.themePreference || "system"
         },
         { merge: true }
       );

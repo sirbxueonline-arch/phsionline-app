@@ -15,7 +15,7 @@ const formatAuthError = (err: any) => {
     return "This browser blocks pop-ups. Try email instead or switch to a modern browser.";
   }
   if (code.includes("network-request-failed")) {
-    return "Network issue—please retry once your connection is stable.";
+    return "Network issue - please retry once your connection is stable.";
   }
   return err?.message || "We couldn't reach Google right now. Please try again.";
 };

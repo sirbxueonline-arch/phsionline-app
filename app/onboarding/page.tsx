@@ -11,6 +11,14 @@ import { Label } from "@/components/ui/label";
 
 const SUBJECTS = ["Math", "Science", "History", "Language", "Coding", "Business"];
 
+const detectTimezone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+  } catch {
+    return null;
+  }
+};
+
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
@@ -32,14 +40,25 @@ export default function OnboardingPage() {
     if (!user) return;
     setSaving(true);
     try {
+      const timezone = profile?.timezone || detectTimezone();
+      const completedAt = new Date().toISOString();
       await setDoc(
         doc(db, "users", user.uid),
         {
           name: name || user.displayName || "Pilot",
+          displayName: name || user.displayName || "Pilot",
           email: user.email,
+          avatarUrl: user.photoURL || profile?.avatarUrl || null,
+          timezone: timezone || null,
           interests,
           defaultTool,
-          themePreference: "system"
+          themePreference: "system",
+          onboarding: { completed: true, completedAt, step: "onboarding" },
+          onboardingCompleted: true,
+          role: profile?.role || "user",
+          permissions: profile?.permissions || [],
+          social: profile?.social || {},
+          updatedAt: completedAt
         },
         { merge: true }
       );
