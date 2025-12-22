@@ -92,11 +92,16 @@ export default function LibraryPage() {
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
-  const cleanedTitle = (res: Resource) => {
-    const raw = res.title || "";
-    const stripped = raw.replace(/^(study set\s*-\s*)/i, "").replace(/^(generated\s*)/i, "").trim();
-    return stripped || prettyType(res.type);
-  };
+const cleanedTitle = (res: Resource) => {
+  const raw = res.title || "";
+  const stripped = raw.replace(/^(study set\s*-\s*)/i, "").replace(/^(generated\s*)/i, "").trim();
+  return stripped || prettyType(res.type);
+};
+
+const truncate = (val: string, limit = 80) => {
+  if (!val) return "";
+  return val.length > limit ? `${val.slice(0, limit - 1)}…` : val;
+};
 
   const getSummary = (res: Resource) => {
     const content = (res as any)?.content;
@@ -156,13 +161,13 @@ export default function LibraryPage() {
             <CardContent className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-lg font-semibold capitalize">{cleanedTitle(res)}</p>
+                  <p className="text-lg font-semibold capitalize">{truncate(cleanedTitle(res), 72)}</p>
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
                     {prettyType(res.type)}
                   </span>
                 </div>
-                {res.subject && <p className="text-sm text-slate-500">{res.subject}</p>}
-                {getSummary(res) && <p className="text-sm text-slate-500">{getSummary(res)}</p>}
+                {res.subject && <p className="text-sm text-slate-500">{truncate(res.subject, 96)}</p>}
+                {getSummary(res) && <p className="text-sm text-slate-500">{truncate(getSummary(res), 110)}</p>}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Link href={`/study/${res.id}`}>
@@ -179,12 +184,11 @@ export default function LibraryPage() {
                 </Link>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={() => handleShare(res.id, cleanedTitle(res))}
-                  className="gap-1 whitespace-nowrap"
+                  aria-label="Share"
                 >
                   <Share2 className="h-4 w-4" />
-                  Share
                 </Button>
                 <Button
                   variant="ghost"
