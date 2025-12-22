@@ -148,7 +148,7 @@ export default function SignUpPage() {
       void fetch("/api/email/welcome", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email })
+        body: JSON.stringify({ email: form.email, name: form.name || cred.user.displayName || "" })
       }).catch(() => {});
       router.push("/onboarding");
     } catch (err: any) {
@@ -208,7 +208,7 @@ export default function SignUpPage() {
         void fetch("/api/email/welcome", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: cred.user.email })
+          body: JSON.stringify({ email: cred.user.email, name: cred.user.displayName || "" })
         }).catch(() => {});
       }
       router.push("/onboarding");
