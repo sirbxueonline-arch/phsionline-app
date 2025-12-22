@@ -187,18 +187,19 @@ const truncate = (val: string, limit = 80) => {
                   size="icon"
                   onClick={() => handleShare(res.id, cleanedTitle(res))}
                   aria-label="Share"
+                  className="h-9 w-9 rounded-md border-slate-200 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                   <Share2 className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant="outline"
+                  size="icon"
                   onClick={() => handleArchive(res.id)}
                   disabled={deletingId === res.id}
-                  className="gap-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                  aria-label="Remove"
+                  className="h-9 w-9 rounded-md border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Remove
                 </Button>
               </div>
             </CardContent>
