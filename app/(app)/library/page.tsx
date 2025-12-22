@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/components/AuthProvider";
 import { formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { collection, getDocs, query as fsQuery, where } from "firebase/firestore";
+import { collection, doc, getDocs, query as fsQuery, updateDoc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { ArrowUpRight, RefreshCcw, Share2, Trash2 } from "lucide-react";
 
 type Resource = {
   id: string;
@@ -25,6 +26,7 @@ export default function LibraryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -39,7 +41,7 @@ export default function LibraryPage() {
         const snap = await getDocs(q);
         const items = snap.docs
           .map((d) => ({ id: d.id, ...(d.data() as any) }))
-          .filter((r) => r.type !== "usage-log")
+          .filter((r) => r.type !== "usage-log" && !r.archived)
           .sort(
             (a, b) => new Date((b as any).createdAt || 0).getTime() - new Date((a as any).createdAt || 0).getTime()
           );
@@ -68,6 +70,20 @@ export default function LibraryPage() {
       });
     } else {
       navigator.clipboard?.writeText(url).catch(() => {});
+    }
+  };
+
+  const handleArchive = async (resId: string) => {
+    if (!user) return;
+    setDeletingId(resId);
+    try {
+      const ref = doc(db, "resources", resId);
+      await updateDoc(ref, { archived: true, archivedAt: new Date().toISOString() });
+      setResources((prev) => prev.filter((r) => r.id !== resId));
+    } catch (err) {
+      console.error("Archive failed", err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -137,20 +153,27 @@ export default function LibraryPage() {
       <div className="grid gap-3">
         {filtered.map((res) => (
           <Card key={res.id} className="hover:border-brand/60">
-            <CardContent className="flex items-center justify-between py-4">
-              <div>
-                <p className="text-lg font-semibold capitalize">{cleanedTitle(res)}</p>
+            <CardContent className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-semibold capitalize">{cleanedTitle(res)}</p>
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                    {prettyType(res.type)}
+                  </span>
+                </div>
                 {res.subject && <p className="text-sm text-slate-500">{res.subject}</p>}
                 {getSummary(res) && <p className="text-sm text-slate-500">{getSummary(res)}</p>}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Link href={`/study/${res.id}`}>
-                  <Button variant="outline" size="sm">
+                  <Button size="sm" className="gap-1 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900">
+                    <RefreshCcw className="h-4 w-4" />
                     Retake
                   </Button>
                 </Link>
                 <Link href={`/library/${res.id}`}>
-                  <Button variant="outline" size="sm">
+                  <Button variant="secondary" size="sm" className="gap-1">
+                    <ArrowUpRight className="h-4 w-4" />
                     Open
                   </Button>
                 </Link>
@@ -158,9 +181,20 @@ export default function LibraryPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleShare(res.id, cleanedTitle(res))}
-                  className="whitespace-nowrap"
+                  className="gap-1 whitespace-nowrap"
                 >
+                  <Share2 className="h-4 w-4" />
                   Share
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleArchive(res.id)}
+                  disabled={deletingId === res.id}
+                  className="gap-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Remove
                 </Button>
               </div>
             </CardContent>
