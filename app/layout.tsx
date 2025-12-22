@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="pb-24">{children}</div>
           <Footer />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
