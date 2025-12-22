@@ -423,7 +423,7 @@ export default function FullscreenGenerateView() {
   const isMock = !!(decoded as any)?.mocked;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white text-slate-900 dark:bg-slate-950 dark:text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-white text-slate-900 dark:bg-slate-950 dark:text-white">
       <div className="absolute inset-0 hidden dark:block gradient-bg" aria-hidden="true" />
       <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 pb-16 pt-12 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200/60 shadow-sm dark:bg-white/5 dark:ring-white/5">

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { collection, doc, getDocs, query as fsQuery, updateDoc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { ArrowUpRight, RefreshCcw, Share2, Trash2 } from "lucide-react";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 type Resource = {
   id: string;
@@ -27,17 +28,7 @@ export default function LibraryPage() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const detect = () => {
-      if (typeof window === "undefined") return;
-      setIsMobile(window.innerWidth < 768);
-    };
-    detect();
-    window.addEventListener("resize", detect);
-    return () => window.removeEventListener("resize", detect);
-  }, []);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchResources = async () => {
