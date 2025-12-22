@@ -20,8 +20,6 @@ type FullResult = {
   type?: string;
   title?: string;
   subject?: string;
-  savedResourceId?: string;
-  autoSaved?: boolean;
 } | null;
 
 export default function FullscreenGenerateView() {
@@ -56,14 +54,6 @@ export default function FullscreenGenerateView() {
       return null;
     }
   }, [data]);
-
-  useEffect(() => {
-    const initialSaved = (decoded as any)?.savedResourceId || null;
-    setSavedId(initialSaved);
-    if (initialSaved) {
-      setSaveFeedback({ type: "success", message: "Saved to your library." });
-    }
-  }, [decoded]);
 
   const quizItems = useMemo(() => {
     if (!decoded || !("quiz" in decoded)) return [];

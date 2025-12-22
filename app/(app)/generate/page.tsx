@@ -128,45 +128,12 @@ export default function GeneratePage() {
       }
       const data = responseJson || {};
 
-      const payloadBase = {
+      const payload = {
         ...data,
         type: tool,
         title: subject || `Study set - ${tool}`,
         subject
       };
-
-      let savedResourceId: string | null = null;
-      const canAutoSave = !!user && (tool === "flashcards" || tool === "quiz" || tool === "both");
-      if (canAutoSave && user) {
-        try {
-          const token = await user.getIdToken();
-          const saveRes = await fetch("/api/resources", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              content: payloadBase,
-              type: tool,
-              title: payloadBase.title,
-              subject: subject || null
-            })
-          });
-          if (saveRes.ok) {
-            const json = await saveRes.json().catch(() => null);
-            savedResourceId = json?.id || null;
-          } else {
-            console.error("Auto-save failed", saveRes.status);
-          }
-        } catch (err) {
-          console.error("Auto-save failed", err);
-        }
-      }
-
-      const payload = savedResourceId
-        ? { ...payloadBase, savedResourceId, autoSaved: true }
-        : payloadBase;
       const encoded = encodePayload(payload);
       router.push(`/generate/view?data=${encoded}`);
     } catch (err: any) {
