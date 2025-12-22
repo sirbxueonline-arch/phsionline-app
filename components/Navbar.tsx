@@ -75,16 +75,17 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "inset-x-0 top-0 z-50 w-full transition-colors",
-        scrolled && "backdrop-blur-sm",
-        isLanding ? "absolute" : "sticky"
+        "fixed inset-x-0 top-0 z-50 w-full transition-colors backdrop-blur-sm border-b border-border/60",
+        scrolled && "shadow-sm"
       )}
       style={{
         backgroundColor: scrolled
           ? resolvedTheme === "dark"
-            ? "rgba(15, 23, 42, 0.06)"
-            : "rgba(247, 249, 252, 0.04)"
-          : "transparent"
+            ? "rgba(15, 23, 42, 0.78)"
+            : "rgba(247, 249, 252, 0.88)"
+          : resolvedTheme === "dark"
+          ? "rgba(15, 23, 42, 0.78)"
+          : "rgba(247, 249, 252, 0.9)"
       }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
