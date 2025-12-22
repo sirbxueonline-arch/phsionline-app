@@ -160,12 +160,7 @@ const truncate = (val: string, limit = 80) => {
           <Card key={res.id} className="hover:border-brand/60">
             <CardContent className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-lg font-semibold capitalize">{truncate(cleanedTitle(res), 72)}</p>
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-                    {prettyType(res.type)}
-                  </span>
-                </div>
+                <p className="text-lg font-semibold capitalize">{truncate(cleanedTitle(res), 72)}</p>
                 {res.subject && <p className="text-sm text-slate-500">{truncate(res.subject, 96)}</p>}
                 {getSummary(res) && <p className="text-sm text-slate-500">{truncate(getSummary(res), 110)}</p>}
               </div>
