@@ -92,16 +92,17 @@ export default function LibraryPage() {
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
-const cleanedTitle = (res: Resource) => {
-  const raw = res.title || "";
-  const stripped = raw.replace(/^(study set\s*-\s*)/i, "").replace(/^(generated\s*)/i, "").trim();
-  return stripped || prettyType(res.type);
-};
+  const cleanedTitle = (res: Resource) => {
+    const raw = res.title || "";
+    const stripped = raw.replace(/^(study set\s*-\s*)/i, "").replace(/^(generated\s*)/i, "").trim();
+    return stripped || prettyType(res.type);
+  };
 
-const truncate = (val: string, limit = 80) => {
-  if (!val) return "";
-  return val.length > limit ? `${val.slice(0, limit - 1)}…` : val;
-};
+  const truncate = (val: string, limit = 80) => {
+    if (!val) return "";
+    return val.length > limit ? `${val.slice(0, limit - 3)}...` : val;
+  };
+
 
   const getSummary = (res: Resource) => {
     const content = (res as any)?.content;
@@ -158,13 +159,13 @@ const truncate = (val: string, limit = 80) => {
       <div className="grid gap-3">
         {filtered.map((res) => (
           <Card key={res.id} className="hover:border-brand/60">
-            <CardContent className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
+            <CardContent className="flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between md:gap-3">
+              <div className="space-y-1 md:max-w-2xl md:flex-1">
                 <p className="text-lg font-semibold capitalize">{truncate(cleanedTitle(res), 72)}</p>
                 {res.subject && <p className="text-sm text-slate-500">{truncate(res.subject, 96)}</p>}
                 {getSummary(res) && <p className="text-sm text-slate-500">{truncate(getSummary(res), 110)}</p>}
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
                 <Link href={`/study/${res.id}`}>
                   <Button size="sm" className="gap-1 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900">
                     <RefreshCcw className="h-4 w-4" />
