@@ -27,6 +27,17 @@ export default function LibraryPage() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const detect = () => {
+      if (typeof window === "undefined") return;
+      setIsMobile(window.innerWidth < 768);
+    };
+    detect();
+    window.addEventListener("resize", detect);
+    return () => window.removeEventListener("resize", detect);
+  }, []);
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -120,7 +131,7 @@ export default function LibraryPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-semibold">Library</h1>
@@ -165,7 +176,9 @@ export default function LibraryPage() {
                 {res.subject && <p className="text-sm text-slate-500">{truncate(res.subject, 96)}</p>}
                 {getSummary(res) && <p className="text-sm text-slate-500">{truncate(getSummary(res), 110)}</p>}
               </div>
-              <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
+              <div
+                className={`flex w-full flex-wrap items-center gap-2 ${isMobile ? "justify-start" : "md:w-auto md:justify-end"}`}
+              >
                 <Link href={`/study/${res.id}`}>
                   <Button size="sm" className="gap-1 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900">
                     <RefreshCcw className="h-4 w-4" />
