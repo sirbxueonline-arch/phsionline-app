@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomInt } from "crypto";
-import { adminAuth } from "@/lib/firebase/admin";
-import { adminDb, verifyToken } from "@/lib/firebaseAdmin";
+import { adminAuth, adminDb, verifyToken } from "@/lib/firebaseAdmin";
 import { sendVerifyCodeEmail } from "@/lib/email/sendVerifyCodeEmail";
 
 export async function POST(req: Request) {

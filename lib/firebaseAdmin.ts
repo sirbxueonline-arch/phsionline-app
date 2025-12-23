@@ -1,5 +1,5 @@
 // Optional Firebase Admin helper used by API routes that need token verification.
-import { getApps, initializeApp, cert, App } from "firebase-admin/app";
+import { getApps, initializeApp, cert, App, getApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -15,7 +15,9 @@ const canInitWithJson = typeof serviceAccountJson === "string" && serviceAccount
 const canInitWithFields = projectId && clientEmail && privateKey;
 
 if (typeof window === "undefined" && !adminApp) {
-  if (!canInitWithJson && !canInitWithFields) {
+  if (getApps().length) {
+    adminApp = getApp();
+  } else if (!canInitWithJson && !canInitWithFields) {
     console.warn("firebase-admin init skipped: missing service account credentials");
   } else {
     try {
@@ -33,7 +35,7 @@ if (typeof window === "undefined" && !adminApp) {
     }
   }
 } else if (getApps().length) {
-  adminApp = getApps()[0];
+  adminApp = getApp();
 }
 
 export async function verifyToken(idToken: string) {
@@ -59,4 +61,6 @@ if (adminApp) {
   }
 }
 
-export { adminDb };
+const adminAuth = adminApp ? getAuth(adminApp) : null;
+
+export { adminDb, adminAuth };

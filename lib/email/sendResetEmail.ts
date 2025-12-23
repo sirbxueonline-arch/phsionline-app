@@ -1,4 +1,4 @@
-import { adminAuth } from "@/lib/firebase/admin";
+import { adminAuth } from "@/lib/firebaseAdmin";
 import { resend } from "@/lib/email/resend";
 
 export async function sendResetEmail(email: string) {
