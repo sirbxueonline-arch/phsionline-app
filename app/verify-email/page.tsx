@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 function VerifyEmailContent() {
+  const CODE_LENGTH = 8;
   const { user, loading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -26,8 +27,9 @@ function VerifyEmailContent() {
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [code, setCode] = useState("");
+  const [codeDigits, setCodeDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [initialSend, setInitialSend] = useState(false);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -105,8 +107,9 @@ function VerifyEmailContent() {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!code.trim()) {
-      setError("Enter the 6-digit code.");
+    const code = codeDigits.join("");
+    if (!code || code.length !== CODE_LENGTH) {
+      setError(`Enter the ${CODE_LENGTH}-digit code.`);
       return;
     }
     setVerifying(true);
@@ -184,16 +187,67 @@ function VerifyEmailContent() {
         <form className="mt-6 space-y-4" onSubmit={handleVerify}>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
             Verification code
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={6}
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-              className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-lg tracking-[0.3em] text-slate-900 focus:border-purple-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              placeholder="123456"
-            />
+            <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-8">
+              {codeDigits.map((digit, idx) => (
+                <input
+                  key={idx}
+                  ref={(el) => {
+                    inputRefs.current[idx] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "");
+                    if (!val) {
+                      const next = [...codeDigits];
+                      next[idx] = "";
+                      setCodeDigits(next);
+                      return;
+                    }
+                    const chars = val.split("");
+                    const next = [...codeDigits];
+                    next[idx] = chars[0];
+                    // Fill subsequent boxes if multiple digits pasted into one box
+                    let fillIndex = idx + 1;
+                    for (let i = 1; i < chars.length && fillIndex < CODE_LENGTH; i += 1) {
+                      next[fillIndex] = chars[i];
+                      fillIndex += 1;
+                    }
+                    setCodeDigits(next);
+                    const nextRef = inputRefs.current[idx + 1];
+                    if (nextRef && chars.length === 1) nextRef.focus();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Backspace" && !codeDigits[idx]) {
+                      const prevRef = inputRefs.current[idx - 1];
+                      if (prevRef) {
+                        prevRef.focus();
+                      }
+                    }
+                  }}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
+                    if (!pasted) return;
+                    const next = [...codeDigits];
+                    let i = idx;
+                    for (const ch of pasted.slice(0, CODE_LENGTH)) {
+                      if (i >= CODE_LENGTH) break;
+                      next[i] = ch;
+                      i += 1;
+                    }
+                    setCodeDigits(next);
+                    const focusIndex = Math.min(idx + pasted.length, CODE_LENGTH - 1);
+                    const nextRef = inputRefs.current[focusIndex];
+                    if (nextRef) nextRef.focus();
+                  }}
+                  className="flex h-12 w-full items-center justify-center rounded-lg border border-slate-300 text-center text-xl font-semibold text-slate-900 focus:border-purple-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+              ))}
+            </div>
           </label>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
