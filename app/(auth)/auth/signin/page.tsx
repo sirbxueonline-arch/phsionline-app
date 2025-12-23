@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 const formatAuthError = (err: any) => {
@@ -32,9 +32,7 @@ export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [resetLoading, setResetLoading] = useState(false);
 
   useEffect(() => {
     if (user) router.replace("/dashboard");
@@ -44,7 +42,6 @@ export default function SignInPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setMessage(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
@@ -58,7 +55,6 @@ export default function SignInPage() {
   const handleGoogle = async () => {
     setLoading(true);
     setError(null);
-    setMessage(null);
     try {
       await signInWithPopup(auth, googleProvider);
       router.push("/dashboard");
@@ -69,29 +65,6 @@ export default function SignInPage() {
       }
       setError(formatAuthError(err));
       setLoading(false);
-    }
-  };
-
-  const handlePasswordReset = async () => {
-    const normalizedEmail = email.trim();
-    if (!normalizedEmail) {
-      setError("Enter your email to get a reset link.");
-      return;
-    }
-    setResetLoading(true);
-    setError(null);
-    setMessage(null);
-    try {
-      await sendPasswordResetEmail(auth, normalizedEmail);
-      setMessage("If that email is registered, we've sent a reset link.");
-    } catch (err: any) {
-      if (err?.code?.includes("user-not-found")) {
-        setMessage("If that email is registered, we've sent a reset link.");
-      } else {
-        setError(formatAuthError(err));
-      }
-    } finally {
-      setResetLoading(false);
     }
   };
 
@@ -123,14 +96,12 @@ export default function SignInPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <button
-                type="button"
-                onClick={handlePasswordReset}
-                className="text-sm font-semibold text-cyan-600 underline-offset-4 hover:underline dark:text-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={loading || resetLoading}
+              <Link
+                href="/forgotpassword"
+                className="text-sm font-semibold text-cyan-600 underline-offset-4 hover:underline dark:text-cyan-200"
               >
-                {resetLoading ? "Sending..." : "Forgot password?"}
-              </button>
+                Forgot password?
+              </Link>
             </div>
             <Input
               id="password"
@@ -147,12 +118,6 @@ export default function SignInPage() {
           <div className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
             <AlertCircle className="h-4 w-4" />
             {error}
-          </div>
-        )}
-        {message && (
-          <div className="flex items-center gap-2 rounded-md border border-emerald-500/60 bg-emerald-50 p-3 text-sm text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-100">
-            <CheckCircle2 className="h-4 w-4" />
-            {message}
           </div>
         )}
 
