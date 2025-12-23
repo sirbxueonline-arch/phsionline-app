@@ -150,7 +150,20 @@ export default function SignUpPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email, name: form.name || cred.user.displayName || "" })
       }).catch(() => {});
-      router.push("/onboarding");
+      try {
+        const token = await cred.user.getIdToken();
+        await fetch("/api/email/verify-code/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ email: form.email })
+        });
+      } catch (err) {
+        console.error("Failed to send verification code", err);
+      }
+      router.push("/verify-email");
     } catch (err: any) {
       setError(formatAuthError(err));
     } finally {
@@ -210,6 +223,23 @@ export default function SignUpPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: cred.user.email, name: cred.user.displayName || "" })
         }).catch(() => {});
+      }
+      if (!cred.user.emailVerified) {
+        try {
+          const token = await cred.user.getIdToken();
+          await fetch("/api/email/verify-code/send", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ email: cred.user.email })
+          });
+        } catch (err) {
+          console.error("Failed to send verification code", err);
+        }
+        router.push("/verify-email");
+        return;
       }
       router.push("/onboarding");
     } catch (err: any) {
