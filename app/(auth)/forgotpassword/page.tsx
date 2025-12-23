@@ -52,9 +52,7 @@ export default function ForgotPasswordPage() {
     <div className="space-y-8">
       <div className="space-y-3 text-center">
         <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Reset your password</h1>
-        <p className="text-slate-600 dark:text-slate-200">
-          Enter your account email and we&apos;ll send you a link to reset your password.
-        </p>
+        <p className="text-slate-600 dark:text-slate-200">Enter your account email and we&apos;ll send you a reset link.</p>
       </div>
 
       <form className="space-y-5" onSubmit={handleSubmit}>
