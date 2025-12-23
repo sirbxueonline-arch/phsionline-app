@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Admin SDK not configured" }, { status: 500 });
     }
 
-    const code = randomInt(0, 100000000).toString().padStart(8, "0");
+    const code = randomInt(0, 1000000).toString().padStart(6, "0");
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
     const docRef = adminDb.collection("email_verification_codes").doc(normalizedEmail);
     await docRef.set({

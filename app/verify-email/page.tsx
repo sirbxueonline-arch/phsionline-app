@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 function VerifyEmailContent() {
-  const CODE_LENGTH = 8;
+  const CODE_LENGTH = 6;
   const { user, loading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
