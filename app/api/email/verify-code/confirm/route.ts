@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminAuth, adminDb, verifyToken } from "@/lib/firebaseAdmin";
+import { sendWelcomeEmail } from "@/lib/email/sendWelcomeEmail";
 
 export async function POST(req: Request) {
   try {
@@ -95,6 +96,12 @@ export async function POST(req: Request) {
         },
         { merge: true }
       );
+
+    try {
+      await sendWelcomeEmail(targetEmail, name || data?.name || userRecord.displayName || undefined);
+    } catch (err) {
+      console.error("Welcome email failed (post-verify)", err);
+    }
 
     return NextResponse.json({ ok: true, verified: true, created: true, uid: userRecord.uid });
   } catch (err: any) {
