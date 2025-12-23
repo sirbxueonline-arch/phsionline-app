@@ -100,10 +100,13 @@ function VerifyEmailContent() {
   };
 
   useEffect(() => {
-    if (!loading && ((user && !user.emailVerified) || pendingMode) && !initialSend) {
-      void sendCode();
-    }
-  }, [loading, user, initialSend, pendingMode]);
+    // Avoid double-sending: skip if we already sent from signup (?sent=1) or session flag.
+    if (loading) return;
+    if (user?.emailVerified) return;
+    if (!user && !pendingMode) return;
+    if (initialSend || sentParam || pendingSignup?.codeSent) return;
+    void sendCode();
+  }, [loading, user, initialSend, pendingMode, sentParam, pendingSignup]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();

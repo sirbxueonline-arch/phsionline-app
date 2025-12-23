@@ -51,7 +51,7 @@ export const QuizQuestion = ({
             <Button
               key={opt}
               variant={isSelected ? "default" : "outline"}
-              className={`justify-start rounded-xl text-left text-base whitespace-normal break-words leading-relaxed min-h-[56px] ${
+              className={`w-full h-auto min-h-[56px] justify-start rounded-xl text-left text-base whitespace-normal break-words leading-relaxed ${
                 isSelected
                   ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg"
                   : "border-slate-300 text-slate-900 hover:border-purple-300/70 hover:bg-purple-50/70 dark:border-slate-700 dark:text-slate-100 dark:hover:border-purple-400/60 dark:hover:bg-slate-900"

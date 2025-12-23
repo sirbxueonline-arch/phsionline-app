@@ -118,7 +118,12 @@ export default function StudySessionPage() {
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {quiz[idx]?.options?.map((opt: string) => (
-                  <Button key={opt} variant="outline" className="justify-start" onClick={() => handleChoice(opt)}>
+                  <Button
+                    key={opt}
+                    variant="outline"
+                    className="w-full h-auto min-h-[56px] justify-start text-left whitespace-normal break-words leading-relaxed"
+                    onClick={() => handleChoice(opt)}
+                  >
                     {opt}
                   </Button>
                 ))}
