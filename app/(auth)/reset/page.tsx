@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -19,7 +19,7 @@ const formatResetError = (err: any) => {
   return err?.message || "We couldn't reset your password. Please try again.";
 };
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const oobCode = useMemo(() => searchParams.get("oobCode") || "", [searchParams]);
@@ -166,5 +166,21 @@ export default function ResetPasswordPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading reset form...
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
