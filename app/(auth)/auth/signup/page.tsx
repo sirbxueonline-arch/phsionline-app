@@ -136,11 +136,12 @@ export default function SignUpPage() {
             email: form.email,
             password: form.password,
             name: form.name,
-            referralCode
+            referralCode,
+            codeSent: true
           })
         );
       }
-      router.push(`/verify-email?email=${encodeURIComponent(form.email)}&pending=1`);
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}&pending=1&sent=1`);
     } catch (err: any) {
       setError(err?.message || "We couldn't start your signup. Please try again.");
     } finally {
@@ -215,7 +216,7 @@ export default function SignUpPage() {
         } catch (err) {
           console.error("Failed to send verification code", err);
         }
-        router.push("/verify-email");
+        router.push("/verify-email?sent=1");
         return;
       }
       router.push("/onboarding");

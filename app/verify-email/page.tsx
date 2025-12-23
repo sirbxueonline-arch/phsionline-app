@@ -14,11 +14,13 @@ function VerifyEmailContent() {
   const router = useRouter();
   const pendingEmailParam = useMemo(() => searchParams.get("email") || "", [searchParams]);
   const pendingMode = useMemo(() => searchParams.get("pending") === "1", [searchParams]);
+  const sentParam = useMemo(() => searchParams.get("sent") === "1", [searchParams]);
   const [pendingSignup, setPendingSignup] = useState<{
     email: string;
     password: string;
     name?: string;
     referralCode?: string | null;
+    codeSent?: boolean;
   } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,12 +36,19 @@ function VerifyEmailContent() {
         try {
           const parsed = JSON.parse(stored);
           setPendingSignup(parsed);
+          if (parsed?.codeSent) {
+            setInitialSend(true);
+          }
         } catch {
           setPendingSignup(null);
         }
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (sentParam) setInitialSend(true);
+  }, [sentParam]);
 
   useEffect(() => {
     if (loading) return;
