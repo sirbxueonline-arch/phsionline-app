@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { signInWithPopup, updateProfile } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -120,52 +120,29 @@ export default function SignUpPage() {
     setError(null);
     setLoading(true);
     try {
-      const cred = await createUserWithEmailAndPassword(auth, form.email, form.password);
-      await updateProfile(cred.user, { displayName: form.name });
-      const timezone = getBrowserTimezone();
-      const createdAt = new Date().toISOString();
-      await setDoc(doc(db, "users", cred.user.uid), {
-        name: form.name,
-        displayName: form.name,
-        email: form.email,
-        createdAt,
-        updatedAt: createdAt,
-        referralCode: cred.user.uid.slice(0, 8),
-        referredBy: referralCode || null,
-        avatarUrl: cred.user.photoURL || null,
-        timezone,
-        role: "user",
-        permissions: [],
-        social: {},
-        onboarding: { completed: false, step: "signup", completedAt: null },
-        onboardingCompleted: false,
-        defaultTool: "flashcards",
-        themePreference: "system"
-      });
-      if (referralCode) {
-        void notifyReferral(referralCode, form.name || cred.user.email || undefined, form.email, cred.user.uid);
-      }
-      void fetch("/api/email/welcome", {
+      const res = await fetch("/api/email/verify-code/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, name: form.name || cred.user.displayName || "" })
-      }).catch(() => {});
-      try {
-        const token = await cred.user.getIdToken();
-        await fetch("/api/email/verify-code/send", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ email: form.email })
-        });
-      } catch (err) {
-        console.error("Failed to send verification code", err);
+        body: JSON.stringify({ email: form.email, name: form.name, referralCode })
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to send verification code");
       }
-      router.push("/verify-email");
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          "studypilot_pending_signup",
+          JSON.stringify({
+            email: form.email,
+            password: form.password,
+            name: form.name,
+            referralCode
+          })
+        );
+      }
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}&pending=1`);
     } catch (err: any) {
-      setError(formatAuthError(err));
+      setError(err?.message || "We couldn't start your signup. Please try again.");
     } finally {
       setLoading(false);
     }

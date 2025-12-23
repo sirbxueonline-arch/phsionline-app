@@ -1,14 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 export default function VerifyEmailPage() {
   const { user, loading } = useAuth();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const pendingEmailParam = useMemo(() => searchParams.get("email") || "", [searchParams]);
+  const pendingMode = useMemo(() => searchParams.get("pending") === "1", [searchParams]);
+  const [pendingSignup, setPendingSignup] = useState<{
+    email: string;
+    password: string;
+    name?: string;
+    referralCode?: string | null;
+  } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -17,18 +28,32 @@ export default function VerifyEmailPage() {
   const [initialSend, setInitialSend] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("studypilot_pending_signup");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setPendingSignup(parsed);
+        } catch {
+          setPendingSignup(null);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (loading) return;
-    if (!user) {
-      router.replace("/auth/signin");
-      return;
-    }
-    if (user.emailVerified) {
+    if (user?.emailVerified) {
       router.replace("/dashboard");
+    } else if (!user && !pendingMode) {
+      router.replace("/auth/signin");
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, pendingMode]);
 
   const sendCode = async () => {
-    if (!user?.email) {
+    const targetEmail =
+      (pendingMode ? pendingEmailParam || pendingSignup?.email : user?.email || "")?.trim();
+    if (!targetEmail) {
       setError("No email found on your account.");
       return;
     }
@@ -36,14 +61,19 @@ export default function VerifyEmailPage() {
     setMessage(null);
     setError(null);
     try {
-      const token = await user.getIdToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (user?.email) {
+        const token = await user.getIdToken();
+        headers.Authorization = `Bearer ${token}`;
+      }
       const res = await fetch("/api/email/verify-code/send", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ email: user.email })
+        headers,
+        body: JSON.stringify({
+          email: targetEmail,
+          name: pendingSignup?.name,
+          referralCode: pendingSignup?.referralCode
+        })
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -59,10 +89,10 @@ export default function VerifyEmailPage() {
   };
 
   useEffect(() => {
-    if (!loading && user && !user.emailVerified && !initialSend) {
+    if (!loading && ((user && !user.emailVerified) || pendingMode) && !initialSend) {
       void sendCode();
     }
-  }, [loading, user, initialSend]);
+  }, [loading, user, initialSend, pendingMode]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,20 +104,42 @@ export default function VerifyEmailPage() {
     setError(null);
     setMessage(null);
     try {
-      const token = await user?.getIdToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      let body: Record<string, any> = { code: code.trim() };
+      if (user?.email) {
+        const token = await user?.getIdToken();
+        headers.Authorization = `Bearer ${token}`;
+      } else if (pendingMode && pendingSignup) {
+        body = {
+          ...body,
+          email: pendingSignup.email,
+          password: pendingSignup.password,
+          name: pendingSignup.name,
+          referralCode: pendingSignup.referralCode
+        };
+      } else {
+        throw new Error("No email available for verification.");
+      }
       const res = await fetch("/api/email/verify-code/confirm", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ code: code.trim() })
+        headers,
+        body: JSON.stringify(body)
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || "Invalid code");
       }
       setMessage("Email verified. Redirecting...");
+      if (pendingMode && pendingSignup) {
+        try {
+          await signInWithEmailAndPassword(auth, pendingSignup.email, pendingSignup.password);
+          sessionStorage.removeItem("studypilot_pending_signup");
+        } catch (err) {
+          console.error("Auto sign-in after verification failed", err);
+        }
+        router.replace("/onboarding");
+        return;
+      }
       await user?.reload();
       router.refresh();
       router.replace("/dashboard");
@@ -98,7 +150,7 @@ export default function VerifyEmailPage() {
     }
   };
 
-  if (loading || !user) {
+  if (loading || (!user && pendingMode && !pendingSignup && !pendingEmailParam)) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
         Checking account...
@@ -113,7 +165,10 @@ export default function VerifyEmailPage() {
           <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Verify your email</h1>
           <p className="text-slate-600 dark:text-slate-300">
             Enter the 6-digit code sent to{" "}
-            <span className="font-semibold text-slate-900 dark:text-white">{user.email}</span>.
+            <span className="font-semibold text-slate-900 dark:text-white">
+              {user?.email || pendingEmailParam || pendingSignup?.email}
+            </span>
+            .
           </p>
         </div>
 
