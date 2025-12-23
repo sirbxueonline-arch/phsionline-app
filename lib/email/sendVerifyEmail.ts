@@ -31,10 +31,6 @@ export async function sendVerifyEmail(email: string) {
           Verify email
         </a>
       </div>
-      <p style="font-size: 13px; line-height: 1.6; color: #475569; margin: 0 0 8px; text-align:center;">
-        If the button does not work, copy and paste this link into your browser:<br />
-        <a href="${link}" style="color: #7c3aed;">${link}</a>
-      </p>
       <p style="font-size: 13px; line-height: 1.6; color: #94a3b8; margin: 12px 0 0; text-align:center;">
         If you did not create an account, you can ignore this email.
       </p>
