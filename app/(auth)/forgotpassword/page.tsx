@@ -1,23 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-
-const formatAuthError = (err: any) => {
-  const code = err?.code || "";
-  if (code.includes("network-request-failed")) {
-    return "Network issue - please retry once your connection is stable.";
-  }
-  return err?.message || "We couldn't send the reset email. Please try again.";
-};
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -42,14 +31,18 @@ export default function ForgotPasswordPage() {
     setError(null);
     setMessage(null);
     try {
-      await sendPasswordResetEmail(auth, normalizedEmail);
+      const res = await fetch("/api/email/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail })
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "We couldn't send the reset email. Please try again.");
+      }
       setMessage("If that email is registered, we've sent a reset link.");
     } catch (err: any) {
-      if (err?.code?.includes("user-not-found")) {
-        setMessage("If that email is registered, we've sent a reset link.");
-      } else {
-        setError(formatAuthError(err));
-      }
+      setError(err?.message || "We couldn't send the reset email. Please try again.");
     } finally {
       setLoading(false);
     }
