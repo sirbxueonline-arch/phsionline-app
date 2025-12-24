@@ -4,6 +4,7 @@ import { adminDb, verifyToken } from "@/lib/firebaseAdmin";
 const apiKey = process.env.GEMINI_API_KEY;
 const USAGE_TYPE = "usage-log";
 const USAGE_LIMIT = 20;
+const UNLIMITED_EMAILS = ["studypilot.app@gmail.com"].map((e) => e.toLowerCase());
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 const MODEL = GEMINI_MODEL;
@@ -20,14 +21,17 @@ export async function POST(req: NextRequest) {
     const authHeader = req.headers.get("authorization");
     const token = authHeader?.replace("Bearer ", "");
     let uid: string | null = null;
+    let tokenEmail: string | null = null;
     if (token) {
       const decoded = await verifyToken(token);
       uid = decoded?.uid || null;
+      tokenEmail = decoded?.email?.toLowerCase() || null;
       // Fallback decode for local dev when admin SDK is not configured
       if (!uid) {
         try {
           const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
           uid = payload?.user_id || payload?.uid || payload?.sub || null;
+          tokenEmail = tokenEmail || payload?.email?.toLowerCase() || null;
         } catch (err) {
           uid = null;
         }
@@ -42,9 +46,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing tool or text" }, { status: 400 });
     }
 
-    // Usage limit check (20 per month)
+    const unlimited = await isUnlimitedUser(uid, tokenEmail);
+
+    // Usage limit check (20 per month) unless unlimited
     let overLimit = false;
-    if (adminDb) {
+    if (adminDb && !unlimited) {
       try {
         const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const snap = await adminDb
@@ -338,4 +344,23 @@ async function logUsage(uid: string, tool: string, subject: string | undefined) 
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
+}
+
+async function isUnlimitedUser(uid: string, tokenEmail: string | null) {
+  const allowlist = new Set(UNLIMITED_EMAILS);
+  if (tokenEmail && allowlist.has(tokenEmail)) return true;
+  if (!adminDb) return false;
+  try {
+    const snap = await adminDb.collection("users").doc(uid).get();
+    const data = (snap.data() as any) || {};
+    const email = data.email ? String(data.email).toLowerCase() : null;
+    const role = data.role;
+    const permissions: string[] = data.permissions || [];
+    if (role === "admin") return true;
+    if (permissions.includes("unlimited")) return true;
+    if (email && allowlist.has(email)) return true;
+  } catch (err) {
+    console.warn("Unlimited check failed", err);
+  }
+  return false;
 }

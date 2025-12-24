@@ -49,6 +49,8 @@ export default function GeneratePage() {
   const [stageIndex, setStageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<number | null>(null);
+  const [usageLimit, setUsageLimit] = useState<number | null>(20);
+  const [unlimited, setUnlimited] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
 
   const controllerRef = useRef<AbortController | null>(null);
@@ -70,7 +72,12 @@ export default function GeneratePage() {
         const json = await res.json();
         if (typeof json?.usage === "number") {
           setUsage(json.usage);
-          if (json.usage >= (json.limit ?? 20)) setLimitReached(true);
+          const limitValue = typeof json?.limit === "number" ? json.limit : null;
+          setUsageLimit(limitValue);
+          const isUnlimited = json?.status === "unlimited" || limitValue === null;
+          setUnlimited(isUnlimited);
+          if (!isUnlimited && json.usage >= (limitValue ?? 20)) setLimitReached(true);
+          if (isUnlimited) setLimitReached(false);
         }
       } catch (err) {
         console.warn("Usage fetch failed", err);
@@ -152,9 +159,9 @@ export default function GeneratePage() {
     setLoading(false);
   };
 
-  const usageLimit = 20;
   const usageValue = usage ?? 0;
-  const usagePercent = Math.min(100, Math.round((usageValue / usageLimit) * 100));
+  const effectiveLimit = unlimited ? null : usageLimit ?? 20;
+  const usagePercent = effectiveLimit ? Math.min(100, Math.round((usageValue / effectiveLimit) * 100)) : 100;
   const questionMixLabel = {
     mixed: "Mixed question types",
     concept: "Concept checks",
@@ -190,7 +197,7 @@ export default function GeneratePage() {
             <Gauge className="h-4 w-4" aria-hidden />
             <div className="flex items-center gap-2">
               <span>
-                Credits: {usageValue} / {usageLimit}
+                Credits: {usageValue} / {unlimited ? "unlimited" : effectiveLimit}
               </span>
               <div className="h-2 w-20 rounded-full bg-slate-200 dark:bg-slate-700">
                 <div className="h-2 rounded-full bg-accent" style={{ width: `${usagePercent}%` }} />
@@ -471,7 +478,7 @@ export default function GeneratePage() {
               <div className="flex flex-wrap items-center gap-3">
                 <Button
                   onClick={handleGenerate}
-                  disabled={loading || limitReached}
+                  disabled={loading || (limitReached && !unlimited)}
                   className="min-w-[180px] bg-accent text-[var(--text-on-accent)] shadow-sm hover:bg-accent-strong"
                   aria-busy={loading}
                 >
@@ -490,7 +497,7 @@ export default function GeneratePage() {
                     {error}
                   </p>
                 )}
-                {limitReached && !error && (
+                {limitReached && !error && !unlimited && (
                   <p className="text-sm text-amber-600 dark:text-amber-300">Limit reached. Upgrade to keep creating.</p>
                 )}
                 {!loading && !error && (
