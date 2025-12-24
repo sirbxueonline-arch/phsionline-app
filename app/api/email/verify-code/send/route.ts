@@ -38,9 +38,26 @@ export async function POST(req: Request) {
       name: name || null
     });
 
-    await sendVerifyCodeEmail(normalizedEmail, code);
+    // Return fast: give the email provider up to 1s to respond, then continue in the background.
+    const SEND_TIMEOUT_MS = 1000;
+    const sendPromise = sendVerifyCodeEmail(normalizedEmail, code);
+    const sendResult = await Promise.race([
+      sendPromise.then(() => "sent" as const).catch((err) => {
+        console.error("verify code email failed fast", err);
+        return "failed" as const;
+      }),
+      new Promise<"queued">((resolve) => setTimeout(() => resolve("queued"), SEND_TIMEOUT_MS))
+    ]);
 
-    return NextResponse.json({ ok: true, expiresAt });
+    if (sendResult === "failed") {
+      return NextResponse.json({ error: "Failed to send code" }, { status: 500 });
+    }
+
+    if (sendResult === "queued") {
+      void sendPromise.catch((err) => console.error("verify code email failed post-response", err));
+    }
+
+    return NextResponse.json({ ok: true, expiresAt, queued: sendResult === "queued" });
   } catch (err: any) {
     console.error("send verify code failed", err);
     return NextResponse.json({ error: err?.message || "Failed to send code" }, { status: 500 });

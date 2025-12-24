@@ -68,6 +68,8 @@ function VerifyEmailContent() {
       setError("No email found on your account.");
       return;
     }
+    // Prevent duplicate auto-sends if state updates while a request is in flight.
+    setInitialSend(true);
     setSending(true);
     setMessage(null);
     setError(null);
@@ -86,11 +88,16 @@ function VerifyEmailContent() {
           referralCode: pendingSignup?.referralCode
         })
       });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || "Failed to send code");
       }
-      setMessage("Code sent. Check your inbox for the 6-digit code.");
+      const queued = Boolean((data as any)?.queued);
+      setMessage(
+        queued
+          ? "Request received. Your code is on its way within a few seconds - check spam if you don't see it."
+          : "Code sent. Check your inbox for the 6-digit code."
+      );
     } catch (err: any) {
       setError(err?.message || "Failed to send code.");
     } finally {
@@ -105,8 +112,11 @@ function VerifyEmailContent() {
     if (user?.emailVerified) return;
     if (!user && !pendingMode) return;
     if (initialSend || sentParam || pendingSignup?.codeSent) return;
+    const targetEmail =
+      (pendingMode ? pendingEmailParam || pendingSignup?.email : user?.email || "")?.trim();
+    if (!targetEmail) return;
     void sendCode();
-  }, [loading, user, initialSend, pendingMode, sentParam, pendingSignup]);
+  }, [loading, user, initialSend, pendingMode, sentParam, pendingSignup, pendingEmailParam]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -289,7 +299,7 @@ function VerifyEmailContent() {
         )}
 
         <p className="mt-6 text-sm text-slate-500 dark:text-slate-300">
-          Didn’t get the code? Check spam, or resend the code.
+          Didn't get the code? Check spam, or resend the code.
         </p>
       </div>
     </div>
