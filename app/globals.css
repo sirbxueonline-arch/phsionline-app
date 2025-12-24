@@ -56,6 +56,9 @@ body {
 body {
   @apply antialiased;
   background: var(--bg);
+  background-image: var(--bg-layer-1), var(--bg-layer-2), var(--bg-layer-3);
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--text-primary);
 }
 
@@ -66,17 +69,6 @@ a {
 
 .shadow-soft {
   box-shadow: var(--shadow-soft);
-}
-
-.app-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--bg);
-  background-image: var(--bg-layer-1), var(--bg-layer-2), var(--bg-layer-3);
-  background-repeat: no-repeat;
-  background-size: cover;
-  pointer-events: none;
 }
 
 .hero-glow {
