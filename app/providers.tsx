@@ -5,7 +5,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="studypilot-theme">
       <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   );
