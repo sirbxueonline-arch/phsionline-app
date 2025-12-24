@@ -8,7 +8,7 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <main className="relative z-0 overflow-x-hidden overflow-y-hidden text-text-primary">
+    <main className="relative z-0 overflow-x-hidden text-text-primary">
       <div className="hero-glow" aria-hidden="true" />
 
       <section className="relative mx-auto flex min-h-[calc(100vh-140px)] max-w-[640px] flex-col items-center justify-center px-6 py-16 text-center">
