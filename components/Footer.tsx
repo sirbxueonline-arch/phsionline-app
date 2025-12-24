@@ -13,7 +13,7 @@ export const Footer = () => {
   const { resolvedTheme } = useTheme();
   return (
     <footer
-      className="sticky bottom-0 left-0 right-0 z-40 px-6 py-4 text-sm text-text-muted"
+      className="px-6 py-4 text-sm text-text-muted"
       style={{
         backgroundColor: "transparent",
         boxShadow: "none",

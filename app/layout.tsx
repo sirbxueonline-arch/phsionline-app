@@ -30,9 +30,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${inter.variable} min-h-screen bg-background text-text-primary transition-colors duration-300 font-sans`}
       >
         <Providers>
-          <Navbar />
-          <main className="pt-20 pb-4">{children}</main>
-          <Footer />
+          <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex-1 pt-20 pb-8">{children}</main>
+            <Footer />
+          </div>
         </Providers>
         <Analytics />
       </body>
