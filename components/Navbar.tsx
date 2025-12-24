@@ -77,17 +77,19 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 w-full transition-colors backdrop-blur-sm border-b border-border/60",
-        scrolled && "shadow-sm"
+        "fixed inset-x-0 top-0 z-50 w-full transition-all backdrop-blur-lg",
+        scrolled && "shadow-[0_10px_40px_rgba(15,23,42,0.08)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.45)]"
       )}
       style={{
         backgroundColor: scrolled
           ? resolvedTheme === "dark"
-            ? "rgba(15, 23, 42, 0.78)"
-            : "rgba(247, 249, 252, 0.88)"
+            ? "rgba(15, 23, 42, 0.82)"
+            : "rgba(247, 249, 252, 0.9)"
           : resolvedTheme === "dark"
-          ? "rgba(15, 23, 42, 0.78)"
-          : "rgba(247, 249, 252, 0.9)"
+          ? "rgba(15, 23, 42, 0.8)"
+          : "rgba(247, 249, 252, 0.88)",
+        borderBottom: "1px solid transparent",
+        backdropFilter: "blur(14px) saturate(140%)"
       }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -175,7 +177,7 @@ export const Navbar = () => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-panel shadow-sm">
+        <div className="md:hidden bg-panel/95 backdrop-blur-lg shadow-lg">
           <nav className="flex flex-col gap-1 px-4 py-3 text-sm font-medium text-text-primary">
             {(isAuthed ? authedLinks : marketingLinks).map((link) => (
               <button
