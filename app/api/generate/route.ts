@@ -98,6 +98,11 @@ export async function POST(req: NextRequest) {
         } catch (err) {
           console.error("Usage log failed", err);
         }
+        try {
+          await logMaterial(uid, tool, text, settings, parsed);
+        } catch (err) {
+          console.error("Material log failed", err);
+        }
       }
       return NextResponse.json(parsed);
     } catch (error: any) {
@@ -341,6 +346,28 @@ async function logUsage(uid: string, tool: string, subject: string | undefined) 
     title,
     subject: subject || null,
     content: { tool, subject: subject || null, createdAt: new Date().toISOString() },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+}
+
+async function logMaterial(
+  uid: string,
+  tool: string,
+  userPrompt: string,
+  settings: Record<string, any> | undefined,
+  content: any
+) {
+  const trimmedPrompt = (userPrompt || "").toString();
+  const title = `Generated ${tool}`;
+  await adminDb?.collection("resources").add({
+    userId: uid,
+    type: tool,
+    title,
+    subject: settings?.subject || null,
+    content,
+    prompt: trimmedPrompt,
+    settings: settings || {},
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
