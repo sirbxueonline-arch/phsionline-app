@@ -15,10 +15,10 @@ export const Footer = () => {
     <footer
       className="px-6 py-4 text-sm text-text-muted"
       style={{
-        backgroundColor: "transparent",
+        backgroundColor: resolvedTheme === "dark" ? "rgba(11, 16, 33, 0.6)" : "rgba(247, 249, 252, 0.8)",
         boxShadow: "none",
         borderTop: "1px solid transparent",
-        backdropFilter: "none"
+        backdropFilter: "blur(12px) saturate(140%)"
       }}
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between">
