@@ -11,20 +11,14 @@ const LINKS = [
 
 export const Footer = () => {
   const { resolvedTheme } = useTheme();
-  const background =
-    resolvedTheme === "dark" ? "rgba(15, 23, 42, 0.82)" : "rgba(247, 249, 252, 0.92)";
-
   return (
     <footer
-      className="sticky bottom-0 left-0 right-0 z-40 px-6 py-4 text-sm text-text-muted backdrop-blur-lg"
+      className="sticky bottom-0 left-0 right-0 z-40 px-6 py-4 text-sm text-text-muted"
       style={{
-        background,
-        boxShadow:
-          resolvedTheme === "dark"
-            ? "0 -10px 40px rgba(0, 0, 0, 0.35)"
-            : "0 -10px 40px rgba(15, 23, 42, 0.08)",
+        backgroundColor: "transparent",
+        boxShadow: "none",
         borderTop: "1px solid transparent",
-        backdropFilter: "blur(14px) saturate(140%)"
+        backdropFilter: "none"
       }}
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between">
