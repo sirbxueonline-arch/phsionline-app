@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <Providers>
           <Navbar />
-          <div className="pt-20 pb-24">{children}</div>
+          <main className="pt-20 pb-16">{children}</main>
           <Footer />
         </Providers>
         <Analytics />

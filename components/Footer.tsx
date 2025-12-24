@@ -16,7 +16,7 @@ export const Footer = () => {
 
   return (
     <footer
-      className="fixed bottom-0 left-0 right-0 z-50 px-6 py-4 text-sm text-text-muted backdrop-blur-lg"
+      className="sticky bottom-0 left-0 right-0 z-40 px-6 py-4 text-sm text-text-muted backdrop-blur-lg"
       style={{
         background,
         boxShadow:
