@@ -169,7 +169,6 @@ export default function GeneratePage() {
           return next;
         });
       }, 100);
-      setStageIndex(2);
       setLoadingStage(GENERATE_STAGES[2]);
 
       const payload = {
