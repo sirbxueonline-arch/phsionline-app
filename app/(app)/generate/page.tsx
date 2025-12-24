@@ -47,6 +47,7 @@ export default function GeneratePage() {
   const [loading, setLoading] = useState(false);
   const [loadingStage, setLoadingStage] = useState(GENERATE_STAGES[0]);
   const [stageIndex, setStageIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<number | null>(null);
   const [usageLimit, setUsageLimit] = useState<number | null>(20);
@@ -54,6 +55,7 @@ export default function GeneratePage() {
   const [limitReached, setLimitReached] = useState(false);
 
   const controllerRef = useRef<AbortController | null>(null);
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchUsage = async () => {
@@ -87,24 +89,49 @@ export default function GeneratePage() {
   }, [user]);
 
   useEffect(() => {
-    if (!loading) return;
-    let idx = 0;
+    if (!loading) {
+      setProgress(0);
+      setStageIndex(0);
+      setLoadingStage(GENERATE_STAGES[0]);
+      return;
+    }
+    setProgress(5);
     setStageIndex(0);
-    setLoadingStage(GENERATE_STAGES[idx]);
+    setLoadingStage(GENERATE_STAGES[0]);
     const interval = setInterval(() => {
-      idx = (idx + 1) % GENERATE_STAGES.length;
-      setStageIndex(idx);
-      setLoadingStage(GENERATE_STAGES[idx]);
-    }, 900);
+      setProgress((prev) => {
+        const next = Math.min(100, prev + 2.5);
+        if (next >= 70) {
+          setStageIndex(2);
+          setLoadingStage(GENERATE_STAGES[2]);
+        } else if (next >= 35) {
+          setStageIndex(1);
+          setLoadingStage(GENERATE_STAGES[1]);
+        }
+        return next;
+      });
+    }, 220);
     return () => clearInterval(interval);
   }, [loading]);
 
+  useEffect(() => {
+    return () => {
+      redirectTimeoutRef.current && clearTimeout(redirectTimeoutRef.current);
+      controllerRef.current?.abort();
+    };
+  }, []);
+
   const handleGenerate = async () => {
+    if (redirectTimeoutRef.current) {
+      clearTimeout(redirectTimeoutRef.current);
+      redirectTimeoutRef.current = null;
+    }
     setLoading(true);
     setError(null);
     const safeCount = Number.isFinite(count) && count > 0 ? count : 10;
     const controller = new AbortController();
     controllerRef.current = controller;
+    let success = false;
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -134,6 +161,10 @@ export default function GeneratePage() {
         throw new Error(message);
       }
       const data = responseJson || {};
+      success = true;
+      setProgress(100);
+      setStageIndex(2);
+      setLoadingStage(GENERATE_STAGES[2]);
 
       const payload = {
         ...data,
@@ -142,7 +173,10 @@ export default function GeneratePage() {
         subject
       };
       const encoded = encodePayload(payload);
-      router.push(`/generate/view?data=${encoded}`);
+      redirectTimeoutRef.current = setTimeout(() => {
+        router.push(`/generate/view?data=${encoded}`);
+        setLoading(false);
+      }, 2000);
     } catch (err: any) {
       if (err.name === "AbortError") {
         setError("Creation cancelled");
@@ -150,13 +184,21 @@ export default function GeneratePage() {
         setError(err.message || "Creation failed");
       }
     } finally {
-      setLoading(false);
+      if (!success) {
+        setLoading(false);
+        setProgress(0);
+      }
     }
   };
 
   const cancelGeneration = () => {
+    if (redirectTimeoutRef.current) {
+      clearTimeout(redirectTimeoutRef.current);
+      redirectTimeoutRef.current = null;
+    }
     controllerRef.current?.abort();
     setLoading(false);
+    setProgress(0);
   };
 
   const usageValue = usage ?? 0;
@@ -468,7 +510,7 @@ export default function GeneratePage() {
                   <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
                     <div
                       className="h-2 rounded-full bg-accent transition-all"
-                      style={{ width: `${((stageIndex + 1) / GENERATE_STAGES.length) * 100}%` }}
+                      style={{ width: `${progress}%` }}
                     />
                   </div>
                   {renderSkeleton()}
