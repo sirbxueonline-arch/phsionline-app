@@ -56,6 +56,7 @@ export default function GeneratePage() {
 
   const controllerRef = useRef<AbortController | null>(null);
   const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchUsage = async () => {
@@ -117,6 +118,7 @@ export default function GeneratePage() {
   useEffect(() => {
     return () => {
       redirectTimeoutRef.current && clearTimeout(redirectTimeoutRef.current);
+      progressIntervalRef.current && clearTimeout(progressIntervalRef.current);
       controllerRef.current?.abort();
     };
   }, []);
@@ -162,7 +164,18 @@ export default function GeneratePage() {
       }
       const data = responseJson || {};
       success = true;
-      setProgress(100);
+      setProgress((prev) => (prev < 85 ? 85 : prev));
+      progressIntervalRef.current && clearTimeout(progressIntervalRef.current);
+      progressIntervalRef.current = setInterval(() => {
+        setProgress((prev) => {
+          const next = Math.min(100, prev + 5);
+          if (next >= 100 && progressIntervalRef.current) {
+            clearInterval(progressIntervalRef.current);
+            progressIntervalRef.current = null;
+          }
+          return next;
+        });
+      }, 100);
       setStageIndex(2);
       setLoadingStage(GENERATE_STAGES[2]);
 
@@ -176,6 +189,7 @@ export default function GeneratePage() {
       redirectTimeoutRef.current = setTimeout(() => {
         router.push(`/generate/view?data=${encoded}`);
         setLoading(false);
+        progressIntervalRef.current && clearTimeout(progressIntervalRef.current);
       }, 2000);
     } catch (err: any) {
       if (err.name === "AbortError") {
@@ -187,6 +201,7 @@ export default function GeneratePage() {
       if (!success) {
         setLoading(false);
         setProgress(0);
+        progressIntervalRef.current && clearTimeout(progressIntervalRef.current);
       }
     }
   };
@@ -196,6 +211,7 @@ export default function GeneratePage() {
       clearTimeout(redirectTimeoutRef.current);
       redirectTimeoutRef.current = null;
     }
+    progressIntervalRef.current && clearTimeout(progressIntervalRef.current);
     controllerRef.current?.abort();
     setLoading(false);
     setProgress(0);
