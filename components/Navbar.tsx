@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogOut, Moon, Sun, Menu, X } from "lucide-react";
 
@@ -32,15 +32,14 @@ const ThemeToggle = () => {
 
 export const Navbar = () => {
   const { resolvedTheme } = useTheme();
-  const pathname = usePathname();
   const router = useRouter();
   const { user, signOutUser } = useAuth();
   const isMobile = useIsMobile();
 
   const isAuthed = !!user;
-  const isLanding = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const [navHeight, setNavHeight] = useState(76);
@@ -55,7 +54,7 @@ export const Navbar = () => {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
+        setProfileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", onClick);
@@ -75,12 +74,12 @@ export const Navbar = () => {
 
   useEffect(() => {
     if (!isMobile) {
-      setMenuOpen(false);
+      setMobileMenuOpen(false);
       return;
     }
     const body = document.body;
     const previous = body.style.overflow;
-    if (menuOpen) {
+    if (mobileMenuOpen) {
       body.style.overflow = "hidden";
     } else {
       body.style.overflow = "";
@@ -88,7 +87,19 @@ export const Navbar = () => {
     return () => {
       body.style.overflow = previous;
     };
-  }, [menuOpen, isMobile]);
+  }, [mobileMenuOpen, isMobile]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen && !profileMenuOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileMenuOpen, profileMenuOpen]);
 
   const authedLinks = [
     { href: "/dashboard", label: "Dashboard" },
@@ -151,19 +162,25 @@ export const Navbar = () => {
                 <div className="relative" ref={menuRef}>
                   <button
                     type="button"
-                    onClick={() => setMenuOpen((prev) => !prev)}
+                    onClick={() => setProfileMenuOpen((prev) => !prev)}
                     className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-sm font-semibold text-text-primary shadow-sm ring-1 ring-border"
                     aria-haspopup="menu"
-                    aria-expanded={menuOpen}
+                    aria-expanded={profileMenuOpen}
+                    aria-controls="account-menu"
+                    aria-label="Open account menu"
                   >
                     {(user?.email?.[0] || "U").toUpperCase()}
                   </button>
-                  {menuOpen && (
-                    <div className="absolute right-0 mt-2 w-44 rounded-xl border border-border bg-panel p-1 shadow-sm">
+                  {profileMenuOpen && (
+                    <div
+                      id="account-menu"
+                      className="absolute right-0 mt-2 w-44 rounded-xl border border-border bg-panel p-1 shadow-sm"
+                      role="menu"
+                    >
                       <button
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-primary hover:bg-surface"
                         onClick={() => {
-                          setMenuOpen(false);
+                          setProfileMenuOpen(false);
                           router.push("/settings");
                         }}
                       >
@@ -172,7 +189,7 @@ export const Navbar = () => {
                       <button
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-primary hover:bg-surface"
                         onClick={() => {
-                          setMenuOpen(false);
+                          setProfileMenuOpen(false);
                           signOutUser();
                         }}
                       >
@@ -198,27 +215,29 @@ export const Navbar = () => {
             <ThemeToggle />
             <button
               type="button"
-              onClick={() => setMenuOpen((prev) => !prev)}
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-text-primary shadow-sm dark:bg-slate-900"
               aria-label="Toggle navigation"
-              aria-expanded={menuOpen}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
       </header>
 
-      {menuOpen && (
+      {mobileMenuOpen && (
         <>
           <div
             className="fixed inset-0 z-30 bg-black/25 backdrop-blur-[1px] md:hidden"
             aria-label="Close menu backdrop"
-            onClick={() => setMenuOpen(false)}
+            onClick={() => setMobileMenuOpen(false)}
           />
           <div
             className="fixed inset-x-0 bottom-0 z-40 md:hidden border-t border-border bg-panel/95 backdrop-blur-xl shadow-xl"
             style={{ top: navHeight || 72 }}
+            id="mobile-menu"
           >
             <nav className="flex flex-col gap-1 px-4 py-4 text-base font-semibold text-text-primary">
               {(isAuthed ? authedLinks : marketingLinks).map((link) => (
@@ -226,7 +245,7 @@ export const Navbar = () => {
                   key={link.href}
                   className="rounded-lg px-3 py-3 text-left hover:bg-surface"
                   onClick={() => {
-                    setMenuOpen(false);
+                    setMobileMenuOpen(false);
                     router.push(link.href);
                   }}
                 >
@@ -238,7 +257,7 @@ export const Navbar = () => {
                   <button
                     className="rounded-lg px-3 py-3 text-left hover:bg-surface"
                     onClick={() => {
-                      setMenuOpen(false);
+                      setMobileMenuOpen(false);
                       router.push("/settings");
                     }}
                   >
@@ -247,7 +266,7 @@ export const Navbar = () => {
                   <button
                     className="flex items-center gap-2 rounded-lg px-3 py-3 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/60"
                     onClick={() => {
-                      setMenuOpen(false);
+                      setMobileMenuOpen(false);
                       signOutUser();
                     }}
                   >
@@ -259,7 +278,7 @@ export const Navbar = () => {
                 <button
                   className="rounded-lg px-3 py-3 text-left hover:bg-surface"
                   onClick={() => {
-                    setMenuOpen(false);
+                    setMobileMenuOpen(false);
                     router.push("/auth/signin");
                   }}
                 >

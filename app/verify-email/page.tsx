@@ -211,6 +211,11 @@ function VerifyEmailContent() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={1}
+                  autoComplete={idx === 0 ? "one-time-code" : "off"}
+                  autoFocus={idx === 0}
+                  aria-label={`Digit ${idx + 1} of ${CODE_LENGTH}`}
+                  aria-invalid={!!error}
+                  disabled={verifying}
                   value={digit}
                   onChange={(e) => {
                     const val = e.target.value.replace(/\D/g, "");
@@ -239,6 +244,14 @@ function VerifyEmailContent() {
                       if (prevRef) {
                         prevRef.focus();
                       }
+                    }
+                    if (e.key === "ArrowLeft") {
+                      const prevRef = inputRefs.current[idx - 1];
+                      if (prevRef) prevRef.focus();
+                    }
+                    if (e.key === "ArrowRight") {
+                      const nextRef = inputRefs.current[idx + 1];
+                      if (nextRef) nextRef.focus();
                     }
                   }}
                   onPaste={(e) => {
@@ -286,13 +299,21 @@ function VerifyEmailContent() {
         </form>
 
         {message && (
-          <div className="mt-4 flex items-center gap-2 rounded-md border border-emerald-500/60 bg-emerald-50 p-3 text-sm text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-100">
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-4 flex items-center gap-2 rounded-md border border-emerald-500/60 bg-emerald-50 p-3 text-sm text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-100"
+          >
             <CheckCircle2 className="h-4 w-4" />
             {message}
           </div>
         )}
         {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-4 flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100"
+          >
             <AlertCircle className="h-4 w-4" />
             {error}
           </div>

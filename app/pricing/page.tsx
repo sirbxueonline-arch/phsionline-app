@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -210,8 +210,9 @@ function PricingContent() {
 
 export default function PricingPage() {
   return (
-    <Suspense fallback={<div className="px-6 py-10 text-center text-sm text-slate-500">Loading pricing…</div>}>
+    <Suspense fallback={<div className="px-6 py-10 text-center text-sm text-slate-500">Loading pricing...</div>}>
       <PricingContent />
     </Suspense>
   );
 }
+

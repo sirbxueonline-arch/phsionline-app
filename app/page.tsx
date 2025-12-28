@@ -20,7 +20,7 @@ export default function LandingPage() {
             Turn any topic into <span className="font-extrabold">exam-ready practice.</span>
           </h1>
           <p className="text-lg leading-relaxed text-text-muted">
-            Focused flashcards and quizzes—no fluff. Built to improve accuracy and exam-day recall.
+            Focused flashcards and quizzes - no fluff. Built to improve accuracy and exam-day recall.
           </p>
         </div>
 
@@ -43,7 +43,7 @@ export default function LandingPage() {
         </div>
 
         <p className="mt-4 text-sm text-text-muted">
-          Designed for focused exam preparation—built for results, not streaks.
+          Designed for focused exam preparation - built for results, not streaks.
         </p>
       </section>
     </main>

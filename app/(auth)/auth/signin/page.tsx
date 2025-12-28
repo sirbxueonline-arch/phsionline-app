@@ -43,7 +43,12 @@ export default function SignInPage() {
     setLoading(true);
     setError(null);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const normalizedEmail = email.trim();
+      if (!normalizedEmail) {
+        setError("Enter your email to sign in.");
+        return;
+      }
+      await signInWithEmailAndPassword(auth, normalizedEmail, password);
       router.push("/dashboard");
     } catch (err: any) {
       setError(formatAuthError(err));
@@ -61,6 +66,7 @@ export default function SignInPage() {
     } catch (err: any) {
       if (err?.code?.includes("popup-blocked")) {
         router.push("/auth/google-redirect?intent=signin");
+        setLoading(false);
         return;
       }
       setError(formatAuthError(err));
@@ -91,6 +97,10 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
             />
           </div>
           <div className="space-y-2">
@@ -110,12 +120,17 @@ export default function SignInPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
+              autoComplete="current-password"
             />
           </div>
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100"
+          >
             <AlertCircle className="h-4 w-4" />
             {error}
           </div>

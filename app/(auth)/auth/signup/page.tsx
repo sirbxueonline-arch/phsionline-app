@@ -24,12 +24,6 @@ const formatAuthError = (err: any) => {
   return err?.message || "We couldn't sign you up. Please try again.";
 };
 
-const maskEmail = (email: string) => {
-  if (!email || !email.includes("@")) return "*****";
-  const [userPart, domain] = email.split("@");
-  return `${userPart[0] ?? ""}***@${domain}`;
-};
-
 const getBrowserTimezone = () => {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
@@ -117,13 +111,19 @@ export default function SignUpPage() {
       setError("Use a stronger password (8+ characters)");
       return;
     }
+    const normalizedEmail = form.email.trim();
+    const normalizedName = form.name.trim();
+    if (!normalizedEmail || !normalizedName) {
+      setError("Please fill in your name and email.");
+      return;
+    }
     setError(null);
     setLoading(true);
     try {
       const res = await fetch("/api/email/verify-code/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, name: form.name, referralCode })
+        body: JSON.stringify({ email: normalizedEmail, name: normalizedName, referralCode })
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -133,15 +133,15 @@ export default function SignUpPage() {
         sessionStorage.setItem(
           "studypilot_pending_signup",
           JSON.stringify({
-            email: form.email,
+            email: normalizedEmail,
             password: form.password,
-            name: form.name,
+            name: normalizedName,
             referralCode,
             codeSent: true
           })
         );
       }
-      router.push(`/verify-email?email=${encodeURIComponent(form.email)}&pending=1&sent=1`);
+      router.push(`/verify-email?email=${encodeURIComponent(normalizedEmail)}&pending=1&sent=1`);
     } catch (err: any) {
       setError(err?.message || "We couldn't start your signup. Please try again.");
     } finally {
@@ -223,6 +223,7 @@ export default function SignUpPage() {
     } catch (err: any) {
       if (err?.code?.includes("popup-blocked")) {
         router.push("/auth/google-redirect?intent=signup");
+        setLoading(false);
         return;
       }
       setError(formatAuthError(err));
@@ -251,6 +252,7 @@ export default function SignUpPage() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Your name"
+            autoComplete="name"
           />
         </div>
         <div className="space-y-2">
@@ -262,6 +264,10 @@ export default function SignUpPage() {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             placeholder="you@example.com"
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
           />
         </div>
         <div className="space-y-2">
@@ -273,6 +279,7 @@ export default function SignUpPage() {
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             placeholder="********"
+            autoComplete="new-password"
           />
           <p className="text-xs text-slate-500 dark:text-slate-300">Use 8+ characters for a stronger password.</p>
         </div>
@@ -285,10 +292,15 @@ export default function SignUpPage() {
             value={form.confirm}
             onChange={(e) => setForm({ ...form, confirm: e.target.value })}
             placeholder="********"
+            autoComplete="new-password"
           />
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="flex items-center gap-2 rounded-md border border-red-500/60 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100"
+          >
             <AlertCircle className="h-4 w-4" />
             {error}
           </div>
